@@ -1,27 +1,61 @@
-# Resume Made with LaTeX
+# Dynamic LaTeX Resume Generator
 
-This résumé my academic journey, technical projects, and professional experiences in computer engineering, with a focus on embedded systems and autonomous vehicles.
+This project dynamically generates a PDF resume from a YAML data file using Python and a LaTeX template.
 
-Please note that this résumé might occasionally be outdated — I aim to keep it updated whenever possible.
+## Prerequisites
 
-## Compilation
+Before you begin, ensure you have the following installed:
+- **Python 3.8+**
+- **uv**: A fast Python package installer and resolver. Used for environment management.
+- **A LaTeX Distribution**: You need a working LaTeX compiler.
+  - **Windows**: [MiKTeX](https://miktex.org/)
+  - **macOS**: [MacTeX](https://www.tug.org/mactex/)
+  - **Linux**: TeX Live (e.g., `sudo apt-get install texlive-full` on Debian/Ubuntu).
+  
+  The build script specifically uses `latexmk`.
 
-> You need to have a LaTeX compiler installed on your machine (e.g., TeX Live, MiKTeX, or MacTeX).
+## Project Setup
 
-To compile the document into a PDF:
+1.  **Create the Virtual Environment**
+    Create a dedicated virtual environment for the project using `uv`.
+    ```bash
+    uv venv
+    ```
+
+2.  **Activate the Environment**
+    Activate the newly created environment.
+    - On **Linux/macOS**:
+      ```bash
+      source .venv/bin/activate
+      ```
+    - On **Windows (Command Prompt)**:
+      ```bash
+      .venv\Scripts\activate.bat
+      ```
+    - On **Windows (PowerShell)**:
+      ```powershell
+      .venv\Scripts\Activate.ps1
+      ```
+
+3.  **Install Dependencies**
+    Install the required Python packages.
+    ```bash
+    uv sync
+    ```
+
+## Usage
+
+### Generating the Resume
+
+To generate the PDF resume, simply run the build script:
 ```bash
-latexmk -pdf main.tex
-``` 
+python3 build.py
+```
+This will create `main.tex` and compile it into `main.pdf`. All temporary files will be cleaned up automatically.
 
-## Clean Temporary Files
+### Running Tests
 
-To remove all auxiliary files generated during compilation:
+To run the unit tests and ensure everything is working correctly:
 ```bash
-latexmk -c
-``` 
-
-## Compile And Clean :
-
-```bash
-latexmk -pdf main.tex && latexmk -c
-``` 
+python3 -m unittest discover tests
+```
