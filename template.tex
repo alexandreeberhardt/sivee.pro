@@ -1,0 +1,115 @@
+\documentclass[10pt,a4paper]{article}
+
+\usepackage{geometry}
+\geometry{
+  top    = 0.35in,
+  bottom = 0.35in,
+  left   = 0.30in,
+  right  = 0.30in
+}
+\setlength\parindent{0pt}
+\setlength\parskip{1.5pt}
+\usepackage{multicol}
+\usepackage[T1]{fontenc}
+\usepackage{textcomp}
+\usepackage[sc]{mathpazo}
+\linespread{1.05}
+
+\usepackage{enumitem}
+\setlist[itemize]{leftmargin=*,nosep}
+
+\usepackage{hyperref}
+\usepackage{titlesec}
+
+\titleformat{\section}
+  {\large\bfseries}
+  {}
+  {0pt}
+  {}
+  [\vspace{-0.6em}\rule{\linewidth}{0.4pt}\vspace{-0.4em}]
+
+\titleformat{\subsection}
+  {\bfseries}
+  {}
+  {0pt}
+  {}
+
+\titlespacing*{\section}{0pt}{1ex}{0.7ex}
+\titlespacing*{\subsection}{0pt}{0.5ex}{0.5ex}
+
+\begin{document}
+
+\begin{center}
+  {\Huge\textbf{\VAR{personal.name | escape_latex}}}\\[0.3em]
+  \VAR{personal.location | escape_latex} \;|\;
+  \href{mailto:\VAR{personal.email}}{\VAR{personal.email | escape_latex}} \;|\;
+  \VAR{personal.phone | escape_latex} \;|\;
+  \href{\VAR{personal.github_url | escape_latex}}{\VAR{personal.github | escape_latex}}
+\end{center}
+
+\section*{Education}
+
+\BLOCK{for edu in education}
+\textbf{\VAR{edu.school | escape_latex}}, 
+\textit{\VAR{edu.degree | escape_latex}} 
+\hfill \VAR{edu.dates | escape_latex}
+\BLOCK{if edu.subtitle}
+\par\vspace{0.1em} 
+\textit{\VAR{edu.subtitle | escape_latex}}
+\BLOCK{endif}
+\BLOCK{if edu.description}
+\par\vspace{0.1em} 
+\VAR{edu.description | escape_latex}
+\BLOCK{endif}
+\par\vspace{0.4em} 
+\BLOCK{endfor}
+
+\section*{Experiences}
+
+\BLOCK{for exp in experiences}
+\textbf{\VAR{exp.title | escape_latex}}, \textit{\VAR{exp.company | escape_latex}} \hfill \VAR{exp.dates | escape_latex}
+\begin{itemize}[leftmargin=*]
+  \BLOCK{for item in exp.highlights}
+  \item \VAR{item | escape_latex}
+  \BLOCK{endfor}
+\end{itemize}
+\par\vspace{0.4em} 
+\BLOCK{endfor}
+
+\section*{Projects}
+
+\BLOCK{for proj in projects}
+\textbf{\VAR{proj.name | escape_latex}} \hfill \VAR{proj.year | escape_latex}
+\begin{itemize}
+  \BLOCK{for item in proj.highlights}
+  \item \VAR{item | escape_latex}
+  \BLOCK{endfor}
+\end{itemize}
+\par\vspace{0.4em} 
+\BLOCK{endfor}
+
+\section*{Technical Skills}
+
+\textbf{Programming Languages:} \VAR{skills.languages | escape_latex}
+
+\textbf{Tools:} \VAR{skills.tools | escape_latex}
+
+\par\vspace{0.4em} 
+\section*{\VAR{'Leadership & Community Involvement' | escape_latex}}
+
+\BLOCK{for lead in leadership}
+\textbf{\VAR{lead.role | escape_latex}} \BLOCK{if lead.place}— \VAR{lead.place | escape_latex} \BLOCK{endif} \hfill \VAR{lead.dates | escape_latex}
+\BLOCK{if lead.highlights}
+\begin{itemize}
+  \BLOCK{for item in lead.highlights}
+  \item \VAR{item | escape_latex}
+  \BLOCK{endfor}
+\end{itemize}
+\BLOCK{endif}
+\par\vspace{0.4em} 
+\BLOCK{endfor}
+
+\section*{Languages}
+\VAR{languages_spoken | escape_latex}
+
+\end{document}

@@ -1,0 +1,108 @@
+personal:
+  name: Léopold Chappuis
+  title: Computer Engineer
+  location: Québec, Canada
+  email: leopold@chappuis.fr
+  phone: "+33 6 24 88 42 96"
+  github: github.com/leopoldch
+  github_url: https://github.com/leopoldch
+
+education:
+  - school: Université de Technologie de Compiègne
+    degree: Master of Science, Computer Science Engineering
+    dates: 2021 – 2026 (expected)
+    subtitle: "GPA: 4/4"
+  - school: Université Laval
+    degree: Master of Science, Computer Science Engineering
+    dates: 2025 – 2027 (expected)
+    description: |
+      \textbf{Courses: } Algorithms & Data Structures, Object-Oriented Design & Programming, Operating Systems (UNIX), Computer Networks & Security, Machine Learning, AI, Database Systems.
+
+experiences:
+  - title: Fit Coding Challenge
+    company: Mostar, Bosnia and Herzegovina
+    dates: May 2025
+    highlights:
+      - "Competitive programming \\textbf{(C++)} event focused on solving advanced algorithmic problems."
+  
+  - title: 1st Prize — UTAC Autonomous Vehicle Competition
+    company: Utonome — Linas-Montlhéry proving ground, France
+    dates: May 2025
+    highlights:
+      - "Developed ACC, obstacle avoidance, and decision algorithms for an autonomous vehicle."
+      - "Set up ROS-based real-time communication between server and vehicle."
+
+  - title: Free Software Engineer Intern
+    company: Savoir-faire Linux — Montréal, Canada
+    dates: Aug 2024 – Feb 2025
+    highlights:
+      - "Core contributor to Jami (peer-to-peer DHT, C++)."
+
+  - title: Machine Learning Engineer
+    company: Freelance — Remote
+    dates: Feb 2024 - July 2025
+    highlights:
+      - "Worked for the Urban Research Department at the technical University of Compiègne."
+      - "Urban traffic forecasting — TensorFlow, LSTM, SARIMAX."
+
+  - title: Sysadmin
+    company: Freelance — Remote
+    dates: Oct 2023 – Aug 2024
+    highlights:
+      - "Hosted, secured and maintained Drupal & WordPress infrastructures, applying CI/CD and GDPR best practices."
+
+  - title: IT Service President
+    company: Students’ Federation, UTC — Compiègne, France
+    dates: May 2022 – May 2023
+    highlights:
+      - "Managed an IT ecosystem for 150 associations (mail servers, web hosting, LDAP directory, monitoring)."
+
+  - title: Event Technician
+    company: Weezevent — France
+    dates: Jun 2022 – Present
+    highlights:
+      - "Managed payment and access-control systems for large-scale festivals, ensuring real-time reliability."
+
+projects:
+  - name: AI – Board Game
+    year: 2024
+    highlights:
+      - "Implemented Min-Max, Negamax, Alpha-Beta Pruning and Monte-Carlo Tree Search in Prolog."
+  - name: C Development (Algorithms & Systems)
+    year: 2024
+    highlights:
+      - "Built AVL trees, stacks, queues and IPC mechanisms (threads, semaphores, signals)."
+  - name: Board Game in C++17 & Qt6
+    year: 2024
+    highlights:
+      - "Designed an interactive board-game GUI, applying OOP and design-pattern best practices."
+  - name: Breast-Cancer Prediction – Machine Learning
+    year: 2023
+    highlights:
+      - "Compared classifiers (Random Forest, KNN, LDA/QDA, Logistic Regression) to maximise AUC."
+  - name: Inventory solution for an Association (React / Django)
+    year: 2023
+    highlights:
+      - "Delivered a containerised inventory platform with JWT auth and GitHub Actions CI/CD."
+  - name: Proxmox Homelab Server
+    year: 2023
+    highlights:
+      - "Built a private cluster with multiple VMs, Docker containers and central LDAP authentication."
+
+skills:
+  languages: "ROS, Rust, C, C++, Bash, Regex, Python (Django, Pandas, Numpy, Scikit-Learn), JavaScript (VueJS, ReactJS), PHP, Java"
+  tools: "Git, Kubernetes, Vagrant, Docker, CI/CD (Gitlab/Github Actions/Jenkins), Terraform, Proxmox, Linux"
+
+leadership:
+  - role: Elected Student Representative
+    place: UTC, Council of Studies
+    dates: 2023 – 2025
+  - role: Technical Light & Sound Association
+    place: UTC
+    dates: 2021 – 2023
+  - role: "International Experience: Lived in Africa for 8 years"
+    dates: 2003 – 2011
+    highlights:
+      - "Developed strong adaptability and cross-cultural communication skills."
+
+languages_spoken: "French, English — Fluent"
