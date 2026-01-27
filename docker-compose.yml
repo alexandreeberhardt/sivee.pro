@@ -8,12 +8,9 @@ services:
     container_name: cv-generator
     restart: unless-stopped
     ports:
-      - "8000:8000"
+      - "127.0.0.1:8099:8000"
     environment:
       - PYTHONUNBUFFERED=1
-    volumes:
-      # Persistance optionnelle pour les données
-      - ./data:/app/data:ro
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/api/health"]
       interval: 30s
