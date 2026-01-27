@@ -23,6 +23,7 @@ Thumbs.db
 
 # Build artifacts
 *.pdf
+!cv_alexandre_eberhardt.pdf
 *.aux
 *.log
 *.out
