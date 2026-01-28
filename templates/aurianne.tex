@@ -75,6 +75,10 @@
 \BLOCK{endfor}
 \BLOCK{endif}
 
+\BLOCK{if section.type == 'summary'}
+\VAR{section.content | escape_latex}
+\BLOCK{endif}
+
 \BLOCK{if section.type == 'experiences'}
 \BLOCK{for exp in section.content}
 \vspace{0.15cm}

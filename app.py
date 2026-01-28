@@ -84,7 +84,7 @@ class CustomItem(BaseModel):
 
 
 # Types de sections supportés
-SectionType = Literal['education', 'experiences', 'projects', 'skills', 'leadership', 'languages', 'custom']
+SectionType = Literal['summary', 'education', 'experiences', 'projects', 'skills', 'leadership', 'languages', 'custom']
 
 
 class CVSection(BaseModel):
@@ -165,8 +165,8 @@ def convert_section_items(section: CVSection) -> Dict[str, Any]:
             section_dict["content"] = section.items.model_dump()
         else:
             section_dict["content"] = {"languages": "", "tools": ""}
-    elif section.type == "languages":
-        # Languages est une string
+    elif section.type in ("languages", "summary"):
+        # Languages et Summary sont des strings
         section_dict["content"] = str(section.items) if section.items else ""
     else:
         # Les autres types sont des listes

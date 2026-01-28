@@ -7,6 +7,8 @@ personal:
   github: github.com/alexandreeberhardt
   github_url: https://github.com/alexandreeberhardt
 
+summary: "Dual-degree Computer Science student at Université Laval and UTC, specializing in computer vision, robotics, and embedded systems. Experienced in software engineering and GPU-optimized deep learning model integration. Actively involved in student life and bilingual in French and English."
+
 education:
   - school: Université Laval
     degree: Master's in Computer Engineering (M.Sc)
@@ -32,13 +34,6 @@ experiences:
       - "Resolution of complex cross-platform compilation issues (Android NDK, macOS) and development of reactive interfaces in \\textbf{QML}."
 
 projects:
-  - name: Arduino Jukebox
-    year: 2024
-    highlights:
-      - "Design of an interactive audio embedded system in \\textbf{C++} on Arduino."
-      - "Integration of hardware modules: \\textbf{RFID} badge reading for music selection and audio management (DFPlayer)."
-      - "Development of control logic and hardware interrupt management."
-
   - name: Mastery Bot Brawl Stars
     year: 2024
     highlights:

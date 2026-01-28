@@ -37,6 +37,11 @@
 \cvitem{Tools}{\VAR{section.content.tools | escape_latex}}
 \BLOCK{endif}
 
+\BLOCK{if section.type == 'summary'}
+\section{\VAR{section.title | escape_latex}}
+\cvitem{}{\VAR{section.content | escape_latex}}
+\BLOCK{endif}
+
 \BLOCK{if section.type == 'experiences'}
 \section{\VAR{section.title | escape_latex}}
 \BLOCK{for exp in section.content}

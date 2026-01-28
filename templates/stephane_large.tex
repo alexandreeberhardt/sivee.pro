@@ -58,6 +58,12 @@
 \par\vspace{0.5em}
 \BLOCK{endif}
 
+\BLOCK{if section.type == 'summary'}
+\section*{\faUser\ \VAR{section.title | escape_latex}}
+\VAR{section.content | escape_latex}
+\par\vspace{0.5em}
+\BLOCK{endif}
+
 \BLOCK{if section.type == 'experiences'}
 \section*{\faSuitcase\ \VAR{section.title | escape_latex}}
 \BLOCK{for exp in section.content}
