@@ -1,0 +1,109 @@
+\documentclass[10pt,a4paper]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{geometry}
+\geometry{
+  top    = 0.4in,
+  bottom = 0.4in,
+  left   = 0.5in,
+  right  = 0.5in
+}
+\setlength\parindent{0pt}
+\setlength\parskip{2pt}
+
+\usepackage{fontawesome}
+\usepackage[sc]{mathpazo}
+\linespread{1.05}
+
+\usepackage{enumitem}
+\setlist[itemize]{leftmargin=*,nosep,topsep=2pt}
+
+\usepackage{hyperref}
+\hypersetup{colorlinks=true,urlcolor=blue}
+\usepackage{titlesec}
+\usepackage{xcolor}
+
+\definecolor{accentcolor}{HTML}{000066}
+
+\titleformat{\section}
+  {\large\bfseries\color{accentcolor}}
+  {}
+  {0pt}
+  {}
+  [\vspace{-0.5em}\rule{\linewidth}{0.4pt}\vspace{-0.3em}]
+
+\titlespacing*{\section}{0pt}{1.2ex}{0.8ex}
+
+\newcommand{\experienceentry}[5]{%
+  \textbf{#1} | \textit{#2} \hfill #3 -- #4\\
+  #5\par\vspace{0.5em}
+}
+
+\newcommand{\educationentry}[3]{%
+  \textbf{#1} \hfill #2\\
+  \textit{#3}\par\vspace{0.3em}
+}
+
+\newcommand{\skillentry}[2]{%
+  \textbf{#1:} #2\par\vspace{0.2em}
+}
+
+\begin{document}
+
+% === HEADER ===
+\begin{center}
+  {\Huge\textbf{\VAR{personal.firstname} \VAR{personal.lastname}}}\\[0.4em]
+  {\large\color{accentcolor} \VAR{personal.tagline}}\\[0.4em]
+  \faLinkedin\ \href{https://linkedin.com/in/\VAR{personal.linkedin}}{\VAR{personal.linkedin}} \quad
+  \faPhone\ \VAR{personal.phone} \quad
+  \faEnvelope\ \href{mailto:\VAR{personal.email}}{\VAR{personal.email}} \quad
+  \faHome\ \VAR{personal.address}
+\end{center}
+
+% === KOMPETENCER ===
+\BLOCK{if sections.skills}
+\section*{\faTasks\ Kompetencer}
+\BLOCK{for skill in sections.skills}
+\skillentry{\VAR{skill.name}}{\VAR{skill.description}}
+\BLOCK{endfor}
+\BLOCK{endif}
+
+% === ERFARING ===
+\BLOCK{if sections.experiences}
+\section*{\faSuitcase\ Erfaring}
+\BLOCK{for exp in sections.experiences}
+\experienceentry{\VAR{exp.title}}{\VAR{exp.company}, \VAR{exp.location}}{\VAR{exp.start}}{\VAR{exp.end}}{%
+\BLOCK{if exp.description}\VAR{exp.description}\BLOCK{endif}
+\BLOCK{if exp.highlights}
+\begin{itemize}
+\BLOCK{for item in exp.highlights}
+  \item \VAR{item}
+\BLOCK{endfor}
+\end{itemize}
+\BLOCK{endif}
+}
+\BLOCK{endfor}
+\BLOCK{endif}
+
+% === UDDANNELSE ===
+\BLOCK{if sections.education}
+\section*{\faMortarBoard\ Uddannelse}
+\BLOCK{for edu in sections.education}
+\educationentry{\VAR{edu.degree}}{\VAR{edu.dates}}{\VAR{edu.school}}
+\BLOCK{endfor}
+\BLOCK{endif}
+
+% === SPROG & IT ===
+\BLOCK{if sections.languages or sections.it_skills}
+\section*{\faGlobe\ Sprog \& \faLaptop\ IT}
+\BLOCK{if sections.languages}
+\textbf{Sprog:} \VAR{sections.languages | join(", ")}
+\BLOCK{endif}
+
+\BLOCK{if sections.it_skills}
+\textbf{IT:} \VAR{sections.it_skills | join(", ")}
+\BLOCK{endif}
+\BLOCK{endif}
+
+\end{document}

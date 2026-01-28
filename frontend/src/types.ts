@@ -82,7 +82,13 @@ export interface CVSection {
 
 // === Types de templates ===
 
-export type TemplateId = 'harvard' | 'europass' | 'mckinsey' | 'aurianne';
+export type TemplateId =
+  | 'harvard' | 'harvard_compact' | 'harvard_large'
+  | 'europass' | 'europass_compact' | 'europass_large'
+  | 'mckinsey' | 'mckinsey_compact' | 'mckinsey_large'
+  | 'aurianne' | 'aurianne_compact' | 'aurianne_large'
+  | 'stephane' | 'stephane_compact' | 'stephane_large'
+  | 'michel' | 'michel_compact' | 'michel_large';
 
 export interface TemplateOption {
   id: TemplateId;
@@ -91,10 +97,30 @@ export interface TemplateOption {
 }
 
 export const AVAILABLE_TEMPLATES: TemplateOption[] = [
+  // Harvard
   { id: 'harvard', name: 'Harvard', description: 'Style classique et professionnel' },
+  { id: 'harvard_compact', name: 'Harvard Compact', description: 'Harvard avec espacement réduit' },
+  { id: 'harvard_large', name: 'Harvard Large', description: 'Harvard avec espacement augmenté' },
+  // Europass
   { id: 'europass', name: 'Europass', description: 'Format européen standardisé' },
+  { id: 'europass_compact', name: 'Europass Compact', description: 'Europass avec espacement réduit' },
+  { id: 'europass_large', name: 'Europass Large', description: 'Europass avec espacement augmenté' },
+  // McKinsey
   { id: 'mckinsey', name: 'McKinsey', description: 'Style consulting haut de gamme' },
+  { id: 'mckinsey_compact', name: 'McKinsey Compact', description: 'McKinsey avec espacement réduit' },
+  { id: 'mckinsey_large', name: 'McKinsey Large', description: 'McKinsey avec espacement augmenté' },
+  // Aurianne
   { id: 'aurianne', name: 'Aurianne', description: 'Style moderne et compact' },
+  { id: 'aurianne_compact', name: 'Aurianne Compact', description: 'Aurianne avec espacement réduit' },
+  { id: 'aurianne_large', name: 'Aurianne Large', description: 'Aurianne avec espacement augmenté' },
+  // Stephane
+  { id: 'stephane', name: 'Stephane', description: 'Style moderne avec icônes' },
+  { id: 'stephane_compact', name: 'Stephane Compact', description: 'Stephane avec espacement réduit' },
+  { id: 'stephane_large', name: 'Stephane Large', description: 'Stephane avec espacement augmenté' },
+  // Michel
+  { id: 'michel', name: 'Michel', description: 'Style moderncv classique' },
+  { id: 'michel_compact', name: 'Michel Compact', description: 'Michel avec espacement réduit' },
+  { id: 'michel_large', name: 'Michel Large', description: 'Michel avec espacement augmenté' },
 ];
 
 // === Structure principale du CV ===
