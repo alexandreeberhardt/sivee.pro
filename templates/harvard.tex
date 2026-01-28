@@ -41,6 +41,7 @@
 
 \begin{center}
   {\Huge\textbf{\VAR{personal.name | escape_latex}}}\\[0.3em]
+  \BLOCK{if personal.title}{\large \VAR{personal.title | escape_latex}}\\[0.3em]\BLOCK{endif}
   \VAR{personal.location | escape_latex} \;|\;
   \href{mailto:\VAR{personal.email}}{\VAR{personal.email | escape_latex}} \;|\;
   \VAR{personal.phone | escape_latex} \;|\;

@@ -3,16 +3,24 @@ Backend FastAPI pour la génération de CV.
 Expose un endpoint POST /generate qui reçoit les données et retourne le PDF.
 Support des sections dynamiques et réorganisables.
 """
+import os
 import tempfile
 import shutil
 from pathlib import Path
 from typing import Any, Dict, List, Literal, Optional, Union
 
-from fastapi import FastAPI, HTTPException
+from dotenv import load_dotenv
+
+# Charger le fichier .env depuis la racine du projet (dossier parent)
+load_dotenv(Path(__file__).parent.parent / ".env")
+
+from fastapi import FastAPI, HTTPException, UploadFile, File
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, field_validator
+from openai import OpenAI
+from pypdf import PdfReader
 
 from core.LatexRenderer import LatexRenderer
 from core.PdfCompiler import PdfCompiler
@@ -247,6 +255,154 @@ async def get_default_data():
         data = yaml.safe_load(f)
 
     return data
+
+
+@app.post("/import")
+async def import_cv(file: UploadFile = File(...)):
+    """
+    Importe un CV depuis un fichier PDF.
+
+    Extrait le texte du PDF et utilise l'API OpenAI pour mapper
+    le contenu vers la structure ResumeData.
+
+    Args:
+        file: Fichier PDF uploadé.
+
+    Returns:
+        ResumeData: Données structurées du CV.
+    """
+    # Vérifier que c'est un PDF
+    if not file.filename or not file.filename.lower().endswith('.pdf'):
+        raise HTTPException(status_code=400, detail="Le fichier doit être un PDF")
+
+    # Vérifier la clé API OpenAI
+    api_key = os.environ.get("OPENAI_API_KEY")
+    if not api_key:
+        raise HTTPException(
+            status_code=500,
+            detail="Clé API OpenAI non configurée (OPENAI_API_KEY)"
+        )
+
+    try:
+        # Extraire le texte du PDF
+        pdf_content = await file.read()
+
+        # Créer un fichier temporaire pour pypdf
+        temp_pdf = tempfile.NamedTemporaryFile(delete=False, suffix=".pdf")
+        temp_pdf.write(pdf_content)
+        temp_pdf.close()
+
+        try:
+            reader = PdfReader(temp_pdf.name)
+            text_content = ""
+            for page in reader.pages:
+                text_content += page.extract_text() + "\n"
+        finally:
+            Path(temp_pdf.name).unlink()
+
+        if not text_content.strip():
+            raise HTTPException(
+                status_code=400,
+                detail="Impossible d'extraire le texte du PDF"
+            )
+
+        # Appeler OpenAI pour structurer les données
+        client = OpenAI(api_key=api_key)
+
+        system_prompt = """Tu es un assistant spécialisé dans l'extraction de données de CV.
+Analyse le texte du CV fourni et retourne un JSON avec la structure exacte suivante:
+
+{
+  "personal": {
+    "name": "Nom complet",
+    "title": "Titre professionnel",
+    "location": "Ville, Pays",
+    "email": "email@example.com",
+    "phone": "+33 6 12 34 56 78",
+    "github": "username",
+    "github_url": "https://github.com/username"
+  },
+  "sections": [
+    {
+      "id": "sec-1",
+      "type": "education",
+      "title": "Education",
+      "isVisible": true,
+      "items": [
+        {"school": "Nom école", "degree": "Diplôme", "dates": "2020 - 2024", "subtitle": "Mention/GPA", "description": "Description"}
+      ]
+    },
+    {
+      "id": "sec-2",
+      "type": "experiences",
+      "title": "Experiences",
+      "isVisible": true,
+      "items": [
+        {"title": "Poste", "company": "Entreprise", "dates": "Jan 2023 - Present", "highlights": ["Point 1", "Point 2"]}
+      ]
+    },
+    {
+      "id": "sec-3",
+      "type": "projects",
+      "title": "Projects",
+      "isVisible": true,
+      "items": [
+        {"name": "Nom projet", "year": "2023", "highlights": ["Description 1", "Description 2"]}
+      ]
+    },
+    {
+      "id": "sec-4",
+      "type": "skills",
+      "title": "Technical Skills",
+      "isVisible": true,
+      "items": {"languages": "Python, JavaScript, C++", "tools": "Git, Docker, Linux"}
+    },
+    {
+      "id": "sec-5",
+      "type": "leadership",
+      "title": "Leadership",
+      "isVisible": true,
+      "items": [
+        {"role": "Rôle", "place": "Organisation", "dates": "2022 - 2023", "highlights": ["Action 1"]}
+      ]
+    },
+    {
+      "id": "sec-6",
+      "type": "languages",
+      "title": "Languages",
+      "isVisible": true,
+      "items": "Français (natif), Anglais (courant)"
+    }
+  ],
+  "template_id": "harvard"
+}
+
+IMPORTANT:
+- Pour "skills", items est un OBJET avec "languages" et "tools" (pas un array)
+- Pour "languages", items est une STRING simple
+- Pour les autres types, items est un ARRAY d'objets
+- Génère des IDs uniques pour chaque section (sec-1, sec-2, etc.)
+- Si une info n'est pas dans le CV, utilise une chaîne vide "" ou un array vide []
+- N'invente pas d'informations, extrais uniquement ce qui est présent"""
+
+        response = client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=[
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": f"Voici le texte extrait du CV:\n\n{text_content}"}
+            ],
+            response_format={"type": "json_object"}
+        )
+
+        import json
+        result = json.loads(response.choices[0].message.content)
+
+        return result
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Erreur lors de l'import: {str(e)}")
 
 
 @app.get("/api/health")
