@@ -69,6 +69,17 @@ function App() {
   const convertLegacyData = (legacyData: any): ResumeData => {
     const sections: CVSection[] = [];
 
+    // Summary en premier
+    if (legacyData.summary) {
+      sections.push({
+        id: generateId(),
+        type: 'summary',
+        title: 'Summary',
+        isVisible: true,
+        items: legacyData.summary,
+      });
+    }
+
     if (legacyData.education?.length > 0) {
       sections.push({
         id: generateId(),

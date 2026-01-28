@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { X, GraduationCap, Briefcase, FolderKanban, Wrench, Users, Languages, FileText } from 'lucide-react';
+import { X, GraduationCap, Briefcase, FolderKanban, Wrench, Users, Languages, FileText, User } from 'lucide-react';
 import { SectionType, defaultSectionTitles } from '../types';
 
 interface AddSectionModalProps {
@@ -9,6 +9,11 @@ interface AddSectionModalProps {
 }
 
 const sectionOptions: { type: SectionType; icon: React.ReactNode; description: string }[] = [
+  {
+    type: 'summary',
+    icon: <User className="w-6 h-6" />,
+    description: 'Profil et objectif professionnel',
+  },
   {
     type: 'education',
     icon: <GraduationCap className="w-6 h-6" />,

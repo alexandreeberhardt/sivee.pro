@@ -55,6 +55,7 @@ export interface CustomItem {
 // === Types de sections ===
 
 export type SectionType =
+  | 'summary'
   | 'education'
   | 'experiences'
   | 'projects'
@@ -184,6 +185,9 @@ export const createSection = (type: SectionType, title: string): CVSection => {
   let items: SectionItems;
 
   switch (type) {
+    case 'summary':
+      items = '';
+      break;
     case 'education':
       items = [];
       break;
@@ -224,6 +228,13 @@ export const emptyResumeData: ResumeData = {
     github_url: '',
   },
   sections: [
+    {
+      id: generateId(),
+      type: 'summary',
+      title: 'Summary',
+      isVisible: true,
+      items: 'Dual-degree Computer Science student at Université Laval and UTC, specializing in computer vision, robotics, and embedded systems. Experienced in software engineering and GPU-optimized deep learning model integration. Actively involved in student life and bilingual in French and English.',
+    },
     createSection('education', 'Education'),
     createSection('experiences', 'Experiences'),
     createSection('projects', 'Projects'),
@@ -236,6 +247,7 @@ export const emptyResumeData: ResumeData = {
 
 // Titres par défaut pour chaque type de section
 export const defaultSectionTitles: Record<SectionType, string> = {
+  summary: 'Summary',
   education: 'Education',
   experiences: 'Experiences',
   projects: 'Projects',

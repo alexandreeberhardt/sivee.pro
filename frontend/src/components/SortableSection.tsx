@@ -18,6 +18,7 @@ import SkillsEditor from './editors/SkillsEditor';
 import LeadershipEditor from './editors/LeadershipEditor';
 import LanguagesEditor from './editors/LanguagesEditor';
 import CustomEditor from './editors/CustomEditor';
+import SummaryEditor from './editors/SummaryEditor';
 
 interface SortableSectionProps {
   section: CVSection;
@@ -52,6 +53,13 @@ export default function SortableSection({ section, onUpdate, onDelete }: Sortabl
 
   const renderEditor = () => {
     switch (section.type) {
+      case 'summary':
+        return (
+          <SummaryEditor
+            value={section.items as string}
+            onChange={(items) => onUpdate({ items })}
+          />
+        );
       case 'education':
         return (
           <EducationEditor
