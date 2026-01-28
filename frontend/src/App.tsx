@@ -14,7 +14,8 @@ import {
   sortableKeyboardCoordinates,
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
-import { FileDown, Loader2, AlertCircle, Plus } from 'lucide-react';
+import { FileDown, Loader2, AlertCircle, Plus, Upload } from 'lucide-react';
+import { useRef } from 'react';
 import {
   ResumeData,
   CVSection,
@@ -35,9 +36,11 @@ const API_URL = import.meta.env.DEV ? '/api' : '';
 function App() {
   const [data, setData] = useState<ResumeData>(emptyResumeData);
   const [loading, setLoading] = useState(false);
+  const [importLoading, setImportLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [initialLoading, setInitialLoading] = useState(true);
   const [showAddModal, setShowAddModal] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -169,6 +172,51 @@ function App() {
     }
   };
 
+  // Importer un CV depuis un PDF
+  const handleImport = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    setImportLoading(true);
+    setError(null);
+
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+
+      const response = await fetch(`${API_URL}/import`, {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!response.ok) {
+        const errData = await response.json();
+        throw new Error(errData.detail || "Erreur lors de l'import");
+      }
+
+      const importedData: ResumeData = await response.json();
+
+      // Régénérer les IDs pour éviter les conflits
+      const processedData: ResumeData = {
+        ...importedData,
+        sections: importedData.sections.map((section) => ({
+          ...section,
+          id: generateId(),
+        })),
+      };
+
+      setData(processedData);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Erreur lors de l'import");
+    } finally {
+      setImportLoading(false);
+      // Reset l'input file pour permettre de re-sélectionner le même fichier
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+    }
+  };
+
   // Gestion du drag & drop
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
@@ -229,6 +277,31 @@ function App() {
         <div className="max-w-5xl mx-auto px-4 py-4 flex items-center justify-between">
           <h1 className="text-2xl font-bold text-gray-900">CV Generator</h1>
           <div className="flex items-center gap-3">
+            {/* Input file caché pour l'import PDF */}
+            <input
+              type="file"
+              ref={fileInputRef}
+              onChange={handleImport}
+              accept=".pdf"
+              className="hidden"
+            />
+            <button
+              onClick={() => fileInputRef.current?.click()}
+              disabled={importLoading}
+              className="inline-flex items-center gap-2 px-4 py-2 border border-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            >
+              {importLoading ? (
+                <>
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                  Import...
+                </>
+              ) : (
+                <>
+                  <Upload className="w-5 h-5" />
+                  Importer PDF
+                </>
+              )}
+            </button>
             <select
               value={data.template_id}
               onChange={(e) =>
@@ -237,7 +310,7 @@ function App() {
                   template_id: e.target.value as TemplateId,
                 }))
               }
-              className="px-3 py-2 border border-gray-300 rounded-lg bg-white text-gray-700 font-medium hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
+              className="h-10 px-4 py-2 border border-gray-300 rounded-lg bg-white text-gray-700 font-medium hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
             >
               {AVAILABLE_TEMPLATES.map((template) => (
                 <option key={template.id} value={template.id}>
