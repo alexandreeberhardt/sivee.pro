@@ -98,6 +98,7 @@ class ResumeData(BaseModel):
     """Données complètes du CV avec sections dynamiques."""
     personal: PersonalInfo
     sections: List[CVSection] = []
+    template_id: str = "harvard"
 
 
 # === Application FastAPI ===
@@ -117,9 +118,11 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Chemin vers le template
+# Chemin vers les templates
 TEMPLATE_DIR = Path(__file__).parent
-TEMPLATE_NAME = "template.tex"
+TEMPLATES_FOLDER = TEMPLATE_DIR / "templates"
+DEFAULT_TEMPLATE = "harvard"
+VALID_TEMPLATES = {"harvard", "europass", "mckinsey", "aurianne"}
 
 # Dossier des fichiers statiques (frontend buildé)
 STATIC_DIR = TEMPLATE_DIR / "static"
@@ -179,9 +182,15 @@ async def generate_cv(data: ResumeData):
     temp_path = Path(temp_dir)
 
     try:
+        # Déterminer le template à utiliser (fallback sur harvard si invalide)
+        template_id = data.template_id if data.template_id in VALID_TEMPLATES else DEFAULT_TEMPLATE
+        template_filename = f"{template_id}.tex"
+
         # Copier le template dans le dossier temporaire
-        template_src = TEMPLATE_DIR / TEMPLATE_NAME
-        template_dst = temp_path / TEMPLATE_NAME
+        template_src = TEMPLATES_FOLDER / template_filename
+        if not template_src.exists():
+            template_src = TEMPLATES_FOLDER / f"{DEFAULT_TEMPLATE}.tex"
+        template_dst = temp_path / template_filename
         shutil.copy(template_src, template_dst)
 
         # Préparer les données pour le rendu
@@ -191,7 +200,7 @@ async def generate_cv(data: ResumeData):
         }
 
         # Rendre le template LaTeX
-        renderer = LatexRenderer(temp_path, TEMPLATE_NAME)
+        renderer = LatexRenderer(temp_path, template_filename)
         tex_content = renderer.render(render_data)
 
         # Écrire le fichier .tex
