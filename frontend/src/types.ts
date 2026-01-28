@@ -80,11 +80,29 @@ export interface CVSection {
   items: SectionItems;
 }
 
+// === Types de templates ===
+
+export type TemplateId = 'harvard' | 'europass' | 'mckinsey' | 'aurianne';
+
+export interface TemplateOption {
+  id: TemplateId;
+  name: string;
+  description: string;
+}
+
+export const AVAILABLE_TEMPLATES: TemplateOption[] = [
+  { id: 'harvard', name: 'Harvard', description: 'Style classique et professionnel' },
+  { id: 'europass', name: 'Europass', description: 'Format européen standardisé' },
+  { id: 'mckinsey', name: 'McKinsey', description: 'Style consulting haut de gamme' },
+  { id: 'aurianne', name: 'Aurianne', description: 'Style moderne et compact' },
+];
+
 // === Structure principale du CV ===
 
 export interface ResumeData {
   personal: PersonalInfo;
   sections: CVSection[];
+  template_id: TemplateId;
 }
 
 // === Helpers pour créer des sections vides ===
@@ -187,6 +205,7 @@ export const emptyResumeData: ResumeData = {
     createSection('leadership', 'Leadership & Community Involvement'),
     createSection('languages', 'Languages'),
   ],
+  template_id: 'harvard',
 };
 
 // Titres par défaut pour chaque type de section
