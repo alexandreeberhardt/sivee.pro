@@ -286,7 +286,7 @@ function App() {
           <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
             <div className="flex items-center gap-2">
               <FileText className="w-8 h-8 text-primary-900" />
-              <span className="text-lg font-semibold text-primary-900">CV Generator</span>
+              <span className="text-lg font-semibold text-primary-900">Sivee</span>
             </div>
             <button
               onClick={() => setShowLanding(false)}
@@ -372,6 +372,7 @@ function App() {
                   onClick={() => {
                     setData((prev) => ({ ...prev, template_id: template.id as TemplateId }));
                     setShowLanding(false);
+                    window.scrollTo(0, 0);
                   }}
                 >
                   <div className="w-full aspect-[3/4] rounded-lg mb-3 overflow-hidden bg-primary-50">
@@ -401,7 +402,7 @@ function App() {
           <div className="max-w-6xl mx-auto">
             <div className="text-center mb-16">
               <h2 className="text-3xl font-bold text-primary-900 mb-4">
-                Pourquoi choisir CV Generator ?
+                Pourquoi choisir Sivee ?
               </h2>
               <p className="text-lg text-primary-600 max-w-2xl mx-auto">
                 Des outils simples et puissants pour creer le CV parfait
@@ -450,7 +451,7 @@ function App() {
           <div className="max-w-6xl mx-auto flex items-center justify-between">
             <div className="flex items-center gap-2">
               <FileText className="w-5 h-5 text-primary-400" />
-              <span className="text-sm text-primary-500">CV Generator</span>
+              <span className="text-sm text-primary-500">Sivee</span>
             </div>
             <p className="text-sm text-primary-400">
               Fait avec soin
@@ -472,7 +473,7 @@ function App() {
             className="flex items-center gap-2 hover:opacity-70 transition-opacity"
           >
             <FileText className="w-6 h-6 text-primary-900" />
-            <span className="font-semibold text-primary-900">CV Generator</span>
+            <span className="font-semibold text-primary-900">Sivee</span>
           </button>
 
           <div className="flex items-center gap-3">
