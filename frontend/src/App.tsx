@@ -63,17 +63,8 @@ function App() {
   );
 
   useEffect(() => {
-    fetch(`${API_URL}/default-data`)
-      .then((res) => res.json())
-      .then((defaultData) => {
-        const convertedData = convertLegacyData(defaultData);
-        setData(convertedData);
-        setInitialLoading(false);
-      })
-      .catch((err) => {
-        console.error('Erreur chargement donnees:', err);
-        setInitialLoading(false);
-      });
+    // Start with empty data
+    setInitialLoading(false);
   }, []);
 
   const convertLegacyData = (legacyData: any): ResumeData => {
