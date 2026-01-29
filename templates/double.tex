@@ -1,0 +1,222 @@
+\documentclass[10pt, a4paper]{article}
+
+% --- Packages requis ---
+\usepackage[left=1.0cm, right=1.0cm, top=0.8cm, bottom=0.8cm]{geometry}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[default]{lato}
+\usepackage{fontawesome5}
+\usepackage{xcolor}
+\usepackage{tikz}
+\usepackage{enumitem}
+\usepackage{hyperref}
+\usepackage{titlesec}
+\usepackage{paracol}
+
+% --- Couleurs ---
+\definecolor{primary}{HTML}{2B72EE}
+\definecolor{darktext}{HTML}{000000}
+\definecolor{greytext}{HTML}{555555}
+\definecolor{lightgrey}{HTML}{DDDDDD}
+
+% --- Configuration (normal) ---
+\pagestyle{empty}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{1pt}
+\linespread{1.0}
+
+% Style des liens
+\hypersetup{
+    colorlinks=true,
+    linkcolor=primary,
+    filecolor=primary,
+    urlcolor=black,
+}
+
+% Macro pour les titres de section
+\newcommand{\cvsection}[1]{
+    \vspace{0.6em}
+    {\LARGE \textbf{#1}} \\[-0.3em]
+    \rule{\linewidth}{1.5pt}
+    \vspace{0.3em}
+}
+
+% Macro pour les points de compétence (Langues)
+\newcommand{\rating}[1]{%
+    \begin{tikzpicture}[baseline=-0.3em]
+    \foreach \x in {1,...,5} {
+        \ifnum\x>\numexpr#1\relax
+            \fill[lightgrey] (\x*1.2em,0) circle (0.4em);
+        \else
+            \fill[primary] (\x*1.2em,0) circle (0.4em);
+        \fi
+    }
+    \end{tikzpicture}%
+}
+
+% Macro pour les tags de compétences
+\newcommand{\cvtag}[1]{%
+    \begin{tikzpicture}[baseline=(temp.base)]
+        \node[inner sep=3pt, text width=2cm, align=center] (temp) {\textbf{#1}};
+        \draw[thick, black] (temp.south west) -- (temp.south east);
+    \end{tikzpicture}%
+}
+
+% --- DOCUMENT ---
+\begin{document}
+
+% --- EN-TETE ---
+\begin{minipage}[c]{0.75\textwidth}
+    {\fontsize{28}{34}\selectfont \textbf{\VAR{personal.name | escape_latex}}}\\[0.15cm]
+    \BLOCK{if personal.title}{\Large \color{primary} \textbf{\VAR{personal.title | escape_latex}}}\\[0.2cm]\BLOCK{endif}
+
+    \color{black}
+    \small
+    \BLOCK{if personal.phone}\faPhone \ \VAR{personal.phone | escape_latex} \quad\BLOCK{endif}
+    \BLOCK{if personal.email}\faEnvelope \ \VAR{personal.email | escape_latex} \quad\BLOCK{endif}
+    \BLOCK{if personal.github}\faLink \ \href{\VAR{personal.github_url | escape_latex}}{\VAR{personal.github | escape_latex}} \quad\BLOCK{endif}
+    \BLOCK{if personal.location}\faMapMarker* \ \VAR{personal.location | escape_latex}\BLOCK{endif}
+\end{minipage}%
+\begin{minipage}[c]{0.25\textwidth}
+    \begin{flushright}
+        \begin{tikzpicture}
+            \node[circle, fill=primary, minimum size=3cm, text=white, font=\fontsize{26}{26}\selectfont] {\VAR{personal.name | escape_latex | truncate(2, True, '') | upper}};
+        \end{tikzpicture}
+    \end{flushright}
+\end{minipage}
+
+\vspace{0.3cm}
+
+% --- COLONNES ---
+\columnratio{0.60}
+\begin{paracol}{2}
+
+% --- COLONNE GAUCHE ---
+\BLOCK{for section in sections}
+\BLOCK{if section.isVisible and section.type in ['summary', 'education', 'experiences', 'leadership', 'custom']}
+
+\cvsection{\VAR{section.title | escape_latex}}
+
+\BLOCK{if section.type == 'summary'}
+\VAR{section.content | escape_latex}
+\BLOCK{endif}
+
+\BLOCK{if section.type == 'education'}
+\BLOCK{for edu in section.content}
+{\large \textbf{\VAR{edu.school | escape_latex}}}\\
+{\color{primary} \textbf{\VAR{edu.degree | escape_latex}}}\\
+{\small \color{greytext} \faCalendar* \ \VAR{edu.dates | escape_latex}}
+\BLOCK{if edu.subtitle}
+\par\vspace{0.05em}
+\textit{\VAR{edu.subtitle | escape_latex}}
+\BLOCK{endif}
+\BLOCK{if edu.description}
+\par\vspace{0.05em}
+\VAR{edu.description | escape_latex}
+\BLOCK{endif}
+\par\vspace{0.5em}
+\BLOCK{endfor}
+\BLOCK{endif}
+
+\BLOCK{if section.type == 'experiences'}
+\BLOCK{for exp in section.content}
+{\large \textbf{\VAR{exp.title | escape_latex}}}\\
+{\color{primary} \textbf{\VAR{exp.company | escape_latex}}}\\
+{\small \color{greytext} \faCalendar* \ \VAR{exp.dates | escape_latex}}
+\BLOCK{if exp.highlights}
+\vspace{0.1em}
+\begin{itemize}[leftmargin=1.5em, parsep=0pt, itemsep=1pt, topsep=1pt]
+    \BLOCK{for item in exp.highlights}
+    \item \VAR{item | escape_latex}
+    \BLOCK{endfor}
+\end{itemize}
+\BLOCK{endif}
+\vspace{0.5em}
+\BLOCK{endfor}
+\BLOCK{endif}
+
+\BLOCK{if section.type == 'leadership'}
+\BLOCK{for lead in section.content}
+{\large \textbf{\VAR{lead.role | escape_latex}}}\\
+\BLOCK{if lead.place}{\color{primary} \textbf{\VAR{lead.place | escape_latex}}}\\
+\BLOCK{endif}
+{\small \color{greytext} \faCalendar* \ \VAR{lead.dates | escape_latex}}
+\BLOCK{if lead.highlights}
+\vspace{0.1em}
+\begin{itemize}[leftmargin=1.5em, parsep=0pt, itemsep=1pt, topsep=1pt]
+    \BLOCK{for item in lead.highlights}
+    \item \VAR{item | escape_latex}
+    \BLOCK{endfor}
+\end{itemize}
+\BLOCK{endif}
+\vspace{0.5em}
+\BLOCK{endfor}
+\BLOCK{endif}
+
+\BLOCK{if section.type == 'custom'}
+\BLOCK{for item in section.content}
+{\large \textbf{\VAR{item.title | escape_latex}}}
+\BLOCK{if item.subtitle}\\
+{\color{primary} \textbf{\VAR{item.subtitle | escape_latex}}}
+\BLOCK{endif}
+\BLOCK{if item.dates}\\
+{\small \color{greytext} \faCalendar* \ \VAR{item.dates | escape_latex}}
+\BLOCK{endif}
+\BLOCK{if item.highlights}
+\vspace{0.1em}
+\begin{itemize}[leftmargin=1.5em, parsep=0pt, itemsep=1pt, topsep=1pt]
+    \BLOCK{for hl in item.highlights}
+    \item \VAR{hl | escape_latex}
+    \BLOCK{endfor}
+\end{itemize}
+\BLOCK{endif}
+\vspace{0.5em}
+\BLOCK{endfor}
+\BLOCK{endif}
+
+\BLOCK{endif}
+\BLOCK{endfor}
+
+\switchcolumn
+
+% --- COLONNE DROITE ---
+\BLOCK{for section in sections}
+\BLOCK{if section.isVisible and section.type in ['languages', 'skills', 'projects']}
+
+\cvsection{\VAR{section.title | escape_latex}}
+
+\BLOCK{if section.type == 'languages'}
+\VAR{section.content | escape_latex}
+\BLOCK{endif}
+
+\BLOCK{if section.type == 'skills'}
+\BLOCK{if section.content.languages}
+\textbf{Languages:} \VAR{section.content.languages | escape_latex}
+\par\vspace{0.3em}
+\BLOCK{endif}
+\BLOCK{if section.content.tools}
+\textbf{Tools:} \VAR{section.content.tools | escape_latex}
+\BLOCK{endif}
+\BLOCK{endif}
+
+\BLOCK{if section.type == 'projects'}
+\BLOCK{for proj in section.content}
+{\large \textbf{\VAR{proj.name | escape_latex}}}\\
+{\small \color{greytext} \faCalendar* \ \VAR{proj.year | escape_latex}}
+\BLOCK{if proj.highlights}
+\begin{itemize}[leftmargin=1.2em, parsep=0pt, itemsep=1pt, topsep=1pt]
+    \BLOCK{for item in proj.highlights}
+    \item {\small \VAR{item | escape_latex}}
+    \BLOCK{endfor}
+\end{itemize}
+\BLOCK{endif}
+\vspace{0.3em}
+\BLOCK{endfor}
+\BLOCK{endif}
+
+\BLOCK{endif}
+\BLOCK{endfor}
+
+\end{paracol}
+
+\end{document}

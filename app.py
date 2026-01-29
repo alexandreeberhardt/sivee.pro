@@ -143,6 +143,7 @@ VALID_TEMPLATES = {
     "aurianne", "aurianne_compact", "aurianne_large",
     "stephane", "stephane_compact", "stephane_large",
     "michel", "michel_compact", "michel_large",
+    "double", "double_compact", "double_large",
 }
 
 # Dossier des fichiers statiques (frontend buildé)
