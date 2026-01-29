@@ -60,6 +60,7 @@ function App() {
   const [importStep, setImportStep] = useState(0);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const nextButtonRef = useRef<HTMLButtonElement>(null);
+  const actionButtonsRef = useRef<HTMLDivElement>(null);
 
   const importMessages = [
     t('import.analyzing'),
@@ -616,7 +617,11 @@ function App() {
 
         {/* Next button for sections in step mode */}
         {!hasImported && editorStep >= 1 && editorStep <= data.sections.length && (
-          <div className="flex justify-between">
+          <div
+            ref={actionButtonsRef}
+            className="flex justify-between"
+            style={{ scrollMarginBottom: '2rem' }}
+          >
             <button
               onClick={() => setEditorStep(editorStep - 1)}
               className="btn-secondary"
@@ -624,26 +629,20 @@ function App() {
               {t('common.previous')}
             </button>
             <div className="flex gap-3">
-              {editorStep >= data.sections.length && (
-                <button
-                  onClick={handleGenerate}
-                  disabled={loading}
-                  className="btn-brand"
-                >
-                  {loading ? (
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                  ) : (
-                    <FileDown className="w-4 h-4" />
-                  )}
-                  {t('common.export')}
-                </button>
-              )}
               <button
                 ref={editorStep < data.sections.length ? nextButtonRef : undefined}
                 onClick={() => {
                   if (editorStep < data.sections.length) {
                     setEditorStep(editorStep + 1);
-                    setTimeout(() => nextButtonRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' }), 100);
+                    // Scroll to next button, or to action buttons if reaching last section
+                    const isLastSection = editorStep + 1 >= data.sections.length;
+                    setTimeout(() => {
+                      if (isLastSection) {
+                        actionButtonsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
+                      } else {
+                        nextButtonRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
+                      }
+                    }, 100);
                   } else {
                     setShowAddModal(true);
                   }
@@ -663,6 +662,20 @@ function App() {
                   </>
                 )}
               </button>
+              {editorStep >= data.sections.length && (
+                <button
+                  onClick={handleGenerate}
+                  disabled={loading}
+                  className="btn-brand"
+                >
+                  {loading ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : (
+                    <FileDown className="w-4 h-4" />
+                  )}
+                  {t('common.export')}
+                </button>
+              )}
             </div>
           </div>
         )}
