@@ -76,6 +76,7 @@ function App() {
     { id: 'aurianne', name: 'Aurianne', imgBase: '/exemples/Homer_Aurianne' },
     { id: 'michel', name: 'Michel', imgBase: '/exemples/Luke_Michel' },
     { id: 'stephane', name: 'Stephane', imgBase: '/exemples/Luke_Stephane' },
+    { id: 'double', name: 'Double', imgBase: '/exemples/Alexandre_Double' },
   ];
 
   const getTemplateImage = (imgBase: string, size: string) => {

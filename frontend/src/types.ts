@@ -89,7 +89,8 @@ export type TemplateId =
   | 'mckinsey' | 'mckinsey_compact' | 'mckinsey_large'
   | 'aurianne' | 'aurianne_compact' | 'aurianne_large'
   | 'stephane' | 'stephane_compact' | 'stephane_large'
-  | 'michel' | 'michel_compact' | 'michel_large';
+  | 'michel' | 'michel_compact' | 'michel_large'
+  | 'double' | 'double_compact' | 'double_large';
 
 export interface TemplateOption {
   id: TemplateId;
@@ -122,6 +123,10 @@ export const AVAILABLE_TEMPLATES: TemplateOption[] = [
   { id: 'michel', name: 'Michel', description: 'Style moderncv classique' },
   { id: 'michel_compact', name: 'Michel Compact', description: 'Michel avec espacement réduit' },
   { id: 'michel_large', name: 'Michel Large', description: 'Michel avec espacement augmenté' },
+  // Double
+  { id: 'double', name: 'Double', description: 'Style moderne deux colonnes avec initiales' },
+  { id: 'double_compact', name: 'Double Compact', description: 'Double avec espacement réduit' },
+  { id: 'double_large', name: 'Double Large', description: 'Double avec espacement augmenté' },
 ];
 
 // === Structure principale du CV ===
