@@ -58,6 +58,7 @@ function App() {
   const [editorStep, setEditorStep] = useState(0); // 0 = personal info, 1+ = sections
   const [importStep, setImportStep] = useState(0);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const nextButtonRef = useRef<HTMLButtonElement>(null);
 
   const importMessages = [
     t('import.analyzing'),
@@ -569,15 +570,17 @@ function App() {
         {editorStep === 0 && !hasImported && (
           <div className="flex justify-end">
             <button
+              ref={nextButtonRef}
               onClick={() => {
                 if (data.sections.length === 0) {
                   setShowAddModal(true);
                 } else {
                   setEditorStep(1);
-                  setTimeout(() => window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' }), 100);
+                  setTimeout(() => nextButtonRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' }), 100);
                 }
               }}
               className="btn-brand"
+              style={{ scrollMarginBottom: '2rem' }}
             >
               {t('common.next')}
               <ArrowRight className="w-4 h-4" />
@@ -635,15 +638,17 @@ function App() {
                 </button>
               )}
               <button
+                ref={editorStep < data.sections.length ? nextButtonRef : undefined}
                 onClick={() => {
                   if (editorStep < data.sections.length) {
                     setEditorStep(editorStep + 1);
-                    setTimeout(() => window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' }), 100);
+                    setTimeout(() => nextButtonRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' }), 100);
                   } else {
                     setShowAddModal(true);
                   }
                 }}
                 className={editorStep >= data.sections.length ? "btn-secondary" : "btn-brand"}
+                style={{ scrollMarginBottom: '2rem' }}
               >
                 {editorStep < data.sections.length ? (
                   <>
