@@ -5,8 +5,8 @@ const ThemeToggle = () => {
   const { theme, setTheme } = useTheme();
 
   const themes: { value: Theme; icon: React.ReactNode; label: string }[] = [
-    { value: 'light', icon: <Sun className="w-4 h-4" />, label: 'Light' },
-    { value: 'dark', icon: <Moon className="w-4 h-4" />, label: 'Dark' },
+    { value: 'light', icon: <Sun className="w-5 h-5" />, label: 'Light' },
+    { value: 'dark', icon: <Moon className="w-5 h-5" />, label: 'Dark' },
   ];
 
   return (

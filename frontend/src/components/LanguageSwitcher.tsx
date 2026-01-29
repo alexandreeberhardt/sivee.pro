@@ -19,9 +19,9 @@ const LanguageSwitcher = () => {
           key={lang.code}
           onClick={() => changeLanguage(lang.code)}
           className={`
-            px-2 py-1 rounded-md text-lg transition-all duration-200
+            p-1.5 rounded-md text-sm transition-all duration-200
             ${i18n.language === lang.code
-              ? 'bg-surface-0 shadow-sm scale-110'
+              ? 'bg-surface-0 shadow-sm'
               : 'hover:bg-surface-100 opacity-60 hover:opacity-100'
             }
           `}
