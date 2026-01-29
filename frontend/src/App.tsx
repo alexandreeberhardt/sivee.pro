@@ -24,6 +24,8 @@ import {
   Sparkles,
   Layout,
   ChevronDown,
+  ArrowRight,
+  FileUp,
 } from 'lucide-react';
 import {
   ResumeData,
@@ -49,6 +51,8 @@ function App() {
   const [initialLoading, setInitialLoading] = useState(true);
   const [showAddModal, setShowAddModal] = useState(false);
   const [showLanding, setShowLanding] = useState(true);
+  const [hasImported, setHasImported] = useState(false);
+  const [editorStep, setEditorStep] = useState(0); // 0 = personal info, 1+ = sections
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const sensors = useSensors(
@@ -216,6 +220,8 @@ function App() {
 
       setData(processedData);
       setShowLanding(false);
+      setHasImported(true);
+      setEditorStep(999); // Show all sections after import
     } catch (err) {
       setError(err instanceof Error ? err.message : "Erreur lors de l'import");
     } finally {
@@ -264,6 +270,10 @@ function App() {
       sections: [...prev.sections, newSection],
     }));
     setShowAddModal(false);
+    // Advance to show the new section
+    if (!hasImported) {
+      setEditorStep((prev) => prev + 1);
+    }
   };
 
   if (initialLoading) {
@@ -541,7 +551,7 @@ function App() {
               ) : (
                 <>
                   <FileDown className="w-4 h-4" />
-                  <span className="hidden sm:inline">Exporter PDF</span>
+                  <span className="hidden sm:inline">Exporter en PDF</span>
                 </>
               )}
             </button>
@@ -572,32 +582,168 @@ function App() {
 
       {/* Main Content */}
       <main className="max-w-5xl mx-auto px-6 py-8 space-y-6">
-        <PersonalSection
-          data={data.personal}
-          onChange={(personal) => setData((prev) => ({ ...prev, personal }))}
-        />
+        {/* Import suggestion card - only if not imported and at step 0 */}
+        {!hasImported && editorStep === 0 && (
+          <div className="card p-6 border-2 border-dashed border-primary-200 bg-primary-50/30 animate-fade-in">
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 bg-brand/10 rounded-xl flex items-center justify-center flex-shrink-0">
+                <FileUp className="w-6 h-6 text-brand" />
+              </div>
+              <div className="flex-1">
+                <h3 className="font-semibold text-primary-900 mb-1">
+                  Vous avez deja un CV ?
+                </h3>
+                <p className="text-sm text-primary-600">
+                  Importez-le pour pre-remplir automatiquement vos informations
+                </p>
+              </div>
+              <button
+                onClick={() => fileInputRef.current?.click()}
+                disabled={importLoading}
+                className="btn-brand"
+              >
+                {importLoading ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : (
+                  <Upload className="w-4 h-4" />
+                )}
+                Importer un PDF
+              </button>
+            </div>
+          </div>
+        )}
 
-        <DndContext
-          sensors={sensors}
-          collisionDetection={closestCenter}
-          onDragEnd={handleDragEnd}
-        >
-          <SortableContext
-            items={data.sections.map((s) => s.id)}
-            strategy={verticalListSortingStrategy}
+        {/* Step 0: Personal Information */}
+        {editorStep >= 0 && (
+          <PersonalSection
+            data={data.personal}
+            onChange={(personal) => setData((prev) => ({ ...prev, personal }))}
+          />
+        )}
+
+        {/* Next button after personal info if in step mode */}
+        {editorStep === 0 && !hasImported && (
+          <div className="flex justify-end">
+            <button
+              onClick={() => {
+                if (data.sections.length === 0) {
+                  setShowAddModal(true);
+                } else {
+                  setEditorStep(1);
+                  setTimeout(() => window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' }), 100);
+                }
+              }}
+              className="btn-brand"
+            >
+              Suivant
+              <ArrowRight className="w-4 h-4" />
+            </button>
+          </div>
+        )}
+
+        {/* Sections - show based on step or all if imported */}
+        {editorStep >= 1 && (
+          <DndContext
+            sensors={sensors}
+            collisionDetection={closestCenter}
+            onDragEnd={handleDragEnd}
           >
-            {data.sections.map((section) => (
-              <SortableSection
-                key={section.id}
-                section={section}
-                onUpdate={(updates) => updateSection(section.id, updates)}
-                onDelete={() => deleteSection(section.id)}
-              />
-            ))}
-          </SortableContext>
-        </DndContext>
+            <SortableContext
+              items={data.sections.map((s) => s.id)}
+              strategy={verticalListSortingStrategy}
+            >
+              {data.sections.map((section, index) => (
+                (hasImported || editorStep > index) && (
+                  <SortableSection
+                    key={section.id}
+                    section={section}
+                    onUpdate={(updates) => updateSection(section.id, updates)}
+                    onDelete={() => deleteSection(section.id)}
+                  />
+                )
+              ))}
+            </SortableContext>
+          </DndContext>
+        )}
 
-        {data.sections.length === 0 && (
+        {/* Next button for sections in step mode */}
+        {!hasImported && editorStep >= 1 && editorStep <= data.sections.length && (
+          <div className="flex justify-between">
+            <button
+              onClick={() => setEditorStep(editorStep - 1)}
+              className="btn-secondary"
+            >
+              Precedent
+            </button>
+            <div className="flex gap-3">
+              {editorStep >= data.sections.length && (
+                <button
+                  onClick={handleGenerate}
+                  disabled={loading}
+                  className="btn-brand"
+                >
+                  {loading ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : (
+                    <FileDown className="w-4 h-4" />
+                  )}
+                  Exporter en PDF
+                </button>
+              )}
+              <button
+                onClick={() => {
+                  if (editorStep < data.sections.length) {
+                    setEditorStep(editorStep + 1);
+                    setTimeout(() => window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' }), 100);
+                  } else {
+                    setShowAddModal(true);
+                  }
+                }}
+                className={editorStep >= data.sections.length ? "btn-secondary" : "btn-brand"}
+              >
+                {editorStep < data.sections.length ? (
+                  <>
+                    Suivant
+                    <ArrowRight className="w-4 h-4" />
+                  </>
+                ) : (
+                  <>
+                    <Plus className="w-4 h-4" />
+                    Ajouter une section
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Action buttons when imported (all sections visible) */}
+        {hasImported && data.sections.length > 0 && (
+          <div className="flex justify-end gap-3">
+            <button
+              onClick={() => setShowAddModal(true)}
+              className="btn-secondary"
+            >
+              <Plus className="w-4 h-4" />
+              Ajouter une section
+            </button>
+            <button
+              onClick={handleGenerate}
+              disabled={loading}
+              className="btn-brand"
+            >
+              {loading ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : (
+                <FileDown className="w-4 h-4" />
+              )}
+              Exporter en PDF
+            </button>
+          </div>
+        )}
+
+        {/* Empty state - only when imported but no sections */}
+        {hasImported && data.sections.length === 0 && (
           <div className="card p-12 text-center animate-fade-in">
             <div className="w-16 h-16 bg-primary-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
               <Plus className="w-8 h-8 text-primary-400" />
@@ -610,7 +756,7 @@ function App() {
             </p>
             <button
               onClick={() => setShowAddModal(true)}
-              className="btn-primary"
+              className="btn-brand"
             >
               <Plus className="w-4 h-4" />
               Ajouter une section
