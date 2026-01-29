@@ -290,7 +290,7 @@ function App() {
             </div>
             <button
               onClick={() => setShowLanding(false)}
-              className="btn-primary text-base"
+              className="btn-brand text-base"
             >
               Commencer
             </button>
@@ -313,7 +313,7 @@ function App() {
             <div className="flex items-center justify-center gap-4">
               <button
                 onClick={() => setShowLanding(false)}
-                className="btn-primary px-6 py-3 text-base"
+                className="btn-brand px-6 py-3 text-base"
               >
                 Creer mon CV
               </button>
@@ -359,22 +359,40 @@ function App() {
               </p>
             </div>
 
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-              {AVAILABLE_TEMPLATES.slice(0, 6).map((template) => (
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+              {[
+                { img: '/exemples/Luffy_Harvard.png', name: 'Harvard', id: 'harvard' },
+                { img: '/exemples/Homer_Auriane.png', name: 'Aurianne', id: 'aurianne' },
+                { img: '/exemples/Luke_Michel.png', name: 'Michel', id: 'michel' },
+                { img: '/exemples/Luke_Stephane.png', name: 'Stephane', id: 'stephane' },
+              ].map((template) => (
                 <div
                   key={template.id}
-                  className="card p-4 text-center hover:shadow-medium transition-shadow cursor-pointer"
+                  className="group card p-3 text-center hover:shadow-medium transition-all cursor-pointer"
                   onClick={() => {
-                    setData((prev) => ({ ...prev, template_id: template.id }));
+                    setData((prev) => ({ ...prev, template_id: template.id as TemplateId }));
                     setShowLanding(false);
                   }}
                 >
-                  <div className="w-full aspect-[3/4] bg-primary-100 rounded-lg mb-3 flex items-center justify-center">
-                    <FileText className="w-8 h-8 text-primary-400" />
+                  <div className="w-full aspect-[3/4] rounded-lg mb-3 overflow-hidden bg-primary-50">
+                    <img
+                      src={template.img}
+                      alt={`Template ${template.name}`}
+                      className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-300"
+                    />
                   </div>
                   <p className="text-sm font-medium text-primary-900">{template.name}</p>
                 </div>
               ))}
+            </div>
+
+            <div className="text-center mt-8">
+              <button
+                onClick={() => setShowLanding(false)}
+                className="btn-ghost text-primary-600"
+              >
+                Voir tous les templates
+              </button>
             </div>
           </div>
         </section>
@@ -420,7 +438,7 @@ function App() {
             </p>
             <button
               onClick={() => setShowLanding(false)}
-              className="btn-accent px-8 py-3 text-base"
+              className="btn-brand px-8 py-3 text-base"
             >
               Commencer maintenant
             </button>

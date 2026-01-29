@@ -47,6 +47,12 @@
            focus-visible:ring-accent-500;
   }
 
+  .btn-brand {
+    @apply btn bg-brand text-white
+           hover:bg-brand-hover active:bg-brand-active
+           focus-visible:ring-brand;
+  }
+
   .btn-ghost {
     @apply btn bg-transparent text-primary-600
            hover:bg-primary-100 active:bg-primary-200

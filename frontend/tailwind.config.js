@@ -7,6 +7,12 @@ export default {
   theme: {
     extend: {
       colors: {
+        // Brand color - Main CTA buttons
+        brand: {
+          DEFAULT: '#2563EB',
+          hover: '#1d4ed8',
+          active: '#1e40af',
+        },
         // Primary palette - Deep indigo/slate for professional feel
         primary: {
           50: '#f8fafc',
