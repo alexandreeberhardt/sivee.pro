@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { Plus, Trash2, X, FileText } from 'lucide-react';
 import { CustomItem, createEmptyCustomItem } from '../../types';
 
@@ -7,6 +8,8 @@ interface CustomEditorProps {
 }
 
 export default function CustomEditor({ items, onChange }: CustomEditorProps) {
+  const { t } = useTranslation();
+
   const addItem = () => {
     onChange([...items, createEmptyCustomItem()]);
   };
@@ -50,39 +53,39 @@ export default function CustomEditor({ items, onChange }: CustomEditorProps) {
             onClick={() => removeItem(index)}
             className="absolute top-4 right-4 p-1.5 text-primary-400 hover:text-error-500
                        hover:bg-error-50 rounded-lg transition-colors"
-            title="Supprimer cet element"
+            title={t('editors.custom.deleteItem')}
           >
             <Trash2 className="w-4 h-4" />
           </button>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-5 pr-10">
             <div className="form-group">
-              <label className="label">Titre</label>
+              <label className="label">{t('editors.custom.title')}</label>
               <input
                 type="text"
                 value={item.title}
                 onChange={(e) => updateItem(index, 'title', e.target.value)}
-                placeholder="Titre de l'element"
+                placeholder={t('editors.custom.titlePlaceholder')}
                 className="input"
               />
             </div>
             <div className="form-group">
-              <label className="label">Sous-titre (optionnel)</label>
+              <label className="label">{t('editors.custom.subtitle')}</label>
               <input
                 type="text"
                 value={item.subtitle || ''}
                 onChange={(e) => updateItem(index, 'subtitle', e.target.value)}
-                placeholder="Sous-titre, lieu..."
+                placeholder={t('editors.custom.subtitlePlaceholder')}
                 className="input"
               />
             </div>
             <div className="form-group">
-              <label className="label">Dates (optionnel)</label>
+              <label className="label">{t('editors.custom.dates')}</label>
               <input
                 type="text"
                 value={item.dates || ''}
                 onChange={(e) => updateItem(index, 'dates', e.target.value)}
-                placeholder="2022 - 2024"
+                placeholder={t('editors.custom.datesPlaceholder')}
                 className="input"
               />
             </div>
@@ -90,14 +93,14 @@ export default function CustomEditor({ items, onChange }: CustomEditorProps) {
 
           <div>
             <div className="flex items-center justify-between mb-3">
-              <label className="label mb-0">Points</label>
+              <label className="label mb-0">{t('editors.custom.points')}</label>
               <button
                 onClick={() => addHighlight(index)}
                 className="text-sm font-medium text-primary-600 hover:text-primary-800
                            flex items-center gap-1 transition-colors"
               >
                 <Plus className="w-4 h-4" />
-                Ajouter
+                {t('common.add')}
               </button>
             </div>
             <div className="space-y-2">
@@ -108,7 +111,7 @@ export default function CustomEditor({ items, onChange }: CustomEditorProps) {
                     type="text"
                     value={hl}
                     onChange={(e) => updateHighlight(index, hlIndex, e.target.value)}
-                    placeholder="Decrivez un point..."
+                    placeholder={t('editors.custom.pointPlaceholder')}
                     className="input flex-1"
                   />
                   <button
@@ -122,7 +125,7 @@ export default function CustomEditor({ items, onChange }: CustomEditorProps) {
               ))}
               {item.highlights.length === 0 && (
                 <p className="text-sm text-primary-400 italic py-2">
-                  Ajoutez des points pour cette section
+                  {t('editors.custom.noPoints')}
                 </p>
               )}
             </div>
@@ -137,7 +140,7 @@ export default function CustomEditor({ items, onChange }: CustomEditorProps) {
                    hover:bg-primary-50/50 transition-all flex items-center justify-center gap-2"
       >
         <FileText className="w-5 h-5" />
-        Ajouter un element
+        {t('editors.custom.addItem')}
       </button>
     </div>
   );

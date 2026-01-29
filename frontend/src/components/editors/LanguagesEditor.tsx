@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { Languages } from 'lucide-react';
 
 interface LanguagesEditorProps {
@@ -6,21 +7,23 @@ interface LanguagesEditorProps {
 }
 
 export default function LanguagesEditor({ value, onChange }: LanguagesEditorProps) {
+  const { t } = useTranslation();
+
   return (
     <div className="form-group">
       <label className="label flex items-center gap-2">
         <Languages className="w-4 h-4 text-primary-500" />
-        Langues parlees
+        {t('editors.languagesSpoken.label')}
       </label>
       <input
         type="text"
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        placeholder="Francais (Natif), Anglais (Courant), Espagnol (Intermediaire)"
+        placeholder={t('editors.languagesSpoken.placeholder')}
         className="input"
       />
       <p className="text-xs text-primary-400 mt-1.5">
-        Separez les langues par des virgules et indiquez le niveau entre parentheses
+        {t('editors.languagesSpoken.hint')}
       </p>
     </div>
   );

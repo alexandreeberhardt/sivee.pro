@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   DndContext,
   closestCenter,
@@ -39,10 +40,12 @@ import {
 import PersonalSection from './components/PersonalSection';
 import SortableSection from './components/SortableSection';
 import AddSectionModal from './components/AddSectionModal';
+import LanguageSwitcher from './components/LanguageSwitcher';
 
 const API_URL = import.meta.env.DEV ? '/api' : '';
 
 function App() {
+  const { t, i18n } = useTranslation();
   const [data, setData] = useState<ResumeData>(emptyResumeData);
   const [loading, setLoading] = useState(false);
   const [importLoading, setImportLoading] = useState(false);
@@ -56,11 +59,11 @@ function App() {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const importMessages = [
-    "Analyse du PDF...",
-    "Extraction du texte...",
-    "Identification des sections...",
-    "Structuration des donnees...",
-    "Finalisation...",
+    t('import.analyzing'),
+    t('import.extracting'),
+    t('import.identifying'),
+    t('import.structuring'),
+    t('import.finalizing'),
   ];
 
   const templatePreviews: { id: TemplateId; name: string; imgBase: string }[] = [
@@ -107,12 +110,12 @@ function App() {
       const response = await fetch(`${API_URL}/generate`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
+        body: JSON.stringify({ ...data, lang: i18n.language }),
       });
 
       if (!response.ok) {
         const errData = await response.json();
-        throw new Error(errData.detail || 'Erreur lors de la generation');
+        throw new Error(errData.detail || t('errors.generation'));
       }
 
       const blob = await response.blob();
@@ -152,7 +155,7 @@ function App() {
 
       if (!response.ok) {
         const errData = await response.json();
-        throw new Error(errData.detail || "Erreur lors de l'import");
+        throw new Error(errData.detail || t('errors.import'));
       }
 
       const importedData: ResumeData = await response.json();
@@ -227,7 +230,7 @@ function App() {
       <div className="min-h-screen flex items-center justify-center bg-surface-50">
         <div className="flex flex-col items-center gap-4">
           <Loader2 className="w-8 h-8 animate-spin text-primary-600" />
-          <p className="text-sm text-primary-500">Chargement...</p>
+          <p className="text-sm text-primary-500">{t('common.loading')}</p>
         </div>
       </div>
     );
@@ -242,14 +245,17 @@ function App() {
           <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
             <div className="flex items-center gap-2">
               <FileText className="w-8 h-8 text-primary-900" />
-              <span className="text-lg font-semibold text-primary-900">Sivee</span>
+              <span className="text-lg font-semibold text-primary-900">{t('landing.appName')}</span>
             </div>
-            <button
-              onClick={() => setShowLanding(false)}
-              className="btn-brand text-base"
-            >
-              Commencer
-            </button>
+            <div className="flex items-center gap-4">
+              <LanguageSwitcher />
+              <button
+                onClick={() => setShowLanding(false)}
+                className="btn-brand text-base"
+              >
+                {t('landing.start')}
+              </button>
+            </div>
           </div>
         </nav>
 
@@ -258,12 +264,11 @@ function App() {
           <div className="max-w-4xl mx-auto text-center">
 
             <h1 className="text-5xl font-bold text-primary-900 mb-6 text-balance">
-              Creez un CV professionnel en quelques minutes
+              {t('landing.heroTitle')}
             </h1>
 
             <p className="text-xl text-primary-600 mb-10 max-w-2xl mx-auto text-balance">
-              Importez votre CV existant ou partez de zero. Editez, personnalisez et exportez en PDF avec un rendu LaTeX impeccable.
-
+              {t('landing.heroSubtitle')}
             </p>
 
             <div className="flex items-center justify-center gap-4">
@@ -271,7 +276,7 @@ function App() {
                 onClick={() => setShowLanding(false)}
                 className="btn-brand px-6 py-3 text-base"
               >
-                Creer mon CV
+                {t('landing.createCv')}
               </button>
               <input
                 type="file"
@@ -293,7 +298,7 @@ function App() {
                 ) : (
                   <>
                     <Upload className="w-5 h-5" />
-                    Importer un PDF
+                    {t('landing.importPdf')}
                   </>
                 )}
               </button>
@@ -308,13 +313,10 @@ function App() {
           <div className="max-w-6xl mx-auto">
             <div className="text-center mb-16">
               <h2 className="text-3xl font-bold text-primary-900 mb-4">
-                {AVAILABLE_TEMPLATES.length} templates disponibles
+                {t('landing.templatesAvailable', { count: AVAILABLE_TEMPLATES.length })}
               </h2>
               <p className="text-lg text-primary-600">
-                Du style classique au design moderne, 
-              </p>
-              <p className="text-lg text-primary-600">
-                100% ATS friendly et professionnels
+                {t('landing.templatesDescription')}
               </p>
             </div>
 
@@ -351,7 +353,7 @@ function App() {
                 onClick={() => setShowLanding(false)}
                 className="btn-ghost text-primary-600"
               >
-                Voir tous les templates
+                {t('landing.viewAllTemplates')}
               </button>
             </div>
           </div>
@@ -361,28 +363,28 @@ function App() {
           <div className="max-w-6xl mx-auto">
             <div className="text-center mb-16">
               <h2 className="text-3xl font-bold text-primary-900 mb-4">
-                Pourquoi choisir Sivee ?
+                {t('landing.whyChoose')}
               </h2>
               <p className="text-lg text-primary-600 max-w-2xl mx-auto">
-                Des outils simples et puissants pour creer le CV parfait
+                {t('landing.whyDescription')}
               </p>
             </div>
 
             <div className="grid md:grid-cols-3 gap-8">
               <FeatureCard
                 icon={<Layout className="w-6 h-6" />}
-                title="Templates professionnels"
-                description="Choisissez parmi nos templates professionnels 100% compatibles ATS."
+                title={t('features.professionalTemplates')}
+                description={t('features.professionalTemplatesDesc')}
               />
               <FeatureCard
                 icon={<Sparkles className="w-6 h-6" />}
-                title="Interface intuitive"
-                description="Importez votre CV et modifiez-le en temps reel, sans friction."
+                title={t('features.intuitiveInterface')}
+                description={t('features.intuitiveInterfaceDesc')}
               />
               <FeatureCard
                 icon={<FileDown className="w-6 h-6" />}
-                title="Export PDF haute qualite"
-                description="Generez un PDF parfaitement formate, pret a etre envoye."
+                title={t('features.highQualityExport')}
+                description={t('features.highQualityExportDesc')}
               />
             </div>
           </div>
@@ -391,16 +393,16 @@ function App() {
         <section className="py-20 px-6 bg-primary-900">
           <div className="max-w-4xl mx-auto text-center">
             <h2 className="text-3xl font-bold text-white mb-4">
-              Pret a creer votre CV ?
+              {t('landing.ctaTitle')}
             </h2>
             <p className="text-lg text-primary-300 mb-8">
-              Commencez gratuitement, exportez en PDF en quelques clics
+              {t('landing.ctaSubtitle')}
             </p>
             <button
               onClick={() => setShowLanding(false)}
               className="btn-brand px-8 py-3 text-base"
             >
-              Commencer maintenant
+              {t('landing.startNow')}
             </button>
           </div>
         </section>
@@ -410,10 +412,10 @@ function App() {
           <div className="max-w-6xl mx-auto flex items-center justify-between">
             <div className="flex items-center gap-2">
               <FileText className="w-5 h-5 text-primary-400" />
-              <span className="text-sm text-primary-500">Sivee</span>
+              <span className="text-sm text-primary-500">{t('landing.appName')}</span>
             </div>
             <p className="text-sm text-primary-400">
-              Fait avec soin
+              {t('landing.madeWith')}
             </p>
           </div>
         </footer>
@@ -432,10 +434,11 @@ function App() {
             className="flex items-center gap-2 hover:opacity-70 transition-opacity"
           >
             <FileText className="w-6 h-6 text-primary-900" />
-            <span className="font-semibold text-primary-900">Sivee</span>
+            <span className="font-semibold text-primary-900">{t('landing.appName')}</span>
           </button>
 
           <div className="flex items-center gap-3">
+            <LanguageSwitcher />
             <input
               type="file"
               ref={fileInputRef}
@@ -453,7 +456,7 @@ function App() {
               ) : (
                 <Upload className="w-4 h-4" />
               )}
-              <span className="hidden sm:inline">Importer</span>
+              <span className="hidden sm:inline">{t('landing.importPdf').split(' ')[0]}</span>
             </button>
 
             <button
@@ -472,12 +475,12 @@ function App() {
               {loading ? (
                 <>
                   <Loader2 className="w-4 h-4 animate-spin" />
-                  <span className="hidden sm:inline">Generation...</span>
+                  <span className="hidden sm:inline">{t('common.exporting')}</span>
                 </>
               ) : (
                 <>
                   <FileDown className="w-4 h-4" />
-                  <span className="hidden sm:inline">Exporter en PDF</span>
+                  <span className="hidden sm:inline">{t('common.export')}</span>
                 </>
               )}
             </button>
@@ -519,10 +522,10 @@ function App() {
               </div>
               <div className="flex-1">
                 <h3 className="font-semibold text-primary-900 mb-1">
-                  Vous avez deja un CV ?
+                  {t('import.title')}
                 </h3>
                 <p className="text-sm text-primary-600">
-                  Importez-le pour pre-remplir automatiquement vos informations
+                  {t('import.description')}
                 </p>
               </div>
               <button
@@ -538,7 +541,7 @@ function App() {
                 ) : (
                   <>
                     <Upload className="w-4 h-4" />
-                    Importer un PDF
+                    {t('landing.importPdf')}
                   </>
                 )}
               </button>
@@ -568,7 +571,7 @@ function App() {
               }}
               className="btn-brand"
             >
-              Suivant
+              {t('common.next')}
               <ArrowRight className="w-4 h-4" />
             </button>
           </div>
@@ -606,7 +609,7 @@ function App() {
               onClick={() => setEditorStep(editorStep - 1)}
               className="btn-secondary"
             >
-              Precedent
+              {t('common.previous')}
             </button>
             <div className="flex gap-3">
               {editorStep >= data.sections.length && (
@@ -620,7 +623,7 @@ function App() {
                   ) : (
                     <FileDown className="w-4 h-4" />
                   )}
-                  Exporter en PDF
+                  {t('common.export')}
                 </button>
               )}
               <button
@@ -636,13 +639,13 @@ function App() {
               >
                 {editorStep < data.sections.length ? (
                   <>
-                    Suivant
+                    {t('common.next')}
                     <ArrowRight className="w-4 h-4" />
                   </>
                 ) : (
                   <>
                     <Plus className="w-4 h-4" />
-                    Ajouter une section
+                    {t('addSection.addButton')}
                   </>
                 )}
               </button>
@@ -658,7 +661,7 @@ function App() {
               className="btn-secondary"
             >
               <Plus className="w-4 h-4" />
-              Ajouter une section
+              {t('addSection.addButton')}
             </button>
             <button
               onClick={handleGenerate}
@@ -670,7 +673,7 @@ function App() {
               ) : (
                 <FileDown className="w-4 h-4" />
               )}
-              Exporter en PDF
+              {t('common.export')}
             </button>
           </div>
         )}
@@ -682,17 +685,17 @@ function App() {
               <Plus className="w-8 h-8 text-primary-400" />
             </div>
             <h3 className="text-lg font-semibold text-primary-900 mb-2">
-              Aucune section
+              {t('sections.noSections')}
             </h3>
             <p className="text-primary-500 mb-6">
-              Ajoutez des sections pour construire votre CV
+              {t('sections.noSectionsHint')}
             </p>
             <button
               onClick={() => setShowAddModal(true)}
               className="btn-brand"
             >
               <Plus className="w-4 h-4" />
-              Ajouter une section
+              {t('addSection.addButton')}
             </button>
           </div>
         )}
@@ -701,7 +704,7 @@ function App() {
         {/* Right: Template Selector */}
         <aside className="w-64 flex-shrink-0 hidden lg:block">
           <div className="sticky top-24">
-            <h3 className="text-xl font-semibold text-primary-900 mb-4">Templates</h3>
+            <h3 className="text-xl font-semibold text-primary-900 mb-4">{t('sections.templates')}</h3>
 
             {/* Size selector */}
             <div className="mb-4">

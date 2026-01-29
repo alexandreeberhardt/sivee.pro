@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { Code2, Wrench } from 'lucide-react';
 import { SkillsItem } from '../../types';
 
@@ -7,6 +8,8 @@ interface SkillsEditorProps {
 }
 
 export default function SkillsEditor({ data, onChange }: SkillsEditorProps) {
+  const { t } = useTranslation();
+
   const updateField = (field: keyof SkillsItem, value: string) => {
     onChange({ ...data, [field]: value });
   };
@@ -16,34 +19,34 @@ export default function SkillsEditor({ data, onChange }: SkillsEditorProps) {
       <div className="form-group">
         <label className="label flex items-center gap-2">
           <Code2 className="w-4 h-4 text-primary-500" />
-          Langages de programmation
+          {t('editors.skills.languages')}
         </label>
         <input
           type="text"
           value={data.languages}
           onChange={(e) => updateField('languages', e.target.value)}
-          placeholder="Python, JavaScript, TypeScript, Go, Rust..."
+          placeholder={t('editors.skills.languagesPlaceholder')}
           className="input"
         />
         <p className="text-xs text-primary-400 mt-1.5">
-          Separez les langages par des virgules
+          {t('editors.skills.languagesHint')}
         </p>
       </div>
 
       <div className="form-group">
         <label className="label flex items-center gap-2">
           <Wrench className="w-4 h-4 text-primary-500" />
-          Outils et technologies
+          {t('editors.skills.tools')}
         </label>
         <input
           type="text"
           value={data.tools}
           onChange={(e) => updateField('tools', e.target.value)}
-          placeholder="Git, Docker, AWS, PostgreSQL, React..."
+          placeholder={t('editors.skills.toolsPlaceholder')}
           className="input"
         />
         <p className="text-xs text-primary-400 mt-1.5">
-          Frameworks, outils DevOps, bases de donnees, etc.
+          {t('editors.skills.toolsHint')}
         </p>
       </div>
     </div>

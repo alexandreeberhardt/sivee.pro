@@ -1,5 +1,6 @@
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
+import { useTranslation } from 'react-i18next';
 import {
   GripVertical,
   Eye,
@@ -20,6 +21,7 @@ import {
   SkillsItem,
   LeadershipItem,
   CustomItem,
+  SectionType,
 } from '../types';
 import EducationEditor from './editors/EducationEditor';
 import ExperienceEditor from './editors/ExperienceEditor';
@@ -36,21 +38,25 @@ interface SortableSectionProps {
   onDelete: () => void;
 }
 
-const sectionTypeLabels: Record<string, string> = {
-  summary: 'Resume',
-  education: 'Formation',
-  experiences: 'Experience',
-  projects: 'Projets',
-  skills: 'Competences',
-  leadership: 'Leadership',
-  languages: 'Langues',
-  custom: 'Personnalise',
-};
-
 export default function SortableSection({ section, onUpdate, onDelete }: SortableSectionProps) {
+  const { t } = useTranslation();
   const [isExpanded, setIsExpanded] = useState(true);
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [titleInput, setTitleInput] = useState(section.title);
+
+  const getSectionTypeLabel = (type: SectionType): string => {
+    const labels: Record<SectionType, string> = {
+      summary: t('sections.summary'),
+      education: t('sections.education'),
+      experiences: t('sections.experience'),
+      projects: t('sections.projects'),
+      skills: t('sections.skills'),
+      leadership: t('sections.leadership'),
+      languages: t('sections.languages'),
+      custom: t('sections.custom'),
+    };
+    return labels[type] || type;
+  };
 
   const {
     attributes,
@@ -201,7 +207,7 @@ export default function SortableSection({ section, onUpdate, onDelete }: Sortabl
                 <Pencil className="w-3.5 h-3.5" />
               </button>
               <span className="badge">
-                {sectionTypeLabels[section.type] || section.type}
+                {getSectionTypeLabel(section.type)}
               </span>
             </div>
           )}
@@ -216,7 +222,7 @@ export default function SortableSection({ section, onUpdate, onDelete }: Sortabl
                 ? 'text-primary-400 hover:text-primary-600 hover:bg-primary-50'
                 : 'text-accent-500 hover:text-accent-600 hover:bg-accent-50'
             }`}
-            title={section.isVisible ? 'Masquer dans le PDF' : 'Afficher dans le PDF'}
+            title={section.isVisible ? t('sections.hideInPdf') : t('sections.showInPdf')}
           >
             {section.isVisible ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
           </button>
@@ -225,7 +231,7 @@ export default function SortableSection({ section, onUpdate, onDelete }: Sortabl
             onClick={onDelete}
             className="p-2 text-primary-400 hover:text-error-500 hover:bg-error-50
                        rounded-lg transition-colors"
-            title="Supprimer la section"
+            title={t('sections.deleteSection')}
           >
             <Trash2 className="w-4 h-4" />
           </button>
@@ -253,7 +259,7 @@ export default function SortableSection({ section, onUpdate, onDelete }: Sortabl
       {isExpanded && !section.isVisible && (
         <div className="px-5 py-4 text-center">
           <p className="text-sm text-primary-400">
-            Cette section est masquee dans le PDF final
+            {t('sections.hiddenMessage')}
           </p>
         </div>
       )}

@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { Plus, Trash2, X, Briefcase } from 'lucide-react';
 import { ExperienceItem, createEmptyExperience } from '../../types';
 
@@ -7,6 +8,8 @@ interface ExperienceEditorProps {
 }
 
 export default function ExperienceEditor({ items, onChange }: ExperienceEditorProps) {
+  const { t } = useTranslation();
+
   const addItem = () => {
     onChange([...items, createEmptyExperience()]);
   };
@@ -50,39 +53,39 @@ export default function ExperienceEditor({ items, onChange }: ExperienceEditorPr
             onClick={() => removeItem(index)}
             className="absolute top-4 right-4 p-1.5 text-primary-400 hover:text-error-500
                        hover:bg-error-50 rounded-lg transition-colors"
-            title="Supprimer cette experience"
+            title={t('editors.experience.deleteExperience')}
           >
             <Trash2 className="w-4 h-4" />
           </button>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-5 pr-10">
             <div className="form-group">
-              <label className="label">Poste</label>
+              <label className="label">{t('editors.experience.position')}</label>
               <input
                 type="text"
                 value={exp.title}
                 onChange={(e) => updateItem(index, 'title', e.target.value)}
-                placeholder="Developpeur Senior"
+                placeholder={t('editors.experience.positionPlaceholder')}
                 className="input"
               />
             </div>
             <div className="form-group">
-              <label className="label">Entreprise</label>
+              <label className="label">{t('editors.experience.company')}</label>
               <input
                 type="text"
                 value={exp.company}
                 onChange={(e) => updateItem(index, 'company', e.target.value)}
-                placeholder="Nom de l'entreprise"
+                placeholder={t('editors.experience.companyPlaceholder')}
                 className="input"
               />
             </div>
             <div className="form-group">
-              <label className="label">Dates</label>
+              <label className="label">{t('editors.experience.dates')}</label>
               <input
                 type="text"
                 value={exp.dates}
                 onChange={(e) => updateItem(index, 'dates', e.target.value)}
-                placeholder="Jan 2023 - Present"
+                placeholder={t('editors.experience.datesPlaceholder')}
                 className="input"
               />
             </div>
@@ -90,14 +93,14 @@ export default function ExperienceEditor({ items, onChange }: ExperienceEditorPr
 
           <div>
             <div className="flex items-center justify-between mb-3">
-              <label className="label mb-0">Points cles</label>
+              <label className="label mb-0">{t('editors.experience.highlights')}</label>
               <button
                 onClick={() => addHighlight(index)}
                 className="text-sm font-medium text-primary-600 hover:text-primary-800
                            flex items-center gap-1 transition-colors"
               >
                 <Plus className="w-4 h-4" />
-                Ajouter
+                {t('common.add')}
               </button>
             </div>
             <div className="space-y-2">
@@ -108,7 +111,7 @@ export default function ExperienceEditor({ items, onChange }: ExperienceEditorPr
                     type="text"
                     value={hl}
                     onChange={(e) => updateHighlight(index, hlIndex, e.target.value)}
-                    placeholder="Decrivez une realisation ou responsabilite..."
+                    placeholder={t('editors.experience.highlightPlaceholder')}
                     className="input flex-1"
                   />
                   <button
@@ -122,7 +125,7 @@ export default function ExperienceEditor({ items, onChange }: ExperienceEditorPr
               ))}
               {exp.highlights.length === 0 && (
                 <p className="text-sm text-primary-400 italic py-2">
-                  Ajoutez des points cles pour decrire vos missions
+                  {t('editors.experience.noHighlights')}
                 </p>
               )}
             </div>
@@ -137,7 +140,7 @@ export default function ExperienceEditor({ items, onChange }: ExperienceEditorPr
                    hover:bg-primary-50/50 transition-all flex items-center justify-center gap-2"
       >
         <Briefcase className="w-5 h-5" />
-        Ajouter une experience
+        {t('editors.experience.addExperience')}
       </button>
     </div>
   );

@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { Plus, Trash2, X, Users } from 'lucide-react';
 import { LeadershipItem, createEmptyLeadership } from '../../types';
 
@@ -7,6 +8,8 @@ interface LeadershipEditorProps {
 }
 
 export default function LeadershipEditor({ items, onChange }: LeadershipEditorProps) {
+  const { t } = useTranslation();
+
   const addItem = () => {
     onChange([...items, createEmptyLeadership()]);
   };
@@ -50,39 +53,39 @@ export default function LeadershipEditor({ items, onChange }: LeadershipEditorPr
             onClick={() => removeItem(index)}
             className="absolute top-4 right-4 p-1.5 text-primary-400 hover:text-error-500
                        hover:bg-error-50 rounded-lg transition-colors"
-            title="Supprimer cet engagement"
+            title={t('editors.leadership.deleteLeadership')}
           >
             <Trash2 className="w-4 h-4" />
           </button>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-5 pr-10">
             <div className="form-group">
-              <label className="label">Role</label>
+              <label className="label">{t('editors.leadership.role')}</label>
               <input
                 type="text"
                 value={lead.role}
                 onChange={(e) => updateItem(index, 'role', e.target.value)}
-                placeholder="President, Benevole..."
+                placeholder={t('editors.leadership.rolePlaceholder')}
                 className="input"
               />
             </div>
             <div className="form-group">
-              <label className="label">Lieu / Organisation</label>
+              <label className="label">{t('editors.leadership.place')}</label>
               <input
                 type="text"
                 value={lead.place}
                 onChange={(e) => updateItem(index, 'place', e.target.value)}
-                placeholder="Nom de l'association"
+                placeholder={t('editors.leadership.placePlaceholder')}
                 className="input"
               />
             </div>
             <div className="form-group">
-              <label className="label">Dates</label>
+              <label className="label">{t('editors.leadership.dates')}</label>
               <input
                 type="text"
                 value={lead.dates}
                 onChange={(e) => updateItem(index, 'dates', e.target.value)}
-                placeholder="2022 - 2024"
+                placeholder={t('editors.leadership.datesPlaceholder')}
                 className="input"
               />
             </div>
@@ -90,14 +93,14 @@ export default function LeadershipEditor({ items, onChange }: LeadershipEditorPr
 
           <div>
             <div className="flex items-center justify-between mb-3">
-              <label className="label mb-0">Points cles</label>
+              <label className="label mb-0">{t('editors.leadership.highlights')}</label>
               <button
                 onClick={() => addHighlight(index)}
                 className="text-sm font-medium text-primary-600 hover:text-primary-800
                            flex items-center gap-1 transition-colors"
               >
                 <Plus className="w-4 h-4" />
-                Ajouter
+                {t('common.add')}
               </button>
             </div>
             <div className="space-y-2">
@@ -108,7 +111,7 @@ export default function LeadershipEditor({ items, onChange }: LeadershipEditorPr
                     type="text"
                     value={hl}
                     onChange={(e) => updateHighlight(index, hlIndex, e.target.value)}
-                    placeholder="Decrivez une realisation ou responsabilite..."
+                    placeholder={t('editors.leadership.highlightPlaceholder')}
                     className="input flex-1"
                   />
                   <button
@@ -122,7 +125,7 @@ export default function LeadershipEditor({ items, onChange }: LeadershipEditorPr
               ))}
               {lead.highlights.length === 0 && (
                 <p className="text-sm text-primary-400 italic py-2">
-                  Ajoutez des points pour decrire vos responsabilites
+                  {t('editors.leadership.noHighlights')}
                 </p>
               )}
             </div>
@@ -137,7 +140,7 @@ export default function LeadershipEditor({ items, onChange }: LeadershipEditorPr
                    hover:bg-primary-50/50 transition-all flex items-center justify-center gap-2"
       >
         <Users className="w-5 h-5" />
-        Ajouter un engagement
+        {t('editors.leadership.addLeadership')}
       </button>
     </div>
   );

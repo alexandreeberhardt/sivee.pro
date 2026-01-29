@@ -1,0 +1,185 @@
+{
+  "common": {
+    "loading": "Loading...",
+    "next": "Next",
+    "previous": "Previous",
+    "cancel": "Cancel",
+    "add": "Add",
+    "delete": "Delete",
+    "export": "Export to PDF",
+    "exporting": "Generating..."
+  },
+  "landing": {
+    "appName": "Sivee",
+    "start": "Get Started",
+    "heroTitle": "Create a professional resume in minutes",
+    "heroSubtitle": "Import your existing resume or start from scratch. Edit, customize, and export to PDF with flawless LaTeX rendering.",
+    "createCv": "Create my resume",
+    "importPdf": "Import a PDF",
+    "templatesAvailable": "{{count}} templates available",
+    "templatesDescription": "From classic to modern design, 100% ATS friendly and professional",
+    "viewAllTemplates": "View all templates",
+    "whyChoose": "Why choose Sivee?",
+    "whyDescription": "Simple and powerful tools to create the perfect resume",
+    "ctaTitle": "Ready to create your resume?",
+    "ctaSubtitle": "Start for free, export to PDF in just a few clicks",
+    "startNow": "Start now",
+    "madeWith": "Made with care"
+  },
+  "features": {
+    "professionalTemplates": "Professional templates",
+    "professionalTemplatesDesc": "Elegant and modern designs, optimized for ATS",
+    "intuitiveInterface": "Intuitive interface",
+    "intuitiveInterfaceDesc": "Easily edit every section of your resume",
+    "highQualityExport": "High quality PDF export",
+    "highQualityExportDesc": "Professional and flawless LaTeX rendering"
+  },
+  "import": {
+    "title": "Already have a resume?",
+    "description": "Import it to automatically fill in your information",
+    "analyzing": "Analyzing PDF...",
+    "extracting": "Extracting text...",
+    "identifying": "Identifying sections...",
+    "structuring": "Structuring data...",
+    "finalizing": "Finalizing..."
+  },
+  "errors": {
+    "generation": "Error during generation",
+    "import": "Error during import"
+  },
+  "personal": {
+    "title": "Personal Information",
+    "subtitle": "Your contact details and professional links",
+    "fullName": "Full name",
+    "fullNamePlaceholder": "John Doe",
+    "professionalTitle": "Professional title",
+    "professionalTitlePlaceholder": "Full Stack Developer",
+    "location": "Location",
+    "locationPlaceholder": "New York, USA",
+    "email": "Email",
+    "emailPlaceholder": "john@example.com",
+    "phone": "Phone",
+    "phonePlaceholder": "+1 555 123 4567",
+    "github": "GitHub",
+    "githubPlaceholder": "username",
+    "githubUrl": "GitHub URL",
+    "githubUrlPlaceholder": "https://github.com/username"
+  },
+  "sections": {
+    "summary": "Summary",
+    "education": "Education",
+    "experience": "Experience",
+    "projects": "Projects",
+    "skills": "Skills",
+    "leadership": "Leadership",
+    "languages": "Languages",
+    "custom": "Custom",
+    "noSections": "No sections",
+    "noSectionsHint": "Add sections to build your resume",
+    "hideInPdf": "Hide in PDF",
+    "showInPdf": "Show in PDF",
+    "deleteSection": "Delete section",
+    "hiddenMessage": "This section is hidden in the final PDF",
+    "templates": "Templates"
+  },
+  "addSection": {
+    "title": "Add a section",
+    "subtitle": "Choose the type of content to add",
+    "alreadyAdded": "already added",
+    "customTitle": "Section title",
+    "customPlaceholder": "Ex: Publications, Certifications, Hobbies...",
+    "addButton": "Add section",
+    "summaryDesc": "Profile and career objective",
+    "educationDesc": "Education, degrees, certifications",
+    "experienceDesc": "Professional experiences",
+    "projectsDesc": "Personal or professional projects",
+    "skillsDesc": "Technical skills",
+    "leadershipDesc": "Leadership and community involvement",
+    "languagesDesc": "Spoken languages",
+    "customDesc": "Custom section with title and bullet points"
+  },
+  "editors": {
+    "education": {
+      "school": "School / University",
+      "schoolPlaceholder": "Institution name",
+      "degree": "Degree",
+      "degreePlaceholder": "Master in Computer Science",
+      "dates": "Dates",
+      "datesPlaceholder": "2021 - 2024",
+      "subtitle": "Subtitle (GPA, honors...)",
+      "subtitlePlaceholder": "Magna Cum Laude",
+      "description": "Description",
+      "descriptionPlaceholder": "Main courses, notable projects...",
+      "addEducation": "Add education",
+      "deleteEducation": "Delete this education"
+    },
+    "experience": {
+      "position": "Position",
+      "positionPlaceholder": "Senior Developer",
+      "company": "Company",
+      "companyPlaceholder": "Company name",
+      "dates": "Dates",
+      "datesPlaceholder": "Jan 2023 - Present",
+      "highlights": "Key points",
+      "highlightPlaceholder": "Describe an achievement or responsibility...",
+      "noHighlights": "Add key points to describe your missions",
+      "addExperience": "Add experience",
+      "deleteExperience": "Delete this experience"
+    },
+    "projects": {
+      "name": "Project name",
+      "namePlaceholder": "Project name",
+      "year": "Year",
+      "yearPlaceholder": "2024",
+      "description": "Description",
+      "pointPlaceholder": "Technology used, key feature...",
+      "noPoints": "Add points to describe the project",
+      "addProject": "Add project",
+      "deleteProject": "Delete this project"
+    },
+    "skills": {
+      "languages": "Programming languages",
+      "languagesPlaceholder": "Python, JavaScript, TypeScript, Go, Rust...",
+      "languagesHint": "Separate languages with commas",
+      "tools": "Tools and technologies",
+      "toolsPlaceholder": "Git, Docker, AWS, PostgreSQL, React...",
+      "toolsHint": "Frameworks, DevOps tools, databases, etc."
+    },
+    "leadership": {
+      "role": "Role",
+      "rolePlaceholder": "President, Volunteer...",
+      "place": "Place / Organization",
+      "placePlaceholder": "Organization name",
+      "dates": "Dates",
+      "datesPlaceholder": "2022 - 2024",
+      "highlights": "Key points",
+      "highlightPlaceholder": "Describe an achievement or responsibility...",
+      "noHighlights": "Add points to describe your responsibilities",
+      "addLeadership": "Add involvement",
+      "deleteLeadership": "Delete this involvement"
+    },
+    "languagesSpoken": {
+      "label": "Spoken languages",
+      "placeholder": "English (Native), French (Fluent), Spanish (Intermediate)",
+      "hint": "Separate languages with commas and indicate the level in parentheses"
+    },
+    "summary": {
+      "label": "Profile / Career objective",
+      "placeholder": "Describe your professional profile, key skills, and career objectives...",
+      "hint": "A short paragraph summarizing your profile and objectives. Be concise and impactful."
+    },
+    "custom": {
+      "title": "Title",
+      "titlePlaceholder": "Item title",
+      "subtitle": "Subtitle (optional)",
+      "subtitlePlaceholder": "Subtitle, location...",
+      "dates": "Dates (optional)",
+      "datesPlaceholder": "2022 - 2024",
+      "points": "Points",
+      "pointPlaceholder": "Describe a point...",
+      "noPoints": "Add points for this section",
+      "addItem": "Add item",
+      "deleteItem": "Delete this item"
+    }
+  }
+}

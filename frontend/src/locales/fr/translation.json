@@ -1,0 +1,185 @@
+{
+  "common": {
+    "loading": "Chargement...",
+    "next": "Suivant",
+    "previous": "Précédent",
+    "cancel": "Annuler",
+    "add": "Ajouter",
+    "delete": "Supprimer",
+    "export": "Exporter en PDF",
+    "exporting": "Génération..."
+  },
+  "landing": {
+    "appName": "Sivee",
+    "start": "Commencer",
+    "heroTitle": "Créez un CV professionnel en quelques minutes",
+    "heroSubtitle": "Importez votre CV existant ou partez de zéro. Éditez, personnalisez et exportez en PDF avec un rendu LaTeX impeccable.",
+    "createCv": "Créer mon CV",
+    "importPdf": "Importer un PDF",
+    "templatesAvailable": "{{count}} templates disponibles",
+    "templatesDescription": "Du style classique au design moderne, 100% ATS friendly et professionnels",
+    "viewAllTemplates": "Voir tous les templates",
+    "whyChoose": "Pourquoi choisir Sivee ?",
+    "whyDescription": "Des outils simples et puissants pour créer le CV parfait",
+    "ctaTitle": "Prêt à créer votre CV ?",
+    "ctaSubtitle": "Commencez gratuitement, exportez en PDF en quelques clics",
+    "startNow": "Commencer maintenant",
+    "madeWith": "Fait avec soin"
+  },
+  "features": {
+    "professionalTemplates": "Templates professionnels",
+    "professionalTemplatesDesc": "Des designs élégants et modernes, optimisés pour les ATS",
+    "intuitiveInterface": "Interface intuitive",
+    "intuitiveInterfaceDesc": "Éditez facilement chaque section de votre CV",
+    "highQualityExport": "Export PDF haute qualité",
+    "highQualityExportDesc": "Rendu LaTeX professionnel et impeccable"
+  },
+  "import": {
+    "title": "Vous avez déjà un CV ?",
+    "description": "Importez-le pour pré-remplir automatiquement vos informations",
+    "analyzing": "Analyse du PDF...",
+    "extracting": "Extraction du texte...",
+    "identifying": "Identification des sections...",
+    "structuring": "Structuration des données...",
+    "finalizing": "Finalisation..."
+  },
+  "errors": {
+    "generation": "Erreur lors de la génération",
+    "import": "Erreur lors de l'import"
+  },
+  "personal": {
+    "title": "Informations personnelles",
+    "subtitle": "Vos coordonnées et liens professionnels",
+    "fullName": "Nom complet",
+    "fullNamePlaceholder": "Jean Dupont",
+    "professionalTitle": "Titre professionnel",
+    "professionalTitlePlaceholder": "Développeur Full Stack",
+    "location": "Localisation",
+    "locationPlaceholder": "Paris, France",
+    "email": "Email",
+    "emailPlaceholder": "jean@exemple.com",
+    "phone": "Téléphone",
+    "phonePlaceholder": "+33 6 12 34 56 78",
+    "github": "GitHub",
+    "githubPlaceholder": "username",
+    "githubUrl": "GitHub URL",
+    "githubUrlPlaceholder": "https://github.com/username"
+  },
+  "sections": {
+    "summary": "Résumé",
+    "education": "Formation",
+    "experience": "Expérience",
+    "projects": "Projets",
+    "skills": "Compétences",
+    "leadership": "Leadership",
+    "languages": "Langues",
+    "custom": "Personnalisé",
+    "noSections": "Aucune section",
+    "noSectionsHint": "Ajoutez des sections pour construire votre CV",
+    "hideInPdf": "Masquer dans le PDF",
+    "showInPdf": "Afficher dans le PDF",
+    "deleteSection": "Supprimer la section",
+    "hiddenMessage": "Cette section est masquée dans le PDF final",
+    "templates": "Templates"
+  },
+  "addSection": {
+    "title": "Ajouter une section",
+    "subtitle": "Choisissez le type de contenu à ajouter",
+    "alreadyAdded": "déjà ajouté",
+    "customTitle": "Titre de la section",
+    "customPlaceholder": "Ex: Publications, Certifications, Hobbies...",
+    "addButton": "Ajouter la section",
+    "summaryDesc": "Profil et objectif professionnel",
+    "educationDesc": "Formations, diplômes, certifications",
+    "experienceDesc": "Expériences professionnelles",
+    "projectsDesc": "Projets personnels ou professionnels",
+    "skillsDesc": "Compétences techniques",
+    "leadershipDesc": "Leadership et engagement associatif",
+    "languagesDesc": "Langues parlées",
+    "customDesc": "Section personnalisée avec titre et points"
+  },
+  "editors": {
+    "education": {
+      "school": "École / Université",
+      "schoolPlaceholder": "Nom de l'établissement",
+      "degree": "Diplôme",
+      "degreePlaceholder": "Master en Informatique",
+      "dates": "Dates",
+      "datesPlaceholder": "2021 - 2024",
+      "subtitle": "Sous-titre (GPA, mention...)",
+      "subtitlePlaceholder": "Mention Très Bien",
+      "description": "Description",
+      "descriptionPlaceholder": "Cours principaux, projets remarquables...",
+      "addEducation": "Ajouter une formation",
+      "deleteEducation": "Supprimer cette formation"
+    },
+    "experience": {
+      "position": "Poste",
+      "positionPlaceholder": "Développeur Senior",
+      "company": "Entreprise",
+      "companyPlaceholder": "Nom de l'entreprise",
+      "dates": "Dates",
+      "datesPlaceholder": "Jan 2023 - Présent",
+      "highlights": "Points clés",
+      "highlightPlaceholder": "Décrivez une réalisation ou responsabilité...",
+      "noHighlights": "Ajoutez des points clés pour décrire vos missions",
+      "addExperience": "Ajouter une expérience",
+      "deleteExperience": "Supprimer cette expérience"
+    },
+    "projects": {
+      "name": "Nom du projet",
+      "namePlaceholder": "Nom du projet",
+      "year": "Année",
+      "yearPlaceholder": "2024",
+      "description": "Description",
+      "pointPlaceholder": "Technologie utilisée, fonctionnalité clé...",
+      "noPoints": "Ajoutez des points pour décrire le projet",
+      "addProject": "Ajouter un projet",
+      "deleteProject": "Supprimer ce projet"
+    },
+    "skills": {
+      "languages": "Langages de programmation",
+      "languagesPlaceholder": "Python, JavaScript, TypeScript, Go, Rust...",
+      "languagesHint": "Séparez les langages par des virgules",
+      "tools": "Outils et technologies",
+      "toolsPlaceholder": "Git, Docker, AWS, PostgreSQL, React...",
+      "toolsHint": "Frameworks, outils DevOps, bases de données, etc."
+    },
+    "leadership": {
+      "role": "Rôle",
+      "rolePlaceholder": "Président, Bénévole...",
+      "place": "Lieu / Organisation",
+      "placePlaceholder": "Nom de l'association",
+      "dates": "Dates",
+      "datesPlaceholder": "2022 - 2024",
+      "highlights": "Points clés",
+      "highlightPlaceholder": "Décrivez une réalisation ou responsabilité...",
+      "noHighlights": "Ajoutez des points pour décrire vos responsabilités",
+      "addLeadership": "Ajouter un engagement",
+      "deleteLeadership": "Supprimer cet engagement"
+    },
+    "languagesSpoken": {
+      "label": "Langues parlées",
+      "placeholder": "Français (Natif), Anglais (Courant), Espagnol (Intermédiaire)",
+      "hint": "Séparez les langues par des virgules et indiquez le niveau entre parenthèses"
+    },
+    "summary": {
+      "label": "Profil / Objectif professionnel",
+      "placeholder": "Décrivez votre profil professionnel, vos compétences clés et vos objectifs de carrière...",
+      "hint": "Un court paragraphe qui résume votre profil et vos objectifs. Soyez concis et percutant."
+    },
+    "custom": {
+      "title": "Titre",
+      "titlePlaceholder": "Titre de l'élément",
+      "subtitle": "Sous-titre (optionnel)",
+      "subtitlePlaceholder": "Sous-titre, lieu...",
+      "dates": "Dates (optionnel)",
+      "datesPlaceholder": "2022 - 2024",
+      "points": "Points",
+      "pointPlaceholder": "Décrivez un point...",
+      "noPoints": "Ajoutez des points pour cette section",
+      "addItem": "Ajouter un élément",
+      "deleteItem": "Supprimer cet élément"
+    }
+  }
+}

@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { Trash2, GraduationCap } from 'lucide-react';
 import { EducationItem, createEmptyEducation } from '../../types';
 
@@ -7,6 +8,8 @@ interface EducationEditorProps {
 }
 
 export default function EducationEditor({ items, onChange }: EducationEditorProps) {
+  const { t } = useTranslation();
+
   const addItem = () => {
     onChange([...items, createEmptyEducation()]);
   };
@@ -32,59 +35,59 @@ export default function EducationEditor({ items, onChange }: EducationEditorProp
             onClick={() => removeItem(index)}
             className="absolute top-4 right-4 p-1.5 text-primary-400 hover:text-error-500
                        hover:bg-error-50 rounded-lg transition-colors"
-            title="Supprimer cette formation"
+            title={t('editors.education.deleteEducation')}
           >
             <Trash2 className="w-4 h-4" />
           </button>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pr-10">
             <div className="form-group">
-              <label className="label">Ecole / Universite</label>
+              <label className="label">{t('editors.education.school')}</label>
               <input
                 type="text"
                 value={edu.school}
                 onChange={(e) => updateItem(index, 'school', e.target.value)}
-                placeholder="Nom de l'etablissement"
+                placeholder={t('editors.education.schoolPlaceholder')}
                 className="input"
               />
             </div>
             <div className="form-group">
-              <label className="label">Diplome</label>
+              <label className="label">{t('editors.education.degree')}</label>
               <input
                 type="text"
                 value={edu.degree}
                 onChange={(e) => updateItem(index, 'degree', e.target.value)}
-                placeholder="Master en Informatique"
+                placeholder={t('editors.education.degreePlaceholder')}
                 className="input"
               />
             </div>
             <div className="form-group">
-              <label className="label">Dates</label>
+              <label className="label">{t('editors.education.dates')}</label>
               <input
                 type="text"
                 value={edu.dates}
                 onChange={(e) => updateItem(index, 'dates', e.target.value)}
-                placeholder="2021 - 2024"
+                placeholder={t('editors.education.datesPlaceholder')}
                 className="input"
               />
             </div>
             <div className="form-group">
-              <label className="label">Sous-titre (GPA, mention...)</label>
+              <label className="label">{t('editors.education.subtitle')}</label>
               <input
                 type="text"
                 value={edu.subtitle}
                 onChange={(e) => updateItem(index, 'subtitle', e.target.value)}
-                placeholder="Mention Tres Bien"
+                placeholder={t('editors.education.subtitlePlaceholder')}
                 className="input"
               />
             </div>
             <div className="form-group md:col-span-2">
-              <label className="label">Description</label>
+              <label className="label">{t('editors.education.description')}</label>
               <textarea
                 value={edu.description}
                 onChange={(e) => updateItem(index, 'description', e.target.value)}
                 rows={2}
-                placeholder="Cours principaux, projets remarquables..."
+                placeholder={t('editors.education.descriptionPlaceholder')}
                 className="input resize-none"
               />
             </div>
@@ -99,7 +102,7 @@ export default function EducationEditor({ items, onChange }: EducationEditorProp
                    hover:bg-primary-50/50 transition-all flex items-center justify-center gap-2"
       >
         <GraduationCap className="w-5 h-5" />
-        Ajouter une formation
+        {t('editors.education.addEducation')}
       </button>
     </div>
   );

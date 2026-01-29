@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { User } from 'lucide-react';
 
 interface SummaryEditorProps {
@@ -6,21 +7,23 @@ interface SummaryEditorProps {
 }
 
 export default function SummaryEditor({ value, onChange }: SummaryEditorProps) {
+  const { t } = useTranslation();
+
   return (
     <div className="form-group">
       <label className="label flex items-center gap-2">
         <User className="w-4 h-4 text-primary-500" />
-        Profil / Objectif professionnel
+        {t('editors.summary.label')}
       </label>
       <textarea
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        placeholder="Decrivez votre profil professionnel, vos competences cles et vos objectifs de carriere..."
+        placeholder={t('editors.summary.placeholder')}
         rows={4}
         className="input resize-y min-h-[100px]"
       />
       <p className="text-xs text-primary-400 mt-1.5">
-        Un court paragraphe qui resume votre profil et vos objectifs. Soyez concis et percutant.
+        {t('editors.summary.hint')}
       </p>
     </div>
   );

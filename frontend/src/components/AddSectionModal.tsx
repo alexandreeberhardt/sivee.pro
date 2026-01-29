@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   X,
   GraduationCap,
@@ -11,7 +12,7 @@ import {
   User,
   Check,
 } from 'lucide-react';
-import { SectionType, defaultSectionTitles } from '../types';
+import { SectionType } from '../types';
 
 interface AddSectionModalProps {
   onAdd: (type: SectionType, title: string) => void;
@@ -19,59 +20,67 @@ interface AddSectionModalProps {
   existingSections: SectionType[];
 }
 
-const sectionOptions: { type: SectionType; icon: React.ReactNode; description: string }[] = [
-  {
-    type: 'summary',
-    icon: <User className="w-5 h-5" />,
-    description: 'Profil et objectif professionnel',
-  },
-  {
-    type: 'education',
-    icon: <GraduationCap className="w-5 h-5" />,
-    description: 'Formations, diplomes, certifications',
-  },
-  {
-    type: 'experiences',
-    icon: <Briefcase className="w-5 h-5" />,
-    description: 'Experiences professionnelles',
-  },
-  {
-    type: 'projects',
-    icon: <FolderKanban className="w-5 h-5" />,
-    description: 'Projets personnels ou professionnels',
-  },
-  {
-    type: 'skills',
-    icon: <Wrench className="w-5 h-5" />,
-    description: 'Competences techniques',
-  },
-  {
-    type: 'leadership',
-    icon: <Users className="w-5 h-5" />,
-    description: 'Leadership et engagement associatif',
-  },
-  {
-    type: 'languages',
-    icon: <Languages className="w-5 h-5" />,
-    description: 'Langues parlees',
-  },
-  {
-    type: 'custom',
-    icon: <FileText className="w-5 h-5" />,
-    description: 'Section personnalisee avec titre et points',
-  },
+const sectionIcons: Record<SectionType, React.ReactNode> = {
+  summary: <User className="w-5 h-5" />,
+  education: <GraduationCap className="w-5 h-5" />,
+  experiences: <Briefcase className="w-5 h-5" />,
+  projects: <FolderKanban className="w-5 h-5" />,
+  skills: <Wrench className="w-5 h-5" />,
+  leadership: <Users className="w-5 h-5" />,
+  languages: <Languages className="w-5 h-5" />,
+  custom: <FileText className="w-5 h-5" />,
+};
+
+const sectionTypes: SectionType[] = [
+  'summary',
+  'education',
+  'experiences',
+  'projects',
+  'skills',
+  'leadership',
+  'languages',
+  'custom',
 ];
 
 export default function AddSectionModal({ onAdd, onClose, existingSections }: AddSectionModalProps) {
+  const { t } = useTranslation();
   const [selectedType, setSelectedType] = useState<SectionType | null>(null);
   const [customTitle, setCustomTitle] = useState('');
+
+  const getSectionTitle = (type: SectionType): string => {
+    const titles: Record<SectionType, string> = {
+      summary: t('sections.summary'),
+      education: t('sections.education'),
+      experiences: t('sections.experience'),
+      projects: t('sections.projects'),
+      skills: t('sections.skills'),
+      leadership: t('sections.leadership'),
+      languages: t('sections.languages'),
+      custom: t('sections.custom'),
+    };
+    return titles[type];
+  };
+
+  const getSectionDescription = (type: SectionType): string => {
+    const descriptions: Record<SectionType, string> = {
+      summary: t('addSection.summaryDesc'),
+      education: t('addSection.educationDesc'),
+      experiences: t('addSection.experienceDesc'),
+      projects: t('addSection.projectsDesc'),
+      skills: t('addSection.skillsDesc'),
+      leadership: t('addSection.leadershipDesc'),
+      languages: t('addSection.languagesDesc'),
+      custom: t('addSection.customDesc'),
+    };
+    return descriptions[type];
+  };
 
   const handleAdd = () => {
     if (!selectedType) return;
 
     const title = selectedType === 'custom' && customTitle
       ? customTitle
-      : defaultSectionTitles[selectedType];
+      : getSectionTitle(selectedType);
 
     onAdd(selectedType, title);
   };
@@ -90,9 +99,9 @@ export default function AddSectionModal({ onAdd, onClose, existingSections }: Ad
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-5 border-b border-primary-100">
           <div>
-            <h2 className="text-xl font-semibold text-primary-900">Ajouter une section</h2>
+            <h2 className="text-xl font-semibold text-primary-900">{t('addSection.title')}</h2>
             <p className="text-sm text-primary-500 mt-0.5">
-              Choisissez le type de contenu a ajouter
+              {t('addSection.subtitle')}
             </p>
           </div>
           <button
@@ -106,14 +115,14 @@ export default function AddSectionModal({ onAdd, onClose, existingSections }: Ad
 
         {/* Options */}
         <div className="p-4 space-y-2 max-h-[50vh] overflow-y-auto custom-scrollbar">
-          {sectionOptions.map((option) => {
-            const isExisting = existingSections.includes(option.type) && option.type !== 'custom';
-            const isSelected = selectedType === option.type;
+          {sectionTypes.map((type) => {
+            const isExisting = existingSections.includes(type) && type !== 'custom';
+            const isSelected = selectedType === type;
 
             return (
               <button
-                key={option.type}
-                onClick={() => !isExisting && setSelectedType(option.type)}
+                key={type}
+                onClick={() => !isExisting && setSelectedType(type)}
                 disabled={isExisting}
                 className={`w-full flex items-center gap-4 p-4 rounded-xl border-2 transition-all
                            text-left group ${
@@ -131,20 +140,20 @@ export default function AddSectionModal({ onAdd, onClose, existingSections }: Ad
                       : 'bg-primary-100 text-primary-600 group-hover:bg-primary-200'
                   }`}
                 >
-                  {option.icon}
+                  {sectionIcons[type]}
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
                     <span className="font-medium text-primary-900">
-                      {defaultSectionTitles[option.type]}
+                      {getSectionTitle(type)}
                     </span>
                     {isExisting && (
                       <span className="text-xs text-primary-400 bg-primary-100 px-2 py-0.5 rounded-md">
-                        deja ajoute
+                        {t('addSection.alreadyAdded')}
                       </span>
                     )}
                   </div>
-                  <p className="text-sm text-primary-500 truncate">{option.description}</p>
+                  <p className="text-sm text-primary-500 truncate">{getSectionDescription(type)}</p>
                 </div>
                 {isSelected && (
                   <div className="w-6 h-6 bg-primary-900 rounded-full flex items-center justify-center">
@@ -159,12 +168,12 @@ export default function AddSectionModal({ onAdd, onClose, existingSections }: Ad
         {/* Custom title input */}
         {selectedType === 'custom' && (
           <div className="px-6 pb-4">
-            <label className="label">Titre de la section</label>
+            <label className="label">{t('addSection.customTitle')}</label>
             <input
               type="text"
               value={customTitle}
               onChange={(e) => setCustomTitle(e.target.value)}
-              placeholder="Ex: Publications, Certifications, Hobbies..."
+              placeholder={t('addSection.customPlaceholder')}
               className="input"
               autoFocus
             />
@@ -174,14 +183,14 @@ export default function AddSectionModal({ onAdd, onClose, existingSections }: Ad
         {/* Footer */}
         <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-primary-100 bg-primary-50/50">
           <button onClick={onClose} className="btn-ghost">
-            Annuler
+            {t('common.cancel')}
           </button>
           <button
             onClick={handleAdd}
             disabled={!selectedType || (selectedType === 'custom' && !customTitle.trim())}
             className="btn-primary"
           >
-            Ajouter la section
+            {t('addSection.addButton')}
           </button>
         </div>
       </div>
