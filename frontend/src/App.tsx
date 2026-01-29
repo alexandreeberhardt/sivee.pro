@@ -42,6 +42,7 @@ import SortableSection from './components/SortableSection';
 import AddSectionModal from './components/AddSectionModal';
 import LanguageSwitcher from './components/LanguageSwitcher';
 import ThemeToggle from './components/ThemeToggle';
+import CVPreview from './components/CVPreview';
 
 const API_URL = import.meta.env.DEV ? '/api' : '';
 
@@ -714,9 +715,14 @@ function App() {
         )}
         </main>
 
-        {/* Right: Template Selector */}
-        <aside className="w-64 flex-shrink-0 hidden lg:block">
-          <div className="sticky top-24">
+        {/* Right: Preview and Template Selector */}
+        <aside className="w-80 flex-shrink-0 hidden lg:block">
+          <div className="sticky top-24 max-h-[calc(100vh-7rem)] overflow-y-auto space-y-6 pr-2">
+            {/* CV Preview */}
+            <CVPreview data={data} />
+
+            {/* Template Selector */}
+            <div>
             <h3 className="text-xl font-semibold text-primary-900 mb-4">{t('sections.templates')}</h3>
 
             {/* Size selector */}
@@ -747,7 +753,7 @@ function App() {
               </div>
             </div>
 
-            <div className="space-y-3">
+            <div className="grid grid-cols-2 gap-2">
               {templatePreviews.map((template) => {
                 const currentBase = data.template_id.replace(/_compact|_large/, '');
                 const currentSize = data.template_id.includes('_compact') ? 'compact'
@@ -763,7 +769,7 @@ function App() {
                       const newId = `${template.id}${currentSizeSuffix}` as TemplateId;
                       setData((prev) => ({ ...prev, template_id: newId }));
                     }}
-                    className={`w-full text-left rounded-xl overflow-hidden border-2 transition-all ${
+                    className={`w-full text-left rounded-lg overflow-hidden border-2 transition-all ${
                       isSelected
                         ? 'border-brand ring-2 ring-brand/20'
                         : 'border-primary-200 hover:border-primary-300'
@@ -782,12 +788,13 @@ function App() {
                         }}
                       />
                     </div>
-                    <div className="p-2 bg-surface-0 border-t border-primary-100">
-                      <p className="text-xs font-medium text-primary-900">{template.name}</p>
+                    <div className="p-1.5 bg-surface-0 border-t border-primary-100">
+                      <p className="text-xs font-medium text-primary-900 text-center">{template.name}</p>
                     </div>
                   </button>
                 );
               })}
+            </div>
             </div>
           </div>
         </aside>

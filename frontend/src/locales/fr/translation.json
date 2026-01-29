@@ -66,6 +66,15 @@
     "githubUrl": "GitHub URL",
     "githubUrlPlaceholder": "https://github.com/username"
   },
+  "preview": {
+    "title": "Aperçu",
+    "show": "Afficher l'aperçu",
+    "hide": "Masquer l'aperçu",
+    "refresh": "Actualiser",
+    "generating": "Génération de l'aperçu...",
+    "empty": "L'aperçu apparaîtra ici",
+    "hint": "L'aperçu se met à jour automatiquement"
+  },
   "sections": {
     "summary": "Résumé",
     "education": "Formation",
