@@ -248,17 +248,12 @@ function App() {
     }));
   }, [i18n.language]);
 
-  // Cycle through import messages
+  // Reset import step when not loading
   useEffect(() => {
     if (!importLoading) {
       setImportStep(0);
-      return;
     }
-    const interval = setInterval(() => {
-      setImportStep((prev) => Math.min(prev + 1, importMessages.length - 1));
-    }, 4000);
-    return () => clearInterval(interval);
-  }, [importLoading, importMessages.length]);
+  }, [importLoading]);
 
   const handleGenerate = async () => {
     setLoading(true);
@@ -301,12 +296,21 @@ function App() {
 
     setImportLoading(true);
     setError(null);
+    setShowLanding(false);
+
+    // Initialiser avec des données vides pour afficher progressivement
+    const initialData: ResumeData = {
+      personal: { name: '', title: '', location: '', email: '', phone: '', github: '', github_url: '' },
+      sections: [],
+      template_id: 'harvard',
+    };
+    setData(initialData);
 
     try {
       const formData = new FormData();
       formData.append('file', file);
 
-      const response = await fetch(`${API_URL}/import`, {
+      const response = await fetch(`${API_URL}/import-stream`, {
         method: 'POST',
         body: formData,
       });
@@ -316,19 +320,80 @@ function App() {
         throw new Error(errData.detail || t('errors.import'));
       }
 
-      const importedData: ResumeData = await response.json();
-      const processedData: ResumeData = {
-        ...importedData,
-        sections: importedData.sections.map((section) => ({
-          ...section,
-          id: generateId(),
-        })),
-      };
+      const reader = response.body?.getReader();
+      if (!reader) throw new Error('Stream non disponible');
 
-      setData(processedData);
-      setShowLanding(false);
-      setHasImported(true);
-      setEditorStep(999); // Show all sections after import
+      const decoder = new TextDecoder();
+      let buffer = '';
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split('\n\n');
+        buffer = lines.pop() || '';
+
+        for (const line of lines) {
+          if (line.startsWith('data: ')) {
+            try {
+              const event = JSON.parse(line.slice(6));
+
+              switch (event.type) {
+                case 'status':
+                  // Met à jour le message de statut
+                  if (event.message === 'extracting') {
+                    setImportStep(0);
+                  } else if (event.message === 'processing') {
+                    setImportStep(1);
+                  }
+                  break;
+
+                case 'personal':
+                  // Met à jour les infos personnelles
+                  setData(prev => ({
+                    ...prev,
+                    personal: event.data,
+                  }));
+                  setImportStep(2);
+                  break;
+
+                case 'section':
+                  // Ajoute une section
+                  setData(prev => ({
+                    ...prev,
+                    sections: [...prev.sections, { ...event.data, id: generateId() }],
+                  }));
+                  setImportStep(3);
+                  break;
+
+                case 'complete':
+                  // Données finales complètes
+                  const processedData: ResumeData = {
+                    ...event.data,
+                    sections: event.data.sections.map((section: CVSection) => ({
+                      ...section,
+                      id: generateId(),
+                    })),
+                  };
+                  setData(processedData);
+                  setHasImported(true);
+                  setEditorStep(999);
+                  setImportStep(4);
+                  break;
+
+                case 'error':
+                  throw new Error(event.message);
+              }
+            } catch (parseErr) {
+              // Ignorer les erreurs de parsing SSE partielles
+              if (parseErr instanceof Error && parseErr.message !== 'Unexpected end of JSON input') {
+                console.error('SSE parse error:', parseErr);
+              }
+            }
+          }
+        }
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : "Erreur lors de l'import");
     } finally {
