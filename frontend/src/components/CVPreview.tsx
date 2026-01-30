@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
-import { Loader2, RefreshCw, AlertCircle, Eye, EyeOff, X, Maximize2 } from 'lucide-react';
+import { RefreshCw, AlertCircle, Eye, EyeOff, X, Maximize2 } from 'lucide-react';
 import { ResumeData } from '../types';
 
 const API_URL = import.meta.env.DEV ? '/api' : '';
@@ -129,7 +129,7 @@ export default function CVPreview({ data, debounceMs = 1000 }: CVPreviewProps) {
       <div>
         <button
           onClick={() => setIsCollapsed(false)}
-          className="w-full flex items-center justify-center gap-2 py-3 px-4 bg-surface-0 border border-primary-200 rounded-xl text-primary-600 hover:bg-primary-50 transition-colors"
+          className="w-full flex items-center justify-center gap-2 py-2.5 px-4 bg-surface-0 border border-primary-100/80 rounded-xl text-primary-500 hover:text-primary-700 hover:bg-primary-50/50 hover:border-primary-200 transition-all text-sm"
         >
           <Eye className="w-4 h-4" />
           {t('preview.show')}
@@ -141,19 +141,19 @@ export default function CVPreview({ data, debounceMs = 1000 }: CVPreviewProps) {
   return (
     <div>
       <div className="flex items-center justify-between mb-3">
-        <h3 className="text-xl font-semibold text-primary-900">{t('preview.title')}</h3>
-        <div className="flex items-center gap-2">
+        <h3 className="text-base font-semibold text-primary-900">{t('preview.title')}</h3>
+        <div className="flex items-center gap-1">
           <button
             onClick={generatePreview}
             disabled={loading}
-            className="p-2 text-primary-500 hover:text-primary-700 hover:bg-primary-100 rounded-lg transition-colors disabled:opacity-50"
+            className="p-1.5 text-primary-400 hover:text-primary-600 hover:bg-primary-100 rounded-lg transition-colors disabled:opacity-50"
             title={t('preview.refresh')}
           >
             <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
           </button>
           <button
             onClick={() => setIsCollapsed(true)}
-            className="p-2 text-primary-500 hover:text-primary-700 hover:bg-primary-100 rounded-lg transition-colors"
+            className="p-1.5 text-primary-400 hover:text-primary-600 hover:bg-primary-100 rounded-lg transition-colors"
             title={t('preview.hide')}
           >
             <EyeOff className="w-4 h-4" />
@@ -161,99 +161,114 @@ export default function CVPreview({ data, debounceMs = 1000 }: CVPreviewProps) {
         </div>
       </div>
 
+      {/* Paper-like container */}
       <div
-        className="relative rounded-xl overflow-hidden border border-primary-200 bg-surface-0 shadow-soft cursor-pointer group"
+        className="relative cursor-pointer group"
         onClick={() => pdfUrl && setIsFullscreen(true)}
       >
-        {/* PDF Container */}
-        <div className="aspect-[210/297] w-full bg-gray-100">
-          {pdfUrl ? (
-            <object
-              data={pdfUrl}
-              type="application/pdf"
-              className="w-full h-full pointer-events-none"
-            >
-              <iframe
-                src={pdfUrl}
-                className="w-full h-full border-0 pointer-events-none"
-                title="CV Preview"
-              />
-            </object>
-          ) : (
-            <div className="w-full h-full flex items-center justify-center text-primary-400">
-              <div className="text-center p-4">
-                <Eye className="w-12 h-12 mx-auto mb-3 opacity-50" />
-                <p className="text-sm">{t('preview.empty')}</p>
+        {/* Paper shadow effect */}
+        <div className="absolute inset-0 bg-primary-900/5 rounded-lg translate-y-1 translate-x-0.5" />
+        <div className="absolute inset-0 bg-primary-900/[0.03] rounded-lg translate-y-2 translate-x-1" />
+
+        {/* Main paper */}
+        <div className="relative bg-white rounded-lg overflow-hidden shadow-lg ring-1 ring-primary-900/5">
+          {/* PDF Container */}
+          <div className="aspect-[210/297] w-full bg-white">
+            {pdfUrl ? (
+              <object
+                data={pdfUrl}
+                type="application/pdf"
+                className="w-full h-full pointer-events-none"
+              >
+                <iframe
+                  src={pdfUrl}
+                  className="w-full h-full border-0 pointer-events-none"
+                  title="CV Preview"
+                />
+              </object>
+            ) : (
+              <div className="w-full h-full flex items-center justify-center text-primary-300">
+                <div className="text-center p-4">
+                  <Eye className="w-10 h-10 mx-auto mb-2 opacity-50" />
+                  <p className="text-xs">{t('preview.empty')}</p>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Fullscreen hint overlay */}
+          {pdfUrl && !loading && (
+            <div className="absolute inset-0 bg-primary-900/0 group-hover:bg-primary-900/10 transition-all duration-200 flex items-center justify-center opacity-0 group-hover:opacity-100">
+              <div className="bg-white/95 backdrop-blur-sm rounded-lg px-3 py-2 flex items-center gap-2 shadow-md border border-primary-100/50 transform scale-95 group-hover:scale-100 transition-transform">
+                <Maximize2 className="w-4 h-4 text-primary-600" />
+                <span className="text-xs font-medium text-primary-600">{t('preview.fullscreen')}</span>
+              </div>
+            </div>
+          )}
+
+          {/* Loading overlay - more elegant */}
+          {loading && (
+            <div className="absolute inset-0 bg-white/90 backdrop-blur-[2px] flex items-center justify-center">
+              <div className="flex flex-col items-center gap-2">
+                <div className="w-8 h-8 rounded-full border-2 border-primary-200 border-t-brand animate-spin" />
+                <p className="text-xs text-primary-500 font-medium">{t('preview.generating')}</p>
+              </div>
+            </div>
+          )}
+
+          {/* Error overlay */}
+          {error && !loading && (
+            <div className="absolute inset-x-0 bottom-0 bg-error-50/95 backdrop-blur-sm border-t border-error-100 p-2.5">
+              <div className="flex items-center gap-2">
+                <AlertCircle className="w-3.5 h-3.5 text-error-500 flex-shrink-0" />
+                <p className="text-xs text-error-600 truncate">{error}</p>
               </div>
             </div>
           )}
         </div>
-
-        {/* Fullscreen hint overlay */}
-        {pdfUrl && !loading && (
-          <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100">
-            <div className="bg-surface-0/90 backdrop-blur-sm rounded-lg px-3 py-2 flex items-center gap-2 shadow-lg">
-              <Maximize2 className="w-4 h-4 text-primary-700" />
-              <span className="text-sm font-medium text-primary-700">{t('preview.fullscreen')}</span>
-            </div>
-          </div>
-        )}
-
-        {/* Loading overlay */}
-        {loading && (
-          <div className="absolute inset-0 bg-surface-0/80 backdrop-blur-sm flex items-center justify-center">
-            <div className="flex flex-col items-center gap-3">
-              <Loader2 className="w-8 h-8 animate-spin text-brand" />
-              <p className="text-sm text-primary-600">{t('preview.generating')}</p>
-            </div>
-          </div>
-        )}
-
-        {/* Error overlay */}
-        {error && !loading && (
-          <div className="absolute inset-x-0 bottom-0 bg-error-50 border-t border-error-200 p-3">
-            <div className="flex items-start gap-2">
-              <AlertCircle className="w-4 h-4 text-error-500 flex-shrink-0 mt-0.5" />
-              <p className="text-xs text-error-700">{error}</p>
-            </div>
-          </div>
-        )}
       </div>
 
-      <p className="text-xs text-primary-400 mt-2 text-center">
+      <p className="text-[11px] text-primary-400 mt-2.5 text-center">
         {t('preview.hint')}
       </p>
 
       {/* Fullscreen Modal - rendered via portal to escape stacking context */}
       {isFullscreen && pdfUrl && createPortal(
         <div
-          className="fixed inset-0 z-[9999] bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 sm:p-8 animate-fade-in"
+          className="fixed inset-0 z-[9999] bg-primary-950/80 backdrop-blur-md flex items-center justify-center p-4 sm:p-8 animate-fade-in"
           onClick={() => setIsFullscreen(false)}
         >
           {/* Close button */}
           <button
             onClick={() => setIsFullscreen(false)}
-            className="absolute top-4 right-4 p-2 bg-surface-0/90 hover:bg-surface-0 rounded-full text-primary-700 transition-colors shadow-lg"
+            className="absolute top-4 right-4 p-2.5 bg-white/10 hover:bg-white/20 rounded-xl text-white transition-colors backdrop-blur-sm"
           >
-            <X className="w-6 h-6" />
+            <X className="w-5 h-5" />
           </button>
 
-          {/* PDF Container */}
+          {/* PDF Container with paper effect */}
           <div
-            className="bg-white rounded-xl shadow-2xl overflow-hidden max-w-4xl w-full max-h-[90vh] aspect-[210/297]"
+            className="relative max-w-4xl w-full max-h-[90vh]"
             onClick={(e) => e.stopPropagation()}
           >
-            <object
-              data={pdfUrl}
-              type="application/pdf"
-              className="w-full h-full"
-            >
-              <iframe
-                src={pdfUrl}
-                className="w-full h-full border-0"
-                title="CV Preview Fullscreen"
-              />
-            </object>
+            {/* Paper shadows */}
+            <div className="absolute inset-0 bg-black/10 rounded-xl translate-y-2 translate-x-1" />
+            <div className="absolute inset-0 bg-black/5 rounded-xl translate-y-4 translate-x-2" />
+
+            {/* Main paper */}
+            <div className="relative bg-white rounded-xl shadow-2xl overflow-hidden aspect-[210/297]">
+              <object
+                data={pdfUrl}
+                type="application/pdf"
+                className="w-full h-full"
+              >
+                <iframe
+                  src={pdfUrl}
+                  className="w-full h-full border-0"
+                  title="CV Preview Fullscreen"
+                />
+              </object>
+            </div>
           </div>
         </div>,
         document.body

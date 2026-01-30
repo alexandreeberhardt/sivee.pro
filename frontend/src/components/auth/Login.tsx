@@ -44,51 +44,42 @@ export default function Login({ onSwitchToRegister }: LoginProps) {
     <div className="w-full">
       {/* Header */}
       <div className="text-center mb-8">
-        <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-brand to-brand/80 rounded-2xl shadow-lg shadow-brand/25 mb-6">
-          <LogIn className="w-8 h-8 text-white" />
+        <div className="inline-flex items-center justify-center w-14 h-14 bg-brand/10 rounded-2xl mb-5">
+          <LogIn className="w-7 h-7 text-brand" />
         </div>
-        <h2 className="text-2xl sm:text-3xl font-bold text-primary-900 mb-2">
+        <h2 className="text-2xl font-semibold text-primary-900 mb-1.5 tracking-tight">
           {t('auth.login.title')}
         </h2>
-        <p className="text-primary-500">
+        <p className="text-sm text-primary-500">
           {t('auth.login.subtitle')}
         </p>
       </div>
 
       {/* Error message */}
       {error && (
-        <div className="mb-6 p-4 bg-error-50 border border-error-200 rounded-xl flex items-start gap-3 animate-shake">
-          <div className="w-10 h-10 bg-error-100 rounded-lg flex items-center justify-center flex-shrink-0">
-            <AlertCircle className="w-5 h-5 text-error-600" />
+        <div className="mb-6 p-3.5 bg-error-50/80 border border-error-200/50 rounded-xl flex items-center gap-3 animate-shake">
+          <div className="w-9 h-9 bg-error-100 rounded-lg flex items-center justify-center flex-shrink-0">
+            <AlertCircle className="w-4.5 h-4.5 text-error-600" />
           </div>
-          <div className="flex-1 pt-1">
-            <p className="text-sm font-medium text-error-800">{t('auth.errors.title') || 'Erreur de connexion'}</p>
-            <p className="text-sm text-error-600 mt-0.5">{error}</p>
+          <div className="flex-1 min-w-0">
+            <p className="text-sm text-error-700 truncate">{error}</p>
           </div>
         </div>
       )}
 
       {/* Form */}
-      <form onSubmit={handleSubmit} className="space-y-5">
+      <form onSubmit={handleSubmit} className="space-y-4">
         {/* Email field */}
-        <div>
+        <div className="space-y-1.5">
           <label
             htmlFor="email"
-            className={`block text-sm font-medium mb-2 transition-colors ${
-              focusedField === 'email' ? 'text-brand' : 'text-primary-700'
-            }`}
+            className="block text-sm font-medium text-primary-700"
           >
             {t('auth.email')}
           </label>
-          <div
-            className={`relative rounded-xl transition-all duration-200 ${
-              focusedField === 'email'
-                ? 'ring-2 ring-brand ring-offset-2 ring-offset-surface-50 dark:ring-offset-surface-100'
-                : ''
-            }`}
-          >
-            <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-              <Mail className={`w-5 h-5 transition-colors ${
+          <div className="relative">
+            <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+              <Mail className={`w-[18px] h-[18px] transition-colors duration-200 ${
                 focusedField === 'email' ? 'text-brand' : 'text-primary-400'
               }`} />
             </div>
@@ -99,7 +90,7 @@ export default function Login({ onSwitchToRegister }: LoginProps) {
               onChange={(e) => setEmail(e.target.value)}
               onFocus={() => setFocusedField('email')}
               onBlur={() => setFocusedField(null)}
-              className="w-full pl-12 pr-4 py-3.5 bg-surface-0 border border-primary-200 rounded-xl text-primary-900 placeholder-primary-400 focus:outline-none focus:border-brand transition-colors"
+              className="w-full pl-11 pr-4 py-3 bg-surface-0 border border-primary-200/80 rounded-xl text-primary-900 placeholder-primary-400 transition-all duration-200 focus:outline-none focus:border-brand/50 focus:ring-4 focus:ring-brand/10"
               placeholder={t('auth.emailPlaceholder')}
               required
               autoComplete="email"
@@ -108,24 +99,16 @@ export default function Login({ onSwitchToRegister }: LoginProps) {
         </div>
 
         {/* Password field */}
-        <div>
+        <div className="space-y-1.5">
           <label
             htmlFor="password"
-            className={`block text-sm font-medium mb-2 transition-colors ${
-              focusedField === 'password' ? 'text-brand' : 'text-primary-700'
-            }`}
+            className="block text-sm font-medium text-primary-700"
           >
             {t('auth.password')}
           </label>
-          <div
-            className={`relative rounded-xl transition-all duration-200 ${
-              focusedField === 'password'
-                ? 'ring-2 ring-brand ring-offset-2 ring-offset-surface-50 dark:ring-offset-surface-100'
-                : ''
-            }`}
-          >
-            <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-              <Lock className={`w-5 h-5 transition-colors ${
+          <div className="relative">
+            <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+              <Lock className={`w-[18px] h-[18px] transition-colors duration-200 ${
                 focusedField === 'password' ? 'text-brand' : 'text-primary-400'
               }`} />
             </div>
@@ -136,7 +119,7 @@ export default function Login({ onSwitchToRegister }: LoginProps) {
               onChange={(e) => setPassword(e.target.value)}
               onFocus={() => setFocusedField('password')}
               onBlur={() => setFocusedField(null)}
-              className="w-full pl-12 pr-12 py-3.5 bg-surface-0 border border-primary-200 rounded-xl text-primary-900 placeholder-primary-400 focus:outline-none focus:border-brand transition-colors"
+              className="w-full pl-11 pr-11 py-3 bg-surface-0 border border-primary-200/80 rounded-xl text-primary-900 placeholder-primary-400 transition-all duration-200 focus:outline-none focus:border-brand/50 focus:ring-4 focus:ring-brand/10"
               placeholder={t('auth.passwordPlaceholder')}
               required
               autoComplete="current-password"
@@ -144,9 +127,9 @@ export default function Login({ onSwitchToRegister }: LoginProps) {
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute inset-y-0 right-0 pr-4 flex items-center text-primary-400 hover:text-primary-600 transition-colors"
+              className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-primary-400 hover:text-primary-600 transition-colors"
             >
-              {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+              {showPassword ? <EyeOff className="w-[18px] h-[18px]" /> : <Eye className="w-[18px] h-[18px]" />}
             </button>
           </div>
         </div>
@@ -155,29 +138,26 @@ export default function Login({ onSwitchToRegister }: LoginProps) {
         <button
           type="submit"
           disabled={loading}
-          className="relative w-full py-4 px-6 bg-gradient-to-r from-brand to-brand/90 hover:from-brand/90 hover:to-brand text-white font-semibold rounded-xl shadow-lg shadow-brand/25 hover:shadow-xl hover:shadow-brand/30 transition-all duration-200 disabled:opacity-70 disabled:cursor-not-allowed disabled:shadow-none flex items-center justify-center gap-2 group"
+          className="w-full mt-2 py-3 px-6 bg-brand hover:bg-brand-hover text-white font-medium rounded-xl shadow-sm shadow-brand/20 hover:shadow-md hover:shadow-brand/25 transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed disabled:shadow-none flex items-center justify-center gap-2"
         >
           {loading ? (
             <>
-              <Loader2 className="w-5 h-5 animate-spin" />
+              <Loader2 className="w-[18px] h-[18px] animate-spin" />
               <span>{t('auth.loggingIn')}</span>
             </>
           ) : (
-            <>
-              <span>{t('auth.login.button')}</span>
-              <LogIn className="w-5 h-5 group-hover:translate-x-0.5 transition-transform" />
-            </>
+            <span>{t('auth.login.button')}</span>
           )}
         </button>
       </form>
 
       {/* Switch to register */}
-      <div className="mt-8 text-center">
-        <p className="text-sm text-primary-600">
+      <div className="mt-6 text-center">
+        <p className="text-sm text-primary-500">
           {t('auth.noAccount')}{' '}
           <button
             onClick={onSwitchToRegister}
-            className="font-semibold text-brand hover:text-brand/80 transition-colors hover:underline underline-offset-2"
+            className="font-medium text-brand hover:text-brand-hover transition-colors"
           >
             {t('auth.register.link')}
           </button>

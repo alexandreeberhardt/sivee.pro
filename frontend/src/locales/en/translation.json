@@ -12,9 +12,15 @@
     "language": "Language",
     "save": "Save",
     "saving": "Saving...",
-    "logout": "Log out"
+    "logout": "Log out",
+    "actions": "Actions"
   },
   "auth": {
+    "brandingTitle": "Create professional resumes in minutes",
+    "brandingSubtitle": "Import, edit and export your resumes with perfect LaTeX rendering.",
+    "feature1": "Professional and modern templates",
+    "feature2": "Instant high-quality PDF export",
+    "feature3": "Your data secured and saved",
     "email": "Email",
     "emailPlaceholder": "you@example.com",
     "password": "Password",

@@ -12,9 +12,15 @@
     "language": "Langue",
     "save": "Enregistrer",
     "saving": "Enregistrement...",
-    "logout": "Déconnexion"
+    "logout": "Déconnexion",
+    "actions": "Actions"
   },
   "auth": {
+    "brandingTitle": "Créez des CV professionnels en quelques minutes",
+    "brandingSubtitle": "Importez, éditez et exportez vos CV avec un rendu LaTeX impeccable.",
+    "feature1": "Templates professionnels et modernes",
+    "feature2": "Export PDF haute qualité instantané",
+    "feature3": "Vos données sécurisées et sauvegardées",
     "email": "Email",
     "emailPlaceholder": "vous@exemple.com",
     "password": "Mot de passe",

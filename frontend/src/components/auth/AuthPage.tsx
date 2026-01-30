@@ -84,15 +84,21 @@ export default function AuthPage({ onContinueWithoutAuth }: AuthPageProps) {
       </div>
 
       {/* Right Panel - Auth Form */}
-      <div className="flex-1 flex flex-col bg-surface-50 dark:bg-surface-100">
+      <div className="flex-1 flex flex-col bg-surface-50 dark:bg-surface-100 relative">
+        {/* Subtle background pattern */}
+        <div className="absolute inset-0 opacity-[0.015] dark:opacity-[0.03]" style={{
+          backgroundImage: `radial-gradient(circle at 1px 1px, currentColor 1px, transparent 0)`,
+          backgroundSize: '24px 24px',
+        }} />
+
         {/* Mobile Header */}
-        <header className="lg:hidden bg-surface-0/80 backdrop-blur-md border-b border-primary-100">
+        <header className="lg:hidden relative z-10 bg-surface-0/80 backdrop-blur-md border-b border-primary-100/50">
           <div className="px-4 h-14 flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <FileText className="w-7 h-7 text-brand" />
-              <span className="text-lg font-semibold text-primary-900">{t('landing.appName')}</span>
+              <FileText className="w-6 h-6 text-brand" />
+              <span className="text-base font-semibold text-primary-900">{t('landing.appName')}</span>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1.5">
               <ThemeToggle />
               <LanguageSwitcher />
             </div>
@@ -100,42 +106,45 @@ export default function AuthPage({ onContinueWithoutAuth }: AuthPageProps) {
         </header>
 
         {/* Desktop header with theme/language toggles */}
-        <div className="hidden lg:flex justify-end gap-2 p-4">
+        <div className="hidden lg:flex justify-end gap-1.5 p-4 relative z-10">
           <ThemeToggle />
           <LanguageSwitcher />
         </div>
 
         {/* Form Container */}
-        <main className="flex-1 flex items-center justify-center px-4 py-8 sm:py-12">
-          <div className="w-full max-w-md">
-            {/* Animated container */}
-            <div
-              key={mode}
-              className="animate-fade-in"
-            >
-              {mode === 'login' ? (
-                <Login onSwitchToRegister={() => setMode('register')} />
-              ) : (
-                <Register onSwitchToLogin={() => setMode('login')} />
-              )}
+        <main className="flex-1 flex items-center justify-center px-4 py-8 sm:py-12 relative z-10">
+          <div className="w-full max-w-[400px]">
+            {/* Glass card container */}
+            <div className="bg-surface-0/70 dark:bg-surface-0/50 backdrop-blur-xl rounded-2xl border border-primary-200/30 shadow-xl shadow-primary-900/5 p-6 sm:p-8">
+              {/* Animated content */}
+              <div
+                key={mode}
+                className="animate-fade-in"
+              >
+                {mode === 'login' ? (
+                  <Login onSwitchToRegister={() => setMode('register')} />
+                ) : (
+                  <Register onSwitchToLogin={() => setMode('login')} />
+                )}
+              </div>
             </div>
 
             {/* Optional: Continue without account */}
             {onContinueWithoutAuth && (
-              <div className="mt-8 text-center">
+              <div className="mt-6 text-center">
                 <div className="relative">
                   <div className="absolute inset-0 flex items-center">
-                    <div className="w-full border-t border-primary-200" />
+                    <div className="w-full border-t border-primary-200/50" />
                   </div>
                   <div className="relative flex justify-center text-sm">
-                    <span className="px-4 bg-surface-50 dark:bg-surface-100 text-primary-500">
+                    <span className="px-3 bg-surface-50 dark:bg-surface-100 text-primary-400 text-xs">
                       {t('auth.or') || 'ou'}
                     </span>
                   </div>
                 </div>
                 <button
                   onClick={onContinueWithoutAuth}
-                  className="mt-4 text-sm text-primary-600 hover:text-brand transition-colors font-medium"
+                  className="mt-3 text-sm text-primary-500 hover:text-brand transition-colors font-medium"
                 >
                   {t('auth.continueWithoutAccount') || 'Continuer sans compte'}
                 </button>
@@ -145,7 +154,7 @@ export default function AuthPage({ onContinueWithoutAuth }: AuthPageProps) {
         </main>
 
         {/* Footer */}
-        <footer className="py-6 px-4 text-center lg:hidden">
+        <footer className="py-4 px-4 text-center lg:hidden relative z-10">
           <p className="text-xs text-primary-400">{t('landing.madeWith')}</p>
         </footer>
       </div>

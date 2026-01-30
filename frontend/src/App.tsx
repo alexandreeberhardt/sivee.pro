@@ -33,6 +33,7 @@ import {
   Save,
   FolderOpen,
   User,
+  Trash2,
 } from 'lucide-react';
 import {
   ResumeData,
@@ -414,13 +415,11 @@ function App() {
               <ThemeToggle />
               <LanguageSwitcher />
               <button
-                onClick={() => {
-                  setShowLanding(false);
-                  window.scrollTo(0, 0);
-                }}
+                onClick={() => setShowResumeList(true)}
                 className="btn-brand text-sm sm:text-base px-3 sm:px-4 py-2"
               >
-                {t('landing.start')}
+                <FolderOpen className="w-4 h-4" />
+                {t('resumes.myResumes')}
               </button>
             </div>
           </div>
@@ -595,6 +594,83 @@ function App() {
             </p>
           </div>
         </footer>
+
+        {/* Resume List Modal - Landing Page */}
+        {showResumeList && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-primary-950/50 backdrop-blur-sm p-4">
+            <div className="bg-surface-0 rounded-2xl shadow-xl border border-primary-100/30 w-full max-w-lg max-h-[80vh] overflow-hidden animate-fade-in">
+              <div className="px-5 py-4 border-b border-primary-100/50 flex items-center justify-between">
+                <h2 className="text-lg font-semibold text-primary-900">{t('resumes.myResumes')}</h2>
+                <button
+                  onClick={() => setShowResumeList(false)}
+                  className="p-1.5 text-primary-400 hover:text-primary-600 hover:bg-primary-100 rounded-lg transition-colors"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+              <div className="p-5 overflow-y-auto max-h-[60vh]">
+                <button
+                  onClick={handleNewResume}
+                  className="btn-brand w-full mb-5"
+                >
+                  <Plus className="w-4 h-4" />
+                  {t('resumes.createNew')}
+                </button>
+
+                {savedResumes.length === 0 ? (
+                  <div className="text-center py-10">
+                    <div className="w-14 h-14 bg-primary-50 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                      <FolderOpen className="w-7 h-7 text-primary-400" />
+                    </div>
+                    <p className="text-primary-600 font-medium">{t('resumes.noResumes')}</p>
+                    <p className="text-sm text-primary-400 mt-1">{t('resumes.noResumesHint')}</p>
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    {savedResumes.map((resume) => (
+                      <div
+                        key={resume.id}
+                        className={`group p-4 rounded-xl border transition-all cursor-pointer ${
+                          currentResumeId === resume.id
+                            ? 'border-brand/30 bg-brand/5 shadow-sm'
+                            : 'border-primary-100 hover:border-primary-200 hover:bg-primary-50/50 hover:shadow-sm'
+                        }`}
+                        onClick={() => handleOpenResume(resume)}
+                      >
+                        <div className="flex items-center gap-3">
+                          <div className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 ${
+                            currentResumeId === resume.id ? 'bg-brand/10' : 'bg-primary-100'
+                          }`}>
+                            <FileText className={`w-5 h-5 ${
+                              currentResumeId === resume.id ? 'text-brand' : 'text-primary-500'
+                            }`} />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="font-medium text-primary-900 truncate">{resume.name}</p>
+                            {resume.created_at && (
+                              <p className="text-xs text-primary-400 mt-0.5">
+                                {new Date(resume.created_at).toLocaleDateString()}
+                              </p>
+                            )}
+                          </div>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleDeleteResume(resume.id);
+                            }}
+                            className="p-2 text-primary-400 hover:text-error-600 hover:bg-error-50 rounded-lg transition-colors opacity-0 group-hover:opacity-100"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     );
   }
@@ -603,20 +679,23 @@ function App() {
   return (
     <div className="min-h-screen bg-surface-50 pb-20 lg:pb-0">
       {/* Header */}
-      <header className="bg-surface-0/80 backdrop-blur-md border-b border-primary-100 sticky top-0 z-50">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 h-14 sm:h-16 flex items-center justify-between">
+      <header className="bg-surface-0/80 backdrop-blur-xl border-b border-primary-100/50 sticky top-0 z-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between gap-4">
+          {/* Logo */}
           <button
             onClick={() => setShowLanding(true)}
-            className="flex items-center gap-2 hover:opacity-70 transition-opacity"
+            className="flex items-center gap-2 hover:opacity-80 transition-opacity flex-shrink-0"
           >
-            <FileText className="w-7 h-7 sm:w-8 sm:h-8 text-primary-900" />
-            <span className="hidden sm:inline text-lg font-semibold text-primary-900">{t('landing.appName')}</span>
+            <FileText className="w-6 h-6 text-primary-900" />
+            <span className="hidden sm:inline text-base font-semibold text-primary-900">{t('landing.appName')}</span>
           </button>
 
           {/* Desktop actions */}
-          <div className="hidden md:flex items-center gap-3">
+          <div className="hidden md:flex items-center gap-2 flex-nowrap">
             <ThemeToggle />
             <LanguageSwitcher />
+
+            <div className="w-px h-5 bg-primary-200/60 mx-1" />
 
             {/* My Resumes */}
             <button
@@ -627,7 +706,7 @@ function App() {
               <span className="hidden lg:inline">{t('resumes.myResumes')}</span>
             </button>
 
-            {/* Save button */}
+            {/* Save */}
             <button
               onClick={() => currentResumeId ? handleSaveResume() : setShowSaveModal(true)}
               disabled={saveLoading}
@@ -641,38 +720,11 @@ function App() {
               <span className="hidden lg:inline">{t('common.save')}</span>
             </button>
 
-            <input
-              type="file"
-              ref={fileInputRef}
-              onChange={handleImport}
-              accept=".pdf"
-              className="hidden"
-            />
-            <button
-              onClick={() => fileInputRef.current?.click()}
-              disabled={importLoading}
-              className="btn-ghost"
-            >
-              {importLoading ? (
-                <Loader2 className="w-4 h-4 animate-spin" />
-              ) : (
-                <Upload className="w-4 h-4" />
-              )}
-              <span className="hidden lg:inline">{t('landing.importPdf').split(' ')[0]}</span>
-            </button>
-
-            <button
-              onClick={() => setShowAddModal(true)}
-              className="btn-secondary"
-            >
-              <Plus className="w-4 h-4" />
-              <span className="hidden lg:inline">Section</span>
-            </button>
-
+            {/* Primary Export button */}
             <button
               onClick={handleGenerate}
               disabled={loading}
-              className="btn-primary"
+              className="btn-brand"
             >
               {loading ? (
                 <>
@@ -682,17 +734,19 @@ function App() {
               ) : (
                 <>
                   <FileDown className="w-4 h-4" />
-                  <span className="hidden lg:inline">{t('common.export')}</span>
+                  <span>{t('common.export')}</span>
                 </>
               )}
             </button>
 
+            <div className="w-px h-5 bg-primary-200/60 mx-1" />
+
             {/* User menu */}
-            <div className="flex items-center gap-2 pl-2 border-l border-primary-200">
-              <span className="text-sm text-primary-600 hidden lg:inline">{user?.email}</span>
+            <div className="flex items-center gap-1.5">
+              <span className="text-sm text-primary-500 hidden lg:inline max-w-[140px] truncate">{user?.email}</span>
               <button
                 onClick={logout}
-                className="btn-ghost text-error-600 hover:bg-error-50"
+                className="btn-ghost !p-2 text-primary-500 hover:text-error-600 hover:bg-error-50"
                 title={t('common.logout')}
               >
                 <LogOut className="w-4 h-4" />
@@ -701,12 +755,12 @@ function App() {
           </div>
 
           {/* Mobile actions */}
-          <div className="flex md:hidden items-center gap-2">
+          <div className="flex md:hidden items-center gap-1.5">
             <ThemeToggle />
             <button
               onClick={handleGenerate}
               disabled={loading}
-              className="btn-primary px-3"
+              className="btn-brand !px-3"
             >
               {loading ? (
                 <Loader2 className="w-4 h-4 animate-spin" />
@@ -716,7 +770,7 @@ function App() {
             </button>
             <button
               onClick={() => setShowMobileMenu(!showMobileMenu)}
-              className="btn-ghost p-2"
+              className="btn-ghost !p-2"
             >
               {showMobileMenu ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </button>
@@ -725,13 +779,17 @@ function App() {
 
         {/* Mobile menu dropdown */}
         {showMobileMenu && (
-          <div className="md:hidden border-t border-primary-100 bg-surface-0 animate-fade-in">
-            <div className="px-4 py-3 space-y-2">
+          <div className="md:hidden border-t border-primary-100/50 bg-surface-0/95 backdrop-blur-xl animate-fade-in">
+            <div className="px-4 py-3 space-y-1">
               {/* User info */}
-              <div className="flex items-center gap-2 pb-2 border-b border-primary-100 mb-2">
-                <User className="w-4 h-4 text-primary-500" />
-                <span className="text-sm text-primary-600 truncate">{user?.email}</span>
+              <div className="flex items-center gap-2 px-2 py-2 mb-1">
+                <div className="w-8 h-8 rounded-full bg-primary-100 flex items-center justify-center">
+                  <User className="w-4 h-4 text-primary-600" />
+                </div>
+                <span className="text-sm text-primary-700 truncate font-medium">{user?.email}</span>
               </div>
+
+              <div className="h-px bg-primary-100/80 !my-2" />
 
               {/* My Resumes */}
               <button
@@ -739,9 +797,9 @@ function App() {
                   setShowResumeList(true);
                   setShowMobileMenu(false);
                 }}
-                className="btn-ghost w-full justify-start"
+                className="w-full px-2 py-2.5 text-left text-sm text-primary-700 hover:bg-primary-50 rounded-lg flex items-center gap-3 transition-colors"
               >
-                <FolderOpen className="w-4 h-4" />
+                <FolderOpen className="w-4 h-4 text-primary-500" />
                 {t('resumes.myResumes')}
               </button>
 
@@ -752,12 +810,12 @@ function App() {
                   setShowMobileMenu(false);
                 }}
                 disabled={saveLoading}
-                className="btn-ghost w-full justify-start"
+                className="w-full px-2 py-2.5 text-left text-sm text-primary-700 hover:bg-primary-50 rounded-lg flex items-center gap-3 transition-colors disabled:opacity-50"
               >
                 {saveLoading ? (
-                  <Loader2 className="w-4 h-4 animate-spin" />
+                  <Loader2 className="w-4 h-4 animate-spin text-primary-500" />
                 ) : (
-                  <Save className="w-4 h-4" />
+                  <Save className="w-4 h-4 text-primary-500" />
                 )}
                 {t('common.save')}
               </button>
@@ -775,31 +833,35 @@ function App() {
                   setShowMobileMenu(false);
                 }}
                 disabled={importLoading}
-                className="btn-ghost w-full justify-start"
+                className="w-full px-2 py-2.5 text-left text-sm text-primary-700 hover:bg-primary-50 rounded-lg flex items-center gap-3 transition-colors disabled:opacity-50"
               >
                 {importLoading ? (
-                  <Loader2 className="w-4 h-4 animate-spin" />
+                  <Loader2 className="w-4 h-4 animate-spin text-primary-500" />
                 ) : (
-                  <Upload className="w-4 h-4" />
+                  <Upload className="w-4 h-4 text-primary-500" />
                 )}
                 {t('landing.importPdf')}
               </button>
+
               <button
                 onClick={() => {
                   setShowAddModal(true);
                   setShowMobileMenu(false);
                 }}
-                className="btn-ghost w-full justify-start"
+                className="w-full px-2 py-2.5 text-left text-sm text-primary-700 hover:bg-primary-50 rounded-lg flex items-center gap-3 transition-colors"
               >
-                <Plus className="w-4 h-4" />
+                <Plus className="w-4 h-4 text-primary-500" />
                 {t('addSection.addButton')}
               </button>
-              <div className="pt-2 border-t border-primary-100">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-primary-600">{t('common.language')}</span>
-                  <LanguageSwitcher />
-                </div>
+
+              <div className="h-px bg-primary-100/80 !my-2" />
+
+              <div className="flex items-center justify-between px-2 py-2">
+                <span className="text-sm text-primary-600">{t('common.language')}</span>
+                <LanguageSwitcher />
               </div>
+
+              <div className="h-px bg-primary-100/80 !my-2" />
 
               {/* Logout */}
               <button
@@ -807,7 +869,7 @@ function App() {
                   logout();
                   setShowMobileMenu(false);
                 }}
-                className="btn-ghost w-full justify-start text-error-600"
+                className="w-full px-2 py-2.5 text-left text-sm text-error-600 hover:bg-error-50 rounded-lg flex items-center gap-3 transition-colors"
               >
                 <LogOut className="w-4 h-4" />
                 {t('common.logout')}
@@ -1054,11 +1116,11 @@ function App() {
 
             {/* Template Selector */}
             <div>
-            <h3 className="text-xl font-semibold text-primary-900 mb-4">{t('sections.templates')}</h3>
+            <h3 className="text-base font-semibold text-primary-900 mb-3">{t('sections.templates')}</h3>
 
             {/* Size selector */}
-            <div className="mb-4">
-              <div className="flex rounded-lg border border-primary-200 overflow-hidden">
+            <div className="mb-3">
+              <div className="flex rounded-lg bg-primary-100/50 p-0.5">
                 {(['compact', 'normal', 'large'] as const).map((size) => {
                   const currentBase = data.template_id.replace(/_compact|_large/, '');
                   const currentSize = data.template_id.includes('_compact') ? 'compact'
@@ -1071,10 +1133,10 @@ function App() {
                         const newId = size === 'normal' ? currentBase : `${currentBase}_${size}`;
                         setData((prev) => ({ ...prev, template_id: newId as TemplateId }));
                       }}
-                      className={`flex-1 py-2 text-xs font-medium transition-all ${
+                      className={`flex-1 py-1.5 text-xs font-medium rounded-md transition-all ${
                         isSelected
-                          ? 'bg-brand text-white'
-                          : 'bg-surface-0 text-primary-600 hover:bg-primary-50'
+                          ? 'bg-surface-0 text-primary-900 shadow-sm'
+                          : 'text-primary-500 hover:text-primary-700'
                       }`}
                     >
                       {size === 'compact' ? 'Compact' : size === 'normal' ? 'Normal' : 'Large'}
@@ -1100,13 +1162,13 @@ function App() {
                       const newId = `${template.id}${currentSizeSuffix}` as TemplateId;
                       setData((prev) => ({ ...prev, template_id: newId }));
                     }}
-                    className={`w-full text-left rounded-lg overflow-hidden border-2 transition-all ${
+                    className={`w-full text-left rounded-xl overflow-hidden transition-all ${
                       isSelected
-                        ? 'border-brand ring-2 ring-brand/20'
-                        : 'border-primary-200 hover:border-primary-300'
+                        ? 'ring-2 ring-brand ring-offset-2 ring-offset-surface-50'
+                        : 'ring-1 ring-primary-100 hover:ring-primary-200'
                     }`}
                   >
-                    <div className="bg-primary-50">
+                    <div className="bg-white">
                       <img
                         src={imgSrc}
                         alt={template.name}
@@ -1119,8 +1181,12 @@ function App() {
                         }}
                       />
                     </div>
-                    <div className="p-1.5 bg-surface-0 border-t border-primary-100">
-                      <p className="text-xs font-medium text-primary-900 text-center">{template.name}</p>
+                    <div className={`p-1.5 border-t transition-colors ${
+                      isSelected ? 'bg-brand/5 border-brand/10' : 'bg-surface-0 border-primary-50'
+                    }`}>
+                      <p className={`text-xs font-medium text-center ${
+                        isSelected ? 'text-brand' : 'text-primary-700'
+                      }`}>{template.name}</p>
                     </div>
                   </button>
                 );
@@ -1141,30 +1207,32 @@ function App() {
 
       {/* Resume List Modal */}
       {showResumeList && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-          <div className="bg-surface-0 rounded-2xl shadow-elevated w-full max-w-lg max-h-[80vh] overflow-hidden">
-            <div className="p-4 border-b border-primary-100 flex items-center justify-between">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-primary-950/50 backdrop-blur-sm p-4">
+          <div className="bg-surface-0 rounded-2xl shadow-xl border border-primary-100/30 w-full max-w-lg max-h-[80vh] overflow-hidden animate-fade-in">
+            <div className="px-5 py-4 border-b border-primary-100/50 flex items-center justify-between">
               <h2 className="text-lg font-semibold text-primary-900">{t('resumes.myResumes')}</h2>
               <button
                 onClick={() => setShowResumeList(false)}
-                className="p-2 text-primary-500 hover:text-primary-700 hover:bg-primary-100 rounded-lg transition-colors"
+                className="p-1.5 text-primary-400 hover:text-primary-600 hover:bg-primary-100 rounded-lg transition-colors"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
-            <div className="p-4 overflow-y-auto max-h-[60vh]">
+            <div className="p-5 overflow-y-auto max-h-[60vh]">
               <button
                 onClick={handleNewResume}
-                className="btn-brand w-full mb-4"
+                className="btn-brand w-full mb-5"
               >
                 <Plus className="w-4 h-4" />
                 {t('resumes.createNew')}
               </button>
 
               {savedResumes.length === 0 ? (
-                <div className="text-center py-8">
-                  <FolderOpen className="w-12 h-12 text-primary-300 mx-auto mb-3" />
-                  <p className="text-primary-500">{t('resumes.noResumes')}</p>
+                <div className="text-center py-10">
+                  <div className="w-14 h-14 bg-primary-50 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                    <FolderOpen className="w-7 h-7 text-primary-400" />
+                  </div>
+                  <p className="text-primary-600 font-medium">{t('resumes.noResumes')}</p>
                   <p className="text-sm text-primary-400 mt-1">{t('resumes.noResumesHint')}</p>
                 </div>
               ) : (
@@ -1172,18 +1240,25 @@ function App() {
                   {savedResumes.map((resume) => (
                     <div
                       key={resume.id}
-                      className={`p-3 rounded-lg border transition-colors cursor-pointer ${
+                      className={`group p-4 rounded-xl border transition-all cursor-pointer ${
                         currentResumeId === resume.id
-                          ? 'border-brand bg-brand/5'
-                          : 'border-primary-200 hover:border-primary-300 hover:bg-primary-50'
+                          ? 'border-brand/30 bg-brand/5 shadow-sm'
+                          : 'border-primary-100 hover:border-primary-200 hover:bg-primary-50/50 hover:shadow-sm'
                       }`}
                       onClick={() => handleOpenResume(resume)}
                     >
-                      <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 ${
+                          currentResumeId === resume.id ? 'bg-brand/10' : 'bg-primary-100'
+                        }`}>
+                          <FileText className={`w-5 h-5 ${
+                            currentResumeId === resume.id ? 'text-brand' : 'text-primary-500'
+                          }`} />
+                        </div>
                         <div className="flex-1 min-w-0">
                           <p className="font-medium text-primary-900 truncate">{resume.name}</p>
                           {resume.created_at && (
-                            <p className="text-xs text-primary-500 mt-0.5">
+                            <p className="text-xs text-primary-400 mt-0.5">
                               {new Date(resume.created_at).toLocaleDateString()}
                             </p>
                           )}
@@ -1193,9 +1268,9 @@ function App() {
                             e.stopPropagation();
                             handleDeleteResume(resume.id);
                           }}
-                          className="p-2 text-error-500 hover:bg-error-50 rounded-lg transition-colors"
+                          className="p-2 text-primary-400 hover:text-error-600 hover:bg-error-50 rounded-lg transition-colors opacity-0 group-hover:opacity-100"
                         >
-                          <X className="w-4 h-4" />
+                          <Trash2 className="w-4 h-4" />
                         </button>
                       </div>
                     </div>
@@ -1209,20 +1284,20 @@ function App() {
 
       {/* Save Modal */}
       {showSaveModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-          <div className="bg-surface-0 rounded-2xl shadow-elevated w-full max-w-md">
-            <div className="p-4 border-b border-primary-100 flex items-center justify-between">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-primary-950/50 backdrop-blur-sm p-4">
+          <div className="bg-surface-0 rounded-2xl shadow-xl border border-primary-100/30 w-full max-w-md animate-fade-in">
+            <div className="px-5 py-4 border-b border-primary-100/50 flex items-center justify-between">
               <h2 className="text-lg font-semibold text-primary-900">{t('resumes.saveAs')}</h2>
               <button
                 onClick={() => setShowSaveModal(false)}
-                className="p-2 text-primary-500 hover:text-primary-700 hover:bg-primary-100 rounded-lg transition-colors"
+                className="p-1.5 text-primary-400 hover:text-primary-600 hover:bg-primary-100 rounded-lg transition-colors"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
-            <div className="p-4 space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-primary-700 mb-1">
+            <div className="p-5 space-y-5">
+              <div className="space-y-1.5">
+                <label className="block text-sm font-medium text-primary-700">
                   {t('resumes.resumeName')}
                 </label>
                 <input
@@ -1230,10 +1305,11 @@ function App() {
                   value={resumeName}
                   onChange={(e) => setResumeName(e.target.value)}
                   placeholder={t('resumes.resumeNamePlaceholder')}
-                  className="input-field"
+                  className="input"
+                  autoFocus
                 />
               </div>
-              <div className="flex gap-3">
+              <div className="flex gap-3 pt-1">
                 <button
                   onClick={() => setShowSaveModal(false)}
                   className="btn-secondary flex-1"
@@ -1261,7 +1337,7 @@ function App() {
       {/* Mobile Preview Button - Fixed at bottom */}
       <button
         onClick={() => setShowMobilePreview(true)}
-        className="lg:hidden fixed bottom-4 right-4 z-40 btn-brand shadow-elevated rounded-full p-4"
+        className="lg:hidden fixed bottom-5 right-5 z-40 bg-brand text-white shadow-xl shadow-brand/30 rounded-full p-4 hover:bg-brand-hover active:scale-95 transition-all"
         aria-label={t('common.preview')}
       >
         <Eye className="w-5 h-5" />
@@ -1271,11 +1347,11 @@ function App() {
       {showMobilePreview && (
         <div className="lg:hidden fixed inset-0 z-50 bg-surface-50">
           {/* Header */}
-          <div className="sticky top-0 bg-surface-0 border-b border-primary-100 px-4 py-3 flex items-center justify-between">
+          <div className="sticky top-0 bg-surface-0/80 backdrop-blur-xl border-b border-primary-100/50 px-4 py-3 flex items-center justify-between">
             <h2 className="font-semibold text-primary-900">{t('common.preview')}</h2>
             <button
               onClick={() => setShowMobilePreview(false)}
-              className="p-2 text-primary-500 hover:text-primary-700 hover:bg-primary-100 rounded-lg transition-colors"
+              className="p-1.5 text-primary-400 hover:text-primary-600 hover:bg-primary-100 rounded-lg transition-colors"
             >
               <X className="w-5 h-5" />
             </button>
@@ -1287,11 +1363,11 @@ function App() {
 
             {/* Template Selector in mobile */}
             <div className="mt-6">
-              <h3 className="text-lg font-semibold text-primary-900 mb-4">{t('sections.templates')}</h3>
+              <h3 className="text-base font-semibold text-primary-900 mb-3">{t('sections.templates')}</h3>
 
               {/* Size selector */}
-              <div className="mb-4">
-                <div className="flex rounded-lg border border-primary-200 overflow-hidden">
+              <div className="mb-3">
+                <div className="flex rounded-lg bg-primary-100/50 p-0.5">
                   {(['compact', 'normal', 'large'] as const).map((size) => {
                     const currentBase = data.template_id.replace(/_compact|_large/, '');
                     const currentSize = data.template_id.includes('_compact') ? 'compact'
@@ -1304,10 +1380,10 @@ function App() {
                           const newId = size === 'normal' ? currentBase : `${currentBase}_${size}`;
                           setData((prev) => ({ ...prev, template_id: newId as TemplateId }));
                         }}
-                        className={`flex-1 py-2.5 text-sm font-medium transition-all ${
+                        className={`flex-1 py-2 text-sm font-medium rounded-md transition-all ${
                           isSelected
-                            ? 'bg-brand text-white'
-                            : 'bg-surface-0 text-primary-600 hover:bg-primary-50'
+                            ? 'bg-surface-0 text-primary-900 shadow-sm'
+                            : 'text-primary-500'
                         }`}
                       >
                         {size === 'compact' ? 'Compact' : size === 'normal' ? 'Normal' : 'Large'}
@@ -1333,13 +1409,13 @@ function App() {
                         const newId = `${template.id}${currentSizeSuffix}` as TemplateId;
                         setData((prev) => ({ ...prev, template_id: newId }));
                       }}
-                      className={`w-full text-left rounded-lg overflow-hidden border-2 transition-all active:scale-[0.98] ${
+                      className={`w-full text-left rounded-xl overflow-hidden transition-all active:scale-[0.98] ${
                         isSelected
-                          ? 'border-brand ring-2 ring-brand/20'
-                          : 'border-primary-200'
+                          ? 'ring-2 ring-brand ring-offset-2 ring-offset-surface-50'
+                          : 'ring-1 ring-primary-100'
                       }`}
                     >
-                      <div className="bg-primary-50">
+                      <div className="bg-white">
                         <img
                           src={imgSrc}
                           alt={template.name}
@@ -1352,8 +1428,12 @@ function App() {
                           }}
                         />
                       </div>
-                      <div className="p-1.5 bg-surface-0 border-t border-primary-100">
-                        <p className="text-xs font-medium text-primary-900 text-center">{template.name}</p>
+                      <div className={`p-1.5 border-t transition-colors ${
+                        isSelected ? 'bg-brand/5 border-brand/10' : 'bg-surface-0 border-primary-50'
+                      }`}>
+                        <p className={`text-xs font-medium text-center ${
+                          isSelected ? 'text-brand' : 'text-primary-700'
+                        }`}>{template.name}</p>
                       </div>
                     </button>
                   );
@@ -1377,12 +1457,12 @@ function FeatureCard({
   description: string;
 }) {
   return (
-    <div className="card p-4 sm:p-6">
-      <div className="w-10 h-10 sm:w-12 sm:h-12 bg-primary-100 rounded-xl flex items-center justify-center mb-3 sm:mb-4 text-primary-600">
+    <div className="p-5 sm:p-6 rounded-2xl bg-surface-0 border border-primary-100/50 hover:border-primary-200/50 hover:shadow-soft transition-all">
+      <div className="w-10 h-10 bg-brand/10 rounded-xl flex items-center justify-center mb-4 text-brand">
         {icon}
       </div>
-      <h3 className="text-base sm:text-lg font-semibold text-primary-900 mb-2">{title}</h3>
-      <p className="text-sm sm:text-base text-primary-600">{description}</p>
+      <h3 className="text-base font-semibold text-primary-900 mb-1.5">{title}</h3>
+      <p className="text-sm text-primary-500 leading-relaxed">{description}</p>
     </div>
   );
 }

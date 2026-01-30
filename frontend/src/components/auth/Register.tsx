@@ -81,16 +81,16 @@ export default function Register({ onSwitchToLogin }: RegisterProps) {
 
   if (success) {
     return (
-      <div className="w-full text-center">
-        <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-success-500 to-success-600 rounded-full shadow-lg shadow-success-500/30 mb-6 animate-bounce-in">
-          <CheckCircle className="w-10 h-10 text-white" />
+      <div className="w-full text-center py-4">
+        <div className="inline-flex items-center justify-center w-14 h-14 bg-success-100 rounded-2xl mb-5 animate-bounce-in">
+          <CheckCircle className="w-7 h-7 text-success-600" />
         </div>
-        <h2 className="text-2xl sm:text-3xl font-bold text-primary-900 mb-3">
+        <h2 className="text-xl font-semibold text-primary-900 mb-2">
           {t('auth.register.success')}
         </h2>
-        <p className="text-primary-600 mb-6">{t('auth.register.successMessage')}</p>
+        <p className="text-sm text-primary-500 mb-5">{t('auth.register.successMessage')}</p>
         <div className="flex items-center justify-center gap-2 text-brand">
-          <Loader2 className="w-5 h-5 animate-spin" />
+          <Loader2 className="w-4 h-4 animate-spin" />
           <span className="text-sm font-medium">{t('auth.loggingIn')}</span>
         </div>
       </div>
@@ -101,51 +101,42 @@ export default function Register({ onSwitchToLogin }: RegisterProps) {
     <div className="w-full">
       {/* Header */}
       <div className="text-center mb-8">
-        <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-brand to-brand/80 rounded-2xl shadow-lg shadow-brand/25 mb-6">
-          <UserPlus className="w-8 h-8 text-white" />
+        <div className="inline-flex items-center justify-center w-14 h-14 bg-brand/10 rounded-2xl mb-5">
+          <UserPlus className="w-7 h-7 text-brand" />
         </div>
-        <h2 className="text-2xl sm:text-3xl font-bold text-primary-900 mb-2">
+        <h2 className="text-2xl font-semibold text-primary-900 mb-1.5 tracking-tight">
           {t('auth.register.title')}
         </h2>
-        <p className="text-primary-500">
+        <p className="text-sm text-primary-500">
           {t('auth.register.subtitle')}
         </p>
       </div>
 
       {/* Error message */}
       {error && (
-        <div className="mb-6 p-4 bg-error-50 border border-error-200 rounded-xl flex items-start gap-3 animate-shake">
-          <div className="w-10 h-10 bg-error-100 rounded-lg flex items-center justify-center flex-shrink-0">
-            <AlertCircle className="w-5 h-5 text-error-600" />
+        <div className="mb-6 p-3.5 bg-error-50/80 border border-error-200/50 rounded-xl flex items-center gap-3 animate-shake">
+          <div className="w-9 h-9 bg-error-100 rounded-lg flex items-center justify-center flex-shrink-0">
+            <AlertCircle className="w-4.5 h-4.5 text-error-600" />
           </div>
-          <div className="flex-1 pt-1">
-            <p className="text-sm font-medium text-error-800">{t('auth.errors.title') || 'Erreur'}</p>
-            <p className="text-sm text-error-600 mt-0.5">{error}</p>
+          <div className="flex-1 min-w-0">
+            <p className="text-sm text-error-700 truncate">{error}</p>
           </div>
         </div>
       )}
 
       {/* Form */}
-      <form onSubmit={handleSubmit} className="space-y-5">
+      <form onSubmit={handleSubmit} className="space-y-4">
         {/* Email field */}
-        <div>
+        <div className="space-y-1.5">
           <label
             htmlFor="register-email"
-            className={`block text-sm font-medium mb-2 transition-colors ${
-              focusedField === 'email' ? 'text-brand' : 'text-primary-700'
-            }`}
+            className="block text-sm font-medium text-primary-700"
           >
             {t('auth.email')}
           </label>
-          <div
-            className={`relative rounded-xl transition-all duration-200 ${
-              focusedField === 'email'
-                ? 'ring-2 ring-brand ring-offset-2 ring-offset-surface-50 dark:ring-offset-surface-100'
-                : ''
-            }`}
-          >
-            <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-              <Mail className={`w-5 h-5 transition-colors ${
+          <div className="relative">
+            <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+              <Mail className={`w-[18px] h-[18px] transition-colors duration-200 ${
                 focusedField === 'email' ? 'text-brand' : 'text-primary-400'
               }`} />
             </div>
@@ -156,7 +147,7 @@ export default function Register({ onSwitchToLogin }: RegisterProps) {
               onChange={(e) => setEmail(e.target.value)}
               onFocus={() => setFocusedField('email')}
               onBlur={() => setFocusedField(null)}
-              className="w-full pl-12 pr-4 py-3.5 bg-surface-0 border border-primary-200 rounded-xl text-primary-900 placeholder-primary-400 focus:outline-none focus:border-brand transition-colors"
+              className="w-full pl-11 pr-4 py-3 bg-surface-0 border border-primary-200/80 rounded-xl text-primary-900 placeholder-primary-400 transition-all duration-200 focus:outline-none focus:border-brand/50 focus:ring-4 focus:ring-brand/10"
               placeholder={t('auth.emailPlaceholder')}
               required
               autoComplete="email"
@@ -165,24 +156,16 @@ export default function Register({ onSwitchToLogin }: RegisterProps) {
         </div>
 
         {/* Password field */}
-        <div>
+        <div className="space-y-1.5">
           <label
             htmlFor="register-password"
-            className={`block text-sm font-medium mb-2 transition-colors ${
-              focusedField === 'password' ? 'text-brand' : 'text-primary-700'
-            }`}
+            className="block text-sm font-medium text-primary-700"
           >
             {t('auth.password')}
           </label>
-          <div
-            className={`relative rounded-xl transition-all duration-200 ${
-              focusedField === 'password'
-                ? 'ring-2 ring-brand ring-offset-2 ring-offset-surface-50 dark:ring-offset-surface-100'
-                : ''
-            }`}
-          >
-            <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-              <Lock className={`w-5 h-5 transition-colors ${
+          <div className="relative">
+            <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+              <Lock className={`w-[18px] h-[18px] transition-colors duration-200 ${
                 focusedField === 'password' ? 'text-brand' : 'text-primary-400'
               }`} />
             </div>
@@ -193,7 +176,7 @@ export default function Register({ onSwitchToLogin }: RegisterProps) {
               onChange={(e) => setPassword(e.target.value)}
               onFocus={() => setFocusedField('password')}
               onBlur={() => setFocusedField(null)}
-              className="w-full pl-12 pr-12 py-3.5 bg-surface-0 border border-primary-200 rounded-xl text-primary-900 placeholder-primary-400 focus:outline-none focus:border-brand transition-colors"
+              className="w-full pl-11 pr-11 py-3 bg-surface-0 border border-primary-200/80 rounded-xl text-primary-900 placeholder-primary-400 transition-all duration-200 focus:outline-none focus:border-brand/50 focus:ring-4 focus:ring-brand/10"
               placeholder={t('auth.passwordPlaceholder')}
               required
               autoComplete="new-password"
@@ -201,16 +184,16 @@ export default function Register({ onSwitchToLogin }: RegisterProps) {
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute inset-y-0 right-0 pr-4 flex items-center text-primary-400 hover:text-primary-600 transition-colors"
+              className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-primary-400 hover:text-primary-600 transition-colors"
             >
-              {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+              {showPassword ? <EyeOff className="w-[18px] h-[18px]" /> : <Eye className="w-[18px] h-[18px]" />}
             </button>
           </div>
 
           {/* Password requirements */}
           {password && (
-            <div className="mt-3 p-3 bg-primary-50 dark:bg-primary-900/20 rounded-lg">
-              <div className="grid grid-cols-2 gap-2">
+            <div className="mt-2.5 p-2.5 bg-primary-50/80 dark:bg-primary-900/20 rounded-lg border border-primary-100/50">
+              <div className="grid grid-cols-2 gap-1.5">
                 <PasswordCheck passed={passwordChecks.length} label={t('auth.passwordRules.length')} />
                 <PasswordCheck passed={passwordChecks.uppercase} label={t('auth.passwordRules.uppercase')} />
                 <PasswordCheck passed={passwordChecks.lowercase} label={t('auth.passwordRules.lowercase')} />
@@ -221,24 +204,16 @@ export default function Register({ onSwitchToLogin }: RegisterProps) {
         </div>
 
         {/* Confirm password field */}
-        <div>
+        <div className="space-y-1.5">
           <label
             htmlFor="register-confirm-password"
-            className={`block text-sm font-medium mb-2 transition-colors ${
-              focusedField === 'confirmPassword' ? 'text-brand' : 'text-primary-700'
-            }`}
+            className="block text-sm font-medium text-primary-700"
           >
             {t('auth.confirmPassword')}
           </label>
-          <div
-            className={`relative rounded-xl transition-all duration-200 ${
-              focusedField === 'confirmPassword'
-                ? 'ring-2 ring-brand ring-offset-2 ring-offset-surface-50 dark:ring-offset-surface-100'
-                : ''
-            }`}
-          >
-            <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-              <Lock className={`w-5 h-5 transition-colors ${
+          <div className="relative">
+            <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+              <Lock className={`w-[18px] h-[18px] transition-colors duration-200 ${
                 focusedField === 'confirmPassword' ? 'text-brand' : 'text-primary-400'
               }`} />
             </div>
@@ -249,12 +224,12 @@ export default function Register({ onSwitchToLogin }: RegisterProps) {
               onChange={(e) => setConfirmPassword(e.target.value)}
               onFocus={() => setFocusedField('confirmPassword')}
               onBlur={() => setFocusedField(null)}
-              className={`w-full pl-12 pr-12 py-3.5 bg-surface-0 border rounded-xl text-primary-900 placeholder-primary-400 focus:outline-none transition-colors ${
+              className={`w-full pl-11 pr-11 py-3 bg-surface-0 border rounded-xl text-primary-900 placeholder-primary-400 transition-all duration-200 focus:outline-none focus:ring-4 ${
                 confirmPassword && !passwordsMatch
-                  ? 'border-error-300 focus:border-error-500'
+                  ? 'border-error-300 focus:border-error-400 focus:ring-error-100'
                   : confirmPassword && passwordsMatch
-                  ? 'border-success-300 focus:border-success-500'
-                  : 'border-primary-200 focus:border-brand'
+                  ? 'border-success-300 focus:border-success-400 focus:ring-success-100'
+                  : 'border-primary-200/80 focus:border-brand/50 focus:ring-brand/10'
               }`}
               placeholder={t('auth.confirmPasswordPlaceholder')}
               required
@@ -263,20 +238,20 @@ export default function Register({ onSwitchToLogin }: RegisterProps) {
             <button
               type="button"
               onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-              className="absolute inset-y-0 right-0 pr-4 flex items-center text-primary-400 hover:text-primary-600 transition-colors"
+              className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-primary-400 hover:text-primary-600 transition-colors"
             >
-              {showConfirmPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+              {showConfirmPassword ? <EyeOff className="w-[18px] h-[18px]" /> : <Eye className="w-[18px] h-[18px]" />}
             </button>
           </div>
           {confirmPassword && !passwordsMatch && (
-            <p className="mt-2 text-sm text-error-600 flex items-center gap-1">
-              <AlertCircle className="w-4 h-4" />
+            <p className="mt-1.5 text-xs text-error-600 flex items-center gap-1">
+              <AlertCircle className="w-3.5 h-3.5" />
               {t('auth.errors.passwordMismatch')}
             </p>
           )}
           {confirmPassword && passwordsMatch && (
-            <p className="mt-2 text-sm text-success-600 flex items-center gap-1">
-              <CheckCircle className="w-4 h-4" />
+            <p className="mt-1.5 text-xs text-success-600 flex items-center gap-1">
+              <CheckCircle className="w-3.5 h-3.5" />
               {t('auth.passwordsMatch') || 'Les mots de passe correspondent'}
             </p>
           )}
@@ -286,29 +261,26 @@ export default function Register({ onSwitchToLogin }: RegisterProps) {
         <button
           type="submit"
           disabled={loading || !allChecksValid}
-          className="relative w-full py-4 px-6 bg-gradient-to-r from-brand to-brand/90 hover:from-brand/90 hover:to-brand text-white font-semibold rounded-xl shadow-lg shadow-brand/25 hover:shadow-xl hover:shadow-brand/30 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none disabled:from-primary-400 disabled:to-primary-400 flex items-center justify-center gap-2 group"
+          className="w-full mt-2 py-3 px-6 bg-brand hover:bg-brand-hover text-white font-medium rounded-xl shadow-sm shadow-brand/20 hover:shadow-md hover:shadow-brand/25 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none disabled:bg-primary-300 flex items-center justify-center gap-2"
         >
           {loading ? (
             <>
-              <Loader2 className="w-5 h-5 animate-spin" />
+              <Loader2 className="w-[18px] h-[18px] animate-spin" />
               <span>{t('auth.registering')}</span>
             </>
           ) : (
-            <>
-              <span>{t('auth.register.button')}</span>
-              <UserPlus className="w-5 h-5 group-hover:scale-110 transition-transform" />
-            </>
+            <span>{t('auth.register.button')}</span>
           )}
         </button>
       </form>
 
       {/* Switch to login */}
-      <div className="mt-8 text-center">
-        <p className="text-sm text-primary-600">
+      <div className="mt-6 text-center">
+        <p className="text-sm text-primary-500">
           {t('auth.hasAccount')}{' '}
           <button
             onClick={onSwitchToLogin}
-            className="font-semibold text-brand hover:text-brand/80 transition-colors hover:underline underline-offset-2"
+            className="font-medium text-brand hover:text-brand-hover transition-colors"
           >
             {t('auth.login.link')}
           </button>
@@ -320,13 +292,13 @@ export default function Register({ onSwitchToLogin }: RegisterProps) {
 
 function PasswordCheck({ passed, label }: { passed: boolean; label: string }) {
   return (
-    <div className={`flex items-center gap-2 text-xs transition-all duration-200 ${
+    <div className={`flex items-center gap-1.5 text-[11px] transition-all duration-200 ${
       passed ? 'text-success-600' : 'text-primary-400'
     }`}>
-      <div className={`w-4 h-4 rounded-full flex items-center justify-center transition-all duration-200 ${
-        passed ? 'bg-success-100 text-success-600' : 'bg-primary-200 text-primary-400'
+      <div className={`w-3.5 h-3.5 rounded-full flex items-center justify-center transition-all duration-200 ${
+        passed ? 'bg-success-500 text-white' : 'bg-primary-200'
       }`}>
-        <Check className="w-3 h-3" />
+        {passed && <Check className="w-2.5 h-2.5" />}
       </div>
       <span>{label}</span>
     </div>
