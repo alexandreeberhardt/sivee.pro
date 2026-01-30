@@ -82,7 +82,7 @@ function App() {
   // Resume management state
   const [savedResumes, setSavedResumes] = useState<SavedResume[]>([]);
   const [currentResumeId, setCurrentResumeId] = useState<number | null>(null);
-  const [showResumeList, setShowResumeList] = useState(false);
+  const [showResumesPage, setShowResumesPage] = useState(false);
   const [saveLoading, setSaveLoading] = useState(false);
   const [showSaveModal, setShowSaveModal] = useState(false);
   const [resumeName, setResumeName] = useState('');
@@ -201,7 +201,7 @@ function App() {
     if (resume.json_content) {
       setData(resume.json_content);
       setCurrentResumeId(resume.id);
-      setShowResumeList(false);
+      setShowResumesPage(false);
       setShowLanding(false);
       setHasImported(true);
       setEditorStep(999);
@@ -225,7 +225,7 @@ function App() {
   const handleNewResume = () => {
     setData(getEmptyResumeData(getTranslatedSectionTitle));
     setCurrentResumeId(null);
-    setShowResumeList(false);
+    setShowResumesPage(false);
     setShowLanding(false);
     setHasImported(false);
     setEditorStep(0);
@@ -415,7 +415,10 @@ function App() {
               <ThemeToggle />
               <LanguageSwitcher />
               <button
-                onClick={() => setShowResumeList(true)}
+                onClick={() => {
+                  setShowLanding(false);
+                  setShowResumesPage(true);
+                }}
                 className="btn-brand text-sm sm:text-base px-3 sm:px-4 py-2"
               >
                 <FolderOpen className="w-4 h-4" />
@@ -595,82 +598,79 @@ function App() {
           </div>
         </footer>
 
-        {/* Resume List Modal - Landing Page */}
-        {showResumeList && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-primary-950/50 backdrop-blur-sm p-4">
-            <div className="bg-surface-0 rounded-2xl shadow-xl border border-primary-100/30 w-full max-w-lg max-h-[80vh] overflow-hidden animate-fade-in">
-              <div className="px-5 py-4 border-b border-primary-100/50 flex items-center justify-between">
-                <h2 className="text-lg font-semibold text-primary-900">{t('resumes.myResumes')}</h2>
-                <button
-                  onClick={() => setShowResumeList(false)}
-                  className="p-1.5 text-primary-400 hover:text-primary-600 hover:bg-primary-100 rounded-lg transition-colors"
-                >
-                  <X className="w-5 h-5" />
-                </button>
-              </div>
-              <div className="p-5 overflow-y-auto max-h-[60vh]">
-                <button
-                  onClick={handleNewResume}
-                  className="btn-brand w-full mb-5"
-                >
-                  <Plus className="w-4 h-4" />
-                  {t('resumes.createNew')}
-                </button>
+      </div>
+    );
+  }
 
-                {savedResumes.length === 0 ? (
-                  <div className="text-center py-10">
-                    <div className="w-14 h-14 bg-primary-50 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                      <FolderOpen className="w-7 h-7 text-primary-400" />
-                    </div>
-                    <p className="text-primary-600 font-medium">{t('resumes.noResumes')}</p>
-                    <p className="text-sm text-primary-400 mt-1">{t('resumes.noResumesHint')}</p>
-                  </div>
-                ) : (
-                  <div className="space-y-2">
-                    {savedResumes.map((resume) => (
-                      <div
-                        key={resume.id}
-                        className={`group p-4 rounded-xl border transition-all cursor-pointer ${
-                          currentResumeId === resume.id
-                            ? 'border-brand/30 bg-brand/5 shadow-sm'
-                            : 'border-primary-100 hover:border-primary-200 hover:bg-primary-50/50 hover:shadow-sm'
-                        }`}
-                        onClick={() => handleOpenResume(resume)}
-                      >
-                        <div className="flex items-center gap-3">
-                          <div className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 ${
-                            currentResumeId === resume.id ? 'bg-brand/10' : 'bg-primary-100'
-                          }`}>
-                            <FileText className={`w-5 h-5 ${
-                              currentResumeId === resume.id ? 'text-brand' : 'text-primary-500'
-                            }`} />
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <p className="font-medium text-primary-900 truncate">{resume.name}</p>
-                            {resume.created_at && (
-                              <p className="text-xs text-primary-400 mt-0.5">
-                                {new Date(resume.created_at).toLocaleDateString()}
-                              </p>
-                            )}
-                          </div>
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleDeleteResume(resume.id);
-                            }}
-                            className="p-2 text-primary-400 hover:text-error-600 hover:bg-error-50 rounded-lg transition-colors opacity-0 group-hover:opacity-100"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </button>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
+  // Resumes Page
+  if (showResumesPage) {
+    return (
+      <div className="min-h-screen bg-surface-50">
+        {/* Header */}
+        <header className="bg-surface-0/80 backdrop-blur-xl border-b border-primary-100/50 sticky top-0 z-50">
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between">
+            <button
+              onClick={() => {
+                setShowResumesPage(false);
+                setShowLanding(true);
+              }}
+              className="flex items-center gap-2 hover:opacity-80 transition-opacity"
+            >
+              <FileText className="w-6 h-6 text-primary-900" />
+              <span className="text-base font-semibold text-primary-900">{t('landing.appName')}</span>
+            </button>
+            <div className="flex items-center gap-2">
+              <ThemeToggle />
+              <LanguageSwitcher />
             </div>
           </div>
-        )}
+        </header>
+
+        {/* Content */}
+        <main className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
+          <div className="flex items-center justify-between mb-8">
+            <div>
+              <h1 className="text-2xl font-semibold text-primary-900">{t('resumes.myResumes')}</h1>
+              <p className="text-sm text-primary-500 mt-1">{t('resumes.pageSubtitle') || 'Gérez et accédez à tous vos CV'}</p>
+            </div>
+            <button
+              onClick={handleNewResume}
+              className="btn-brand"
+            >
+              <Plus className="w-4 h-4" />
+              {t('resumes.createNew')}
+            </button>
+          </div>
+
+          {savedResumes.length === 0 ? (
+            <div className="text-center py-20">
+              <div className="w-20 h-20 bg-primary-100 rounded-3xl flex items-center justify-center mx-auto mb-6">
+                <FolderOpen className="w-10 h-10 text-primary-400" />
+              </div>
+              <h2 className="text-xl font-semibold text-primary-900 mb-2">{t('resumes.noResumes')}</h2>
+              <p className="text-primary-500 mb-6 max-w-md mx-auto">{t('resumes.noResumesHint')}</p>
+              <button
+                onClick={handleNewResume}
+                className="btn-brand"
+              >
+                <Plus className="w-4 h-4" />
+                {t('resumes.createNew')}
+              </button>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {savedResumes.map((resume) => (
+                <ResumeCard
+                  key={resume.id}
+                  resume={resume}
+                  isActive={currentResumeId === resume.id}
+                  onOpen={() => handleOpenResume(resume)}
+                  onDelete={() => handleDeleteResume(resume.id)}
+                />
+              ))}
+            </div>
+          )}
+        </main>
       </div>
     );
   }
@@ -699,7 +699,7 @@ function App() {
 
             {/* My Resumes */}
             <button
-              onClick={() => setShowResumeList(true)}
+              onClick={() => setShowResumesPage(true)}
               className="btn-ghost"
             >
               <FolderOpen className="w-4 h-4" />
@@ -803,7 +803,7 @@ function App() {
               {/* My Resumes */}
               <button
                 onClick={() => {
-                  setShowResumeList(true);
+                  setShowResumesPage(true);
                   setShowMobileMenu(false);
                 }}
                 className="w-full px-2 py-2.5 text-left text-sm text-primary-700 hover:bg-primary-50 rounded-lg flex items-center gap-3 transition-colors"
@@ -1214,83 +1214,6 @@ function App() {
         />
       )}
 
-      {/* Resume List Modal */}
-      {showResumeList && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-primary-950/50 backdrop-blur-sm p-4">
-          <div className="bg-surface-0 rounded-2xl shadow-xl border border-primary-100/30 w-full max-w-lg max-h-[80vh] overflow-hidden animate-fade-in">
-            <div className="px-5 py-4 border-b border-primary-100/50 flex items-center justify-between">
-              <h2 className="text-lg font-semibold text-primary-900">{t('resumes.myResumes')}</h2>
-              <button
-                onClick={() => setShowResumeList(false)}
-                className="p-1.5 text-primary-400 hover:text-primary-600 hover:bg-primary-100 rounded-lg transition-colors"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-            <div className="p-5 overflow-y-auto max-h-[60vh]">
-              <button
-                onClick={handleNewResume}
-                className="btn-brand w-full mb-5"
-              >
-                <Plus className="w-4 h-4" />
-                {t('resumes.createNew')}
-              </button>
-
-              {savedResumes.length === 0 ? (
-                <div className="text-center py-10">
-                  <div className="w-14 h-14 bg-primary-50 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                    <FolderOpen className="w-7 h-7 text-primary-400" />
-                  </div>
-                  <p className="text-primary-600 font-medium">{t('resumes.noResumes')}</p>
-                  <p className="text-sm text-primary-400 mt-1">{t('resumes.noResumesHint')}</p>
-                </div>
-              ) : (
-                <div className="space-y-2">
-                  {savedResumes.map((resume) => (
-                    <div
-                      key={resume.id}
-                      className={`group p-4 rounded-xl border transition-all cursor-pointer ${
-                        currentResumeId === resume.id
-                          ? 'border-brand/30 bg-brand/5 shadow-sm'
-                          : 'border-primary-100 hover:border-primary-200 hover:bg-primary-50/50 hover:shadow-sm'
-                      }`}
-                      onClick={() => handleOpenResume(resume)}
-                    >
-                      <div className="flex items-center gap-3">
-                        <div className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 ${
-                          currentResumeId === resume.id ? 'bg-brand/10' : 'bg-primary-100'
-                        }`}>
-                          <FileText className={`w-5 h-5 ${
-                            currentResumeId === resume.id ? 'text-brand' : 'text-primary-500'
-                          }`} />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="font-medium text-primary-900 truncate">{resume.name}</p>
-                          {resume.created_at && (
-                            <p className="text-xs text-primary-400 mt-0.5">
-                              {new Date(resume.created_at).toLocaleDateString()}
-                            </p>
-                          )}
-                        </div>
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleDeleteResume(resume.id);
-                          }}
-                          className="p-2 text-primary-400 hover:text-error-600 hover:bg-error-50 rounded-lg transition-colors opacity-0 group-hover:opacity-100"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-      )}
-
       {/* Save Modal */}
       {showSaveModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-primary-950/50 backdrop-blur-sm p-4">
@@ -1472,6 +1395,137 @@ function FeatureCard({
       </div>
       <h3 className="text-base font-semibold text-primary-900 mb-1.5">{title}</h3>
       <p className="text-sm text-primary-500 leading-relaxed">{description}</p>
+    </div>
+  );
+}
+
+function ResumeCard({
+  resume,
+  isActive,
+  onOpen,
+  onDelete,
+}: {
+  resume: SavedResume;
+  isActive: boolean;
+  onOpen: () => void;
+  onDelete: () => void;
+}) {
+  const { t } = useTranslation();
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+
+  // Generate preview on mount
+  useEffect(() => {
+    if (resume.json_content) {
+      generatePreview();
+    }
+  }, [resume.id]);
+
+  const generatePreview = async () => {
+    if (!resume.json_content) return;
+
+    setLoading(true);
+    try {
+      const response = await fetch(`${API_URL}/generate`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...resume.json_content, lang: 'fr' }),
+      });
+
+      if (response.ok) {
+        const blob = await response.blob();
+        const url = URL.createObjectURL(blob);
+        setPreviewUrl(url);
+      }
+    } catch (err) {
+      console.error('Failed to generate preview:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Cleanup URL on unmount
+  useEffect(() => {
+    return () => {
+      if (previewUrl) {
+        URL.revokeObjectURL(previewUrl);
+      }
+    };
+  }, [previewUrl]);
+
+  // Get template name from resume data
+  const templateId = resume.json_content?.template_id?.replace(/_compact|_large/, '') || 'harvard';
+  const personName = resume.json_content?.personal?.name || resume.name;
+
+  return (
+    <div
+      className={`group bg-surface-0 rounded-2xl border overflow-hidden transition-all cursor-pointer hover:shadow-lg ${
+        isActive
+          ? 'border-brand ring-2 ring-brand/20'
+          : 'border-primary-100 hover:border-primary-200'
+      }`}
+      onClick={onOpen}
+    >
+      {/* Preview */}
+      <div className="relative aspect-[210/297] bg-primary-50 overflow-hidden">
+        {loading ? (
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div className="w-8 h-8 rounded-full border-2 border-primary-200 border-t-brand animate-spin" />
+          </div>
+        ) : previewUrl ? (
+          <object
+            data={previewUrl}
+            type="application/pdf"
+            className="w-full h-full pointer-events-none"
+          >
+            <div className="w-full h-full flex items-center justify-center">
+              <FileText className="w-12 h-12 text-primary-300" />
+            </div>
+          </object>
+        ) : (
+          <div className="w-full h-full flex items-center justify-center">
+            <FileText className="w-12 h-12 text-primary-300" />
+          </div>
+        )}
+
+        {/* Hover overlay */}
+        <div className="absolute inset-0 bg-primary-900/0 group-hover:bg-primary-900/10 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100">
+          <div className="bg-white/95 backdrop-blur-sm rounded-lg px-4 py-2 shadow-lg border border-primary-100">
+            <span className="text-sm font-medium text-primary-700">{t('resumes.open') || 'Ouvrir'}</span>
+          </div>
+        </div>
+
+        {/* Delete button */}
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            onDelete();
+          }}
+          className="absolute top-2 right-2 p-2 bg-white/90 hover:bg-error-50 text-primary-400 hover:text-error-600 rounded-lg transition-all opacity-0 group-hover:opacity-100 shadow-sm"
+        >
+          <Trash2 className="w-4 h-4" />
+        </button>
+
+        {/* Active indicator */}
+        {isActive && (
+          <div className="absolute top-2 left-2 px-2 py-1 bg-brand text-white text-xs font-medium rounded-md">
+            {t('resumes.current') || 'Actuel'}
+          </div>
+        )}
+      </div>
+
+      {/* Info */}
+      <div className="p-4">
+        <h3 className="font-medium text-primary-900 truncate">{personName}</h3>
+        <div className="flex items-center justify-between mt-1.5">
+          <span className="text-xs text-primary-400 capitalize">{templateId}</span>
+          {resume.created_at && (
+            <span className="text-xs text-primary-400">
+              {new Date(resume.created_at).toLocaleDateString()}
+            </span>
+          )}
+        </div>
+      </div>
     </div>
   );
 }

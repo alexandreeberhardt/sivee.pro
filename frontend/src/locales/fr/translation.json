@@ -61,8 +61,10 @@
   },
   "resumes": {
     "myResumes": "Mes CV",
+    "pageSubtitle": "Gérez et accédez à tous vos CV",
     "noResumes": "Aucun CV sauvegardé",
     "noResumesHint": "Créez votre premier CV pour le retrouver ici",
+    "current": "Actuel",
     "createNew": "Nouveau CV",
     "lastModified": "Modifié le",
     "delete": "Supprimer",

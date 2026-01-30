@@ -61,8 +61,10 @@
   },
   "resumes": {
     "myResumes": "My Resumes",
+    "pageSubtitle": "Manage and access all your resumes",
     "noResumes": "No saved resumes",
     "noResumesHint": "Create your first resume to find it here",
+    "current": "Current",
     "createNew": "New Resume",
     "lastModified": "Modified on",
     "delete": "Delete",
