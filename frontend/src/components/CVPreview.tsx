@@ -248,26 +248,28 @@ export default function CVPreview({ data, debounceMs = 1000 }: CVPreviewProps) {
 
           {/* PDF Container with paper effect */}
           <div
-            className="relative max-w-4xl w-full max-h-[90vh]"
+            className="relative w-full h-full flex items-center justify-center overflow-auto"
             onClick={(e) => e.stopPropagation()}
           >
-            {/* Paper shadows */}
-            <div className="absolute inset-0 bg-black/10 rounded-xl translate-y-2 translate-x-1" />
-            <div className="absolute inset-0 bg-black/5 rounded-xl translate-y-4 translate-x-2" />
+            <div className="relative my-auto" style={{ width: 'min(90vw, calc(90vh * 210 / 297))', height: 'min(90vh, calc(90vw * 297 / 210))' }}>
+              {/* Paper shadows */}
+              <div className="absolute inset-0 bg-black/10 rounded-xl translate-y-2 translate-x-1" />
+              <div className="absolute inset-0 bg-black/5 rounded-xl translate-y-4 translate-x-2" />
 
-            {/* Main paper */}
-            <div className="relative bg-white rounded-xl shadow-2xl overflow-hidden aspect-[210/297]">
-              <object
-                data={pdfUrl}
-                type="application/pdf"
-                className="w-full h-full"
-              >
-                <iframe
-                  src={pdfUrl}
-                  className="w-full h-full border-0"
-                  title="CV Preview Fullscreen"
-                />
-              </object>
+              {/* Main paper */}
+              <div className="relative bg-white rounded-xl shadow-2xl overflow-hidden w-full h-full">
+                <object
+                  data={pdfUrl}
+                  type="application/pdf"
+                  className="w-full h-full"
+                >
+                  <iframe
+                    src={pdfUrl}
+                    className="w-full h-full border-0"
+                    title="CV Preview Fullscreen"
+                  />
+                </object>
+              </div>
             </div>
           </div>
         </div>,
