@@ -300,7 +300,7 @@ function App() {
 
     // Initialiser avec des données vides pour afficher progressivement
     const initialData: ResumeData = {
-      personal: { name: '', title: '', location: '', email: '', phone: '', github: '', github_url: '' },
+      personal: { name: '', title: '', location: '', email: '', phone: '', links: [] },
       sections: [],
       template_id: 'harvard',
     };

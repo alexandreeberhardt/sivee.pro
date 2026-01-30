@@ -127,10 +127,21 @@
     "emailPlaceholder": "jean@exemple.com",
     "phone": "Téléphone",
     "phonePlaceholder": "+33 6 12 34 56 78",
-    "github": "GitHub",
-    "githubPlaceholder": "username",
-    "githubUrl": "GitHub URL",
-    "githubUrlPlaceholder": "https://github.com/username"
+    "links": {
+      "title": "Liens professionnels",
+      "add": "Ajouter un lien",
+      "empty": "Aucun lien ajouté. Ajoutez LinkedIn, GitHub, Portfolio...",
+      "usernamePlaceholder": "Nom d'affichage",
+      "urlPlaceholder": "https://...",
+      "platforms": {
+        "linkedin": "LinkedIn",
+        "github": "GitHub",
+        "portfolio": "Portfolio",
+        "behance": "Behance",
+        "website": "Site personnel",
+        "other": "Autre"
+      }
+    }
   },
   "preview": {
     "title": "Aperçu",

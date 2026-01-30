@@ -45,15 +45,28 @@ export interface SavedResumeListResponse {
 
 // === Types de base pour les items ===
 
+export type PlatformType = 'linkedin' | 'github' | 'portfolio' | 'behance' | 'website' | 'other';
+
+export interface ProfessionalLink {
+  platform: PlatformType;
+  username: string;
+  url: string;
+}
+
 export interface PersonalInfo {
   name: string;
   title: string;
   location: string;
   email: string;
   phone: string;
-  github: string;
-  github_url: string;
+  links: ProfessionalLink[];
 }
+
+export const createEmptyLink = (): ProfessionalLink => ({
+  platform: 'linkedin',
+  username: '',
+  url: '',
+});
 
 export interface EducationItem {
   school: string;
@@ -287,8 +300,7 @@ export const emptyResumeData: ResumeData = {
     location: '',
     email: '',
     phone: '',
-    github: '',
-    github_url: '',
+    links: [],
   },
   sections: [],
   template_id: 'harvard',
@@ -304,8 +316,7 @@ export const getEmptyResumeData = (
     location: '',
     email: '',
     phone: '',
-    github: '',
-    github_url: '',
+    links: [],
   },
   sections: [
     {
