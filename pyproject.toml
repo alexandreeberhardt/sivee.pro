@@ -13,4 +13,9 @@ dependencies = [
     "openai>=1.0.0",
     "pypdf>=5.0.0",
     "python-dotenv>=1.0.0",
+    "sqlalchemy>=2.0.46",
+    "psycopg2-binary>=2.9.11",
+    "alembic>=1.18.3",
+    "boto3>=1.42.38",
+    "gunicorn>=24.1.1",
 ]

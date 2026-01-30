@@ -433,6 +433,17 @@ async def health():
     return {"status": "ok", "message": "CV Generator API v2"}
 
 
+@app.get("/health_db")
+async def health_db():
+    """Endpoint de santé pour vérifier la connexion à la base de données."""
+    from database.db_config import check_db_connection
+
+    if check_db_connection():
+        return {"status": "ok", "database": "connected"}
+    else:
+        raise HTTPException(status_code=503, detail="Database connection failed")
+
+
 # Servir le frontend statique en production
 if STATIC_DIR.exists():
     # Monter les assets statiques
