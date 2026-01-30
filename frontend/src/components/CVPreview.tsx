@@ -247,11 +247,12 @@ export default function CVPreview({ data, debounceMs = 1000 }: CVPreviewProps) {
           </button>
 
           {/* PDF Container with paper effect */}
-          <div
-            className="relative w-full h-full flex items-center justify-center overflow-auto"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="relative my-auto" style={{ width: 'min(90vw, calc(90vh * 210 / 297))', height: 'min(90vh, calc(90vw * 297 / 210))' }}>
+          <div className="relative w-full h-full flex items-center justify-center overflow-auto">
+            <div
+              className="relative my-auto"
+              style={{ width: 'min(90vw, calc(90vh * 210 / 297))', height: 'min(90vh, calc(90vw * 297 / 210))' }}
+              onClick={(e) => e.stopPropagation()}
+            >
               {/* Paper shadows */}
               <div className="absolute inset-0 bg-black/10 rounded-xl translate-y-2 translate-x-1" />
               <div className="absolute inset-0 bg-black/5 rounded-xl translate-y-4 translate-x-2" />
