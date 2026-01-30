@@ -1,27 +1,43 @@
-# Python
+# ===========================================
+# CV Generator - Git Ignore
+# ===========================================
+
+# --- Python ---
 __pycache__/
 *.py[cod]
 *$py.class
-.env
 .venv/
 venv/
 *.egg-info/
+.pytest_cache/
+.coverage
+htmlcov/
 
-# Node
+# --- Node ---
 node_modules/
 dist/
+.npm/
+*.tsbuildinfo
 
-# IDE
+# --- Environment & Secrets ---
+.env
+.env.local
+.env.*.local
+!.env.example
+
+# --- IDE ---
 .vscode/
 .idea/
 *.swp
 *.swo
+*.sublime-*
 
-# OS
+# --- OS ---
 .DS_Store
 Thumbs.db
+Desktop.ini
 
-# Build artifacts
+# --- LaTeX Build Artifacts ---
 *.pdf
 !cv_alexandre_eberhardt.pdf
 *.aux
@@ -30,7 +46,33 @@ Thumbs.db
 *.fls
 *.fdb_latexmk
 *.synctex.gz
+*.toc
+*.lof
+*.lot
+*.bbl
+*.blg
 
-# Temporary files
+# --- Temporary Files ---
 tmp/
 temp/
+*.tmp
+*.bak
+*.old
+
+# --- Database & Backups ---
+*.sql
+*.sql.gz
+backups/
+/var/backups/
+
+# --- Docker ---
+docker-compose.override.yml
+
+# --- Logs ---
+*.log
+logs/
+
+# --- Uploads & Generated Files ---
+uploads/
+generated/
+static/uploads/
