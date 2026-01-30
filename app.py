@@ -4,6 +4,7 @@ Expose un endpoint POST /generate qui reçoit les données et retourne le PDF.
 Support des sections dynamiques et réorganisables.
 Authentification OAuth2 avec JWT.
 """
+import asyncio
 import os
 import sys
 import tempfile
@@ -21,10 +22,12 @@ load_dotenv(Path(__file__).parent.parent / ".env")
 
 from fastapi import FastAPI, HTTPException, UploadFile, File
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, field_validator
-from openai import OpenAI
+import json
+import re
+from openai import OpenAI, AsyncOpenAI
 from pypdf import PdfReader
 
 from core.LatexRenderer import LatexRenderer
@@ -434,6 +437,275 @@ IMPORTANT:
         raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Erreur lors de l'import: {str(e)}")
+
+
+@app.post("/import-stream")
+async def import_cv_stream(file: UploadFile = File(...)):
+    """
+    Importe un CV depuis un fichier PDF avec streaming SSE.
+    Envoie les sections au fur et à mesure qu'elles sont extraites.
+    """
+    # Vérifier que c'est un PDF
+    if not file.filename or not file.filename.lower().endswith('.pdf'):
+        raise HTTPException(status_code=400, detail="Le fichier doit être un PDF")
+
+    # Vérifier la clé API OpenAI
+    api_key = os.environ.get("OPENAI_API_KEY")
+    if not api_key:
+        raise HTTPException(
+            status_code=500,
+            detail="Clé API OpenAI non configurée (OPENAI_API_KEY)"
+        )
+
+    # Lire le PDF avant de commencer le streaming
+    pdf_content = await file.read()
+
+    async def generate_stream():
+        try:
+            # Envoyer l'événement de début d'extraction
+            yield f"data: {json.dumps({'type': 'status', 'message': 'extracting'})}\n\n"
+            await asyncio.sleep(0)
+
+            # Créer un fichier temporaire pour pypdf
+            temp_pdf = tempfile.NamedTemporaryFile(delete=False, suffix=".pdf")
+            temp_pdf.write(pdf_content)
+            temp_pdf.close()
+
+            try:
+                reader = PdfReader(temp_pdf.name)
+                text_content = ""
+                for page in reader.pages:
+                    text_content += page.extract_text() + "\n"
+            finally:
+                Path(temp_pdf.name).unlink()
+
+            if not text_content.strip():
+                error_msg = "Impossible d'extraire le texte du PDF"
+                yield f"data: {json.dumps({'type': 'error', 'message': error_msg})}\n\n"
+                return
+
+            # Envoyer l'événement de traitement IA
+            yield f"data: {json.dumps({'type': 'status', 'message': 'processing'})}\n\n"
+            await asyncio.sleep(0)
+
+            # Appeler OpenAI avec streaming (client async)
+            client = AsyncOpenAI(api_key=api_key)
+
+            system_prompt = """Tu es un assistant spécialisé dans l'extraction de données de CV.
+Analyse le texte du CV fourni et retourne un JSON avec la structure exacte suivante:
+
+{
+  "personal": {
+    "name": "Nom complet",
+    "title": "Titre professionnel",
+    "location": "Ville, Pays",
+    "email": "email@example.com",
+    "phone": "+33 6 12 34 56 78",
+    "github": "username",
+    "github_url": "https://github.com/username"
+  },
+  "sections": [
+    {
+      "id": "sec-1",
+      "type": "education",
+      "title": "Education",
+      "isVisible": true,
+      "items": [
+        {"school": "Nom école", "degree": "Diplôme", "dates": "2020 - 2024", "subtitle": "Mention/GPA", "description": "Description"}
+      ]
+    },
+    {
+      "id": "sec-2",
+      "type": "experiences",
+      "title": "Experiences",
+      "isVisible": true,
+      "items": [
+        {"title": "Poste", "company": "Entreprise", "dates": "Jan 2023 - Present", "highlights": ["Point 1", "Point 2"]}
+      ]
+    },
+    {
+      "id": "sec-3",
+      "type": "projects",
+      "title": "Projects",
+      "isVisible": true,
+      "items": [
+        {"name": "Nom projet", "year": "2023", "highlights": ["Description 1", "Description 2"]}
+      ]
+    },
+    {
+      "id": "sec-4",
+      "type": "skills",
+      "title": "Technical Skills",
+      "isVisible": true,
+      "items": {"languages": "Python, JavaScript, C++", "tools": "Git, Docker, Linux"}
+    },
+    {
+      "id": "sec-5",
+      "type": "leadership",
+      "title": "Leadership",
+      "isVisible": true,
+      "items": [
+        {"role": "Rôle", "place": "Organisation", "dates": "2022 - 2023", "highlights": ["Action 1"]}
+      ]
+    },
+    {
+      "id": "sec-6",
+      "type": "languages",
+      "title": "Languages",
+      "isVisible": true,
+      "items": "Français (natif), Anglais (courant)"
+    }
+  ],
+  "template_id": "harvard"
+}
+
+IMPORTANT:
+- Pour "skills", items est un OBJET avec "languages" et "tools" (pas un array)
+- Pour "languages", items est une STRING simple
+- Pour les autres types, items est un ARRAY d'objets
+- Génère des IDs uniques pour chaque section (sec-1, sec-2, etc.)
+- Si une info n'est pas dans le CV, utilise une chaîne vide "" ou un array vide []
+- N'invente pas d'informations, extrais uniquement ce qui est présent"""
+
+            # Streaming depuis OpenAI (async)
+            stream = await client.chat.completions.create(
+                model="gpt-4o-mini",
+                messages=[
+                    {"role": "system", "content": system_prompt},
+                    {"role": "user", "content": f"Voici le texte extrait du CV:\n\n{text_content}"}
+                ],
+                response_format={"type": "json_object"},
+                stream=True
+            )
+
+            accumulated_json = ""
+            sent_personal = False
+            sent_section_ids = set()
+
+            def extract_json_object(text: str, start_key: str) -> tuple[dict | None, int]:
+                """Extrait un objet JSON complet après une clé donnée."""
+                key_pattern = f'"{start_key}"\\s*:\\s*'
+                match = re.search(key_pattern, text)
+                if not match:
+                    return None, -1
+
+                start = match.end()
+                if start >= len(text):
+                    return None, -1
+
+                # Trouver le début de l'objet ou array
+                while start < len(text) and text[start] in ' \t\n\r':
+                    start += 1
+
+                if start >= len(text):
+                    return None, -1
+
+                open_char = text[start]
+                if open_char == '{':
+                    close_char = '}'
+                elif open_char == '[':
+                    close_char = ']'
+                elif open_char == '"':
+                    # C'est une string, chercher la fin
+                    end = start + 1
+                    while end < len(text):
+                        if text[end] == '"' and text[end-1] != '\\':
+                            try:
+                                return json.loads(text[start:end+1]), end + 1
+                            except:
+                                return None, -1
+                        end += 1
+                    return None, -1
+                else:
+                    return None, -1
+
+                # Compter les brackets pour trouver la fin
+                depth = 1
+                pos = start + 1
+                in_string = False
+
+                while pos < len(text) and depth > 0:
+                    char = text[pos]
+                    if char == '"' and (pos == 0 or text[pos-1] != '\\'):
+                        in_string = not in_string
+                    elif not in_string:
+                        if char == open_char:
+                            depth += 1
+                        elif char == close_char:
+                            depth -= 1
+                    pos += 1
+
+                if depth == 0:
+                    try:
+                        return json.loads(text[start:pos]), pos
+                    except json.JSONDecodeError:
+                        return None, -1
+
+                return None, -1
+
+            async for chunk in stream:
+                if chunk.choices[0].delta.content:
+                    accumulated_json += chunk.choices[0].delta.content
+
+                    # Extraire personal dès qu'il est complet
+                    if not sent_personal and '"personal"' in accumulated_json:
+                        personal_data, _ = extract_json_object(accumulated_json, "personal")
+                        if personal_data:
+                            yield f"data: {json.dumps({'type': 'personal', 'data': personal_data})}\n\n"
+                            await asyncio.sleep(0)
+                            sent_personal = True
+
+                    # Extraire les sections individuellement au fur et à mesure
+                    # Chercher tous les objets qui commencent par {"id": "sec-
+                    section_starts = [m.start() for m in re.finditer(r'\{\s*"id"\s*:\s*"sec-', accumulated_json)]
+                    for start_pos in section_starts:
+                        # Compter les brackets pour trouver la fin de cet objet
+                        depth = 0
+                        pos = start_pos
+                        in_string = False
+
+                        while pos < len(accumulated_json):
+                            char = accumulated_json[pos]
+                            if char == '"' and (pos == 0 or accumulated_json[pos-1] != '\\'):
+                                in_string = not in_string
+                            elif not in_string:
+                                if char == '{':
+                                    depth += 1
+                                elif char == '}':
+                                    depth -= 1
+                                    if depth == 0:
+                                        # Objet complet trouvé
+                                        try:
+                                            section_json = accumulated_json[start_pos:pos+1]
+                                            section = json.loads(section_json)
+                                            if 'id' in section and section['id'] not in sent_section_ids:
+                                                yield f"data: {json.dumps({'type': 'section', 'data': section})}\n\n"
+                                                await asyncio.sleep(0)
+                                                sent_section_ids.add(section['id'])
+                                        except json.JSONDecodeError:
+                                            pass
+                                        break
+                            pos += 1
+
+            # Parser le JSON final complet
+            try:
+                result = json.loads(accumulated_json)
+                yield f"data: {json.dumps({'type': 'complete', 'data': result})}\n\n"
+            except json.JSONDecodeError as e:
+                yield f"data: {json.dumps({'type': 'error', 'message': f'Erreur parsing JSON: {str(e)}'})}\n\n"
+
+        except Exception as e:
+            yield f"data: {json.dumps({'type': 'error', 'message': str(e)})}\n\n"
+
+    return StreamingResponse(
+        generate_stream(),
+        media_type="text/event-stream",
+        headers={
+            "Cache-Control": "no-cache",
+            "Connection": "keep-alive",
+            "X-Accel-Buffering": "no"
+        }
+    )
 
 
 @app.get("/api/health")
