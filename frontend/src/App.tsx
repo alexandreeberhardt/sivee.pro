@@ -556,6 +556,17 @@ function App() {
                 <FolderOpen className="w-4 h-4" />
                 {t('resumes.myResumes')}
               </button>
+              <div className="w-px h-5 bg-primary-200/60" />
+              <div className="flex items-center gap-1.5">
+                <span className="text-sm text-primary-500 hidden sm:inline max-w-[140px] truncate">{user?.email}</span>
+                <button
+                  onClick={logout}
+                  className="btn-ghost !p-2 text-primary-500 hover:text-error-600 hover:bg-error-50"
+                  title={t('common.logout')}
+                >
+                  <LogOut className="w-4 h-4" />
+                </button>
+              </div>
             </div>
           </div>
         </nav>
