@@ -57,7 +57,9 @@
       "passwordMismatch": "Passwords do not match",
       "passwordRequirements": "Password does not meet requirements",
       "generic": "An error occurred"
-    }
+    },
+    "loginWithGoogle": "Continue with Google",
+    "orContinueWith": "or continue with your email"
   },
   "resumes": {
     "myResumes": "My Resumes",

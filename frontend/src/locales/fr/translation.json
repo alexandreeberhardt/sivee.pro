@@ -57,7 +57,9 @@
       "passwordMismatch": "Les mots de passe ne correspondent pas",
       "passwordRequirements": "Le mot de passe ne respecte pas les exigences",
       "generic": "Une erreur est survenue"
-    }
+    },
+    "loginWithGoogle": "Continuer avec Google",
+    "orContinueWith": "ou continuer avec votre email"
   },
   "resumes": {
     "myResumes": "Mes CV",

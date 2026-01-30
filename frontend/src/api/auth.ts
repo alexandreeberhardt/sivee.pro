@@ -4,6 +4,8 @@
 import { api } from './client';
 import type { AuthResponse, User, LoginCredentials, RegisterCredentials } from '../types';
 
+const API_URL = import.meta.env.DEV ? '' : '';
+
 /**
  * Register a new user
  */
@@ -46,4 +48,18 @@ export function isTokenExpired(token: string): boolean {
 
   const now = Math.floor(Date.now() / 1000);
   return decoded.exp < now;
+}
+
+/**
+ * Get Google OAuth login URL
+ */
+export function getGoogleLoginUrl(): string {
+  return `${API_URL}/api/auth/google/login`;
+}
+
+/**
+ * Redirect to Google OAuth login
+ */
+export function loginWithGoogle(): void {
+  window.location.href = getGoogleLoginUrl();
 }

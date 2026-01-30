@@ -47,10 +47,35 @@ export function AuthProvider({ children }: AuthProviderProps) {
   }, []);
 
   /**
-   * Initialize auth state from localStorage
+   * Initialize auth state from localStorage or URL (OAuth callback)
    */
   useEffect(() => {
     const initAuth = () => {
+      // Check for token in URL (from OAuth callback)
+      const urlParams = new URLSearchParams(window.location.search);
+      const urlToken = urlParams.get('token');
+
+      if (urlToken) {
+        // Remove token from URL
+        window.history.replaceState({}, document.title, window.location.pathname);
+
+        // Validate and store the token
+        if (!isTokenExpired(urlToken)) {
+          const decoded = decodeToken(urlToken);
+          if (decoded) {
+            setStoredToken(urlToken);
+            setToken(urlToken);
+            setUser({
+              id: parseInt(decoded.sub, 10),
+              email: decoded.email,
+            });
+            setIsLoading(false);
+            return;
+          }
+        }
+      }
+
+      // Check for stored token
       const storedToken = getStoredToken();
 
       if (storedToken) {
