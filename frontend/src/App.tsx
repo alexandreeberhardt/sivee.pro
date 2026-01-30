@@ -720,6 +720,15 @@ function App() {
               <span className="hidden lg:inline">{t('common.save')}</span>
             </button>
 
+            {/* Hidden file input for import */}
+            <input
+              type="file"
+              ref={fileInputRef}
+              onChange={handleImport}
+              accept=".pdf"
+              className="hidden"
+            />
+
             {/* Primary Export button */}
             <button
               onClick={handleGenerate}
