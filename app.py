@@ -34,6 +34,10 @@ from core.LatexRenderer import LatexRenderer
 from core.PdfCompiler import PdfCompiler
 from translations import get_section_title
 
+# Limite de taille pour l'import de CV (protection contre les abus)
+# 10 000 caractères ≈ 2 500 tokens, suffisant pour un CV de 3-4 pages
+MAX_CV_TEXT_LENGTH = 10_000
+
 # Authentication imports
 from auth.routes import router as auth_router
 from api.resumes import router as resumes_router
@@ -511,6 +515,15 @@ async def import_cv(file: UploadFile = File(...)):
                 detail="Impossible d'extraire le texte du PDF"
             )
 
+        # Vérifier la taille du texte extrait (protection contre les abus)
+        if len(text_content) > MAX_CV_TEXT_LENGTH:
+            raise HTTPException(
+                status_code=400,
+                detail=f"Le document est trop volumineux ({len(text_content):,} caractères). "
+                       f"Maximum autorisé : {MAX_CV_TEXT_LENGTH:,} caractères. "
+                       "Veuillez fournir un CV plus concis."
+            )
+
         # Appeler OpenAI pour structurer les données
         client = OpenAI(api_key=api_key)
 
@@ -660,6 +673,14 @@ async def import_cv_stream(file: UploadFile = File(...)):
 
             if not text_content.strip():
                 error_msg = "Impossible d'extraire le texte du PDF"
+                yield f"data: {json.dumps({'type': 'error', 'message': error_msg})}\n\n"
+                return
+
+            # Vérifier la taille du texte extrait (protection contre les abus)
+            if len(text_content) > MAX_CV_TEXT_LENGTH:
+                error_msg = (f"Le document est trop volumineux ({len(text_content):,} caractères). "
+                            f"Maximum autorisé : {MAX_CV_TEXT_LENGTH:,} caractères. "
+                            "Veuillez fournir un CV plus concis.")
                 yield f"data: {json.dumps({'type': 'error', 'message': error_msg})}\n\n"
                 return
 
