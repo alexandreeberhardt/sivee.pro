@@ -22,8 +22,7 @@ export default function AuthPage({ onContinueWithoutAuth }: AuthPageProps) {
   return (
     <div className="min-h-screen flex">
       {/* Left Panel - Branding (hidden on mobile) */}
-      <div className="hidden lg:flex lg:w-1/2 xl:w-[55%] relative overflow-hidden bg-gradient-to-br from-brand via-brand/90 to-brand/80">
-        {/* Decorative background patterns */}
+      <div className="hidden lg:flex lg:w-1/2 xl:w-[55%] relative overflow-hidden bg-gradient-to-br from-indigo-900 via-brand to-indigo-950">        {/* Decorative background patterns */}
         <div className="absolute inset-0 opacity-10">
           <div className="absolute top-20 left-20 w-72 h-72 bg-white rounded-full blur-3xl" />
           <div className="absolute bottom-20 right-20 w-96 h-96 bg-white rounded-full blur-3xl" />
