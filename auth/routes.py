@@ -1,6 +1,7 @@
 """Authentication routes for the CV SaaS application."""
 import os
 import secrets
+import time
 from datetime import timedelta
 from typing import Annotated
 from urllib.parse import urlencode
@@ -28,6 +29,38 @@ GOOGLE_USERINFO_URL = "https://www.googleapis.com/oauth2/v2/userinfo"
 
 # OAuth state token expiration (5 minutes)
 OAUTH_STATE_EXPIRE_MINUTES = 5
+
+# SECURITY: Temporary code store for OAuth token exchange
+# In production, consider using Redis for multi-instance deployments
+_oauth_code_store: dict[str, tuple[str, float]] = {}
+OAUTH_CODE_EXPIRE_SECONDS = 60  # Code expires in 1 minute
+
+
+def _cleanup_expired_codes() -> None:
+    """Remove expired OAuth codes from the store."""
+    now = time.time()
+    expired = [code for code, (_, exp) in _oauth_code_store.items() if now > exp]
+    for code in expired:
+        _oauth_code_store.pop(code, None)
+
+
+def _store_oauth_code(jwt_token: str) -> str:
+    """Store JWT token and return a temporary code for exchange."""
+    _cleanup_expired_codes()
+    code = secrets.token_urlsafe(32)
+    _oauth_code_store[code] = (jwt_token, time.time() + OAUTH_CODE_EXPIRE_SECONDS)
+    return code
+
+
+def _exchange_oauth_code(code: str) -> str | None:
+    """Exchange temporary code for JWT token. Returns None if invalid/expired."""
+    _cleanup_expired_codes()
+    if code not in _oauth_code_store:
+        return None
+    jwt_token, expiry = _oauth_code_store.pop(code)
+    if time.time() > expiry:
+        return None
+    return jwt_token
 
 
 @router.post("/register", response_model=UserResponse, status_code=status.HTTP_201_CREATED)
@@ -239,8 +272,38 @@ async def google_callback(
     # Create JWT token
     jwt_token = create_access_token(data={"sub": str(user.id), "email": user.email})
 
-    # Redirect to frontend with token
+    # SECURITY: Store token and redirect with temporary code instead of exposing JWT in URL
+    # This prevents the JWT from being logged in browser history, server logs, or referrer headers
+    temp_code = _store_oauth_code(jwt_token)
+
     frontend_url = os.environ.get("FRONTEND_URL", "https://sivee.pro")
-    redirect_url = f"{frontend_url}?token={jwt_token}"
+    redirect_url = f"{frontend_url}?code={temp_code}"
 
     return RedirectResponse(url=redirect_url)
+
+
+@router.post("/google/exchange", response_model=Token)
+async def exchange_oauth_code(code: str) -> Token:
+    """Exchange temporary OAuth code for JWT token.
+
+    SECURITY: This endpoint allows the frontend to securely retrieve the JWT token
+    after OAuth callback, without exposing the token in URLs or logs.
+
+    Args:
+        code: Temporary code received from OAuth callback.
+
+    Returns:
+        JWT access token.
+
+    Raises:
+        HTTPException: 400 if code is invalid or expired.
+    """
+    jwt_token = _exchange_oauth_code(code)
+
+    if not jwt_token:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid or expired code",
+        )
+
+    return Token(access_token=jwt_token)

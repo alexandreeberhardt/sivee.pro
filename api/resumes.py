@@ -1,12 +1,15 @@
 """Resume API routes with JWT authentication."""
+import json
 import shutil
 import tempfile
 from pathlib import Path
 from typing import Annotated, Any
 
+from io import BytesIO
+
 from fastapi import APIRouter, Depends, HTTPException, status
-from fastapi.responses import FileResponse
-from pydantic import BaseModel
+from fastapi.responses import StreamingResponse
+from pydantic import BaseModel, field_validator, Field
 from sqlalchemy.orm import Session
 
 from auth.dependencies import CurrentUser
@@ -17,6 +20,10 @@ from database.models import Resume
 from translations import get_section_title
 
 router = APIRouter(prefix="/api/resumes", tags=["Resumes"])
+
+# SECURITY: Resource limits to prevent abuse
+MAX_RESUMES_PER_USER = 50
+MAX_JSON_CONTENT_SIZE = 100 * 1024  # 100 KB max for JSON content
 
 # Template configuration
 TEMPLATE_DIR = Path(__file__).parent.parent
@@ -37,14 +44,40 @@ VALID_TEMPLATES = {
 
 class ResumeCreate(BaseModel):
     """Schema for creating a resume."""
-    name: str
+    name: str = Field(..., max_length=255)
     json_content: dict | None = None
+
+    @field_validator("json_content")
+    @classmethod
+    def validate_json_size(cls, v: dict | None) -> dict | None:
+        """Validate JSON content size to prevent DoS attacks."""
+        if v is not None:
+            json_size = len(json.dumps(v))
+            if json_size > MAX_JSON_CONTENT_SIZE:
+                raise ValueError(
+                    f"JSON content too large ({json_size} bytes). "
+                    f"Maximum allowed: {MAX_JSON_CONTENT_SIZE} bytes."
+                )
+        return v
 
 
 class ResumeUpdate(BaseModel):
     """Schema for updating a resume."""
-    name: str | None = None
+    name: str | None = Field(default=None, max_length=255)
     json_content: dict | None = None
+
+    @field_validator("json_content")
+    @classmethod
+    def validate_json_size(cls, v: dict | None) -> dict | None:
+        """Validate JSON content size to prevent DoS attacks."""
+        if v is not None:
+            json_size = len(json.dumps(v))
+            if json_size > MAX_JSON_CONTENT_SIZE:
+                raise ValueError(
+                    f"JSON content too large ({json_size} bytes). "
+                    f"Maximum allowed: {MAX_JSON_CONTENT_SIZE} bytes."
+                )
+        return v
 
 
 class ResumeResponse(BaseModel):
@@ -81,7 +114,19 @@ async def create_resume(
 
     Returns:
         The created resume.
+
+    Raises:
+        HTTPException: 429 if user has reached max resumes limit.
     """
+    # SECURITY: Check if user has reached max resumes limit
+    resume_count = db.query(Resume).filter(Resume.user_id == current_user.id).count()
+    if resume_count >= MAX_RESUMES_PER_USER:
+        raise HTTPException(
+            status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+            detail=f"Maximum number of resumes reached ({MAX_RESUMES_PER_USER}). "
+                   "Please delete some resumes before creating new ones.",
+        )
+
     new_resume = Resume(
         user_id=current_user.id,
         name=resume_data.name,
@@ -259,7 +304,7 @@ async def generate_resume_pdf(
     db: Annotated[Session, Depends(get_db)],
     template_id: str = "harvard",
     lang: str = "fr",
-) -> FileResponse:
+) -> StreamingResponse:
     """Generate a PDF from a saved resume.
 
     Args:
@@ -295,6 +340,8 @@ async def generate_resume_pdf(
     # Create temporary directory for compilation
     temp_dir = tempfile.mkdtemp(prefix="cv_")
     temp_path = Path(temp_dir)
+    pdf_content = None
+    resume_name = resume.name
 
     try:
         # Validate template
@@ -340,12 +387,8 @@ async def generate_resume_pdf(
                 detail="PDF generation failed",
             )
 
-        return FileResponse(
-            path=str(pdf_file),
-            filename=f"{resume.name}.pdf",
-            media_type="application/pdf",
-            background=None,
-        )
+        # SECURITY: Read PDF content before cleanup to ensure temp files are always deleted
+        pdf_content = pdf_file.read_bytes()
 
     except HTTPException:
         raise
@@ -359,3 +402,16 @@ async def generate_resume_pdf(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Unexpected error: {e}",
         )
+    finally:
+        # SECURITY: Always clean up temporary files, even on exceptions
+        try:
+            shutil.rmtree(temp_path)
+        except Exception:
+            pass
+
+    # Return PDF from memory (temp files already cleaned up)
+    return StreamingResponse(
+        BytesIO(pdf_content),
+        media_type="application/pdf",
+        headers={"Content-Disposition": f"attachment; filename={resume_name}.pdf"}
+    )

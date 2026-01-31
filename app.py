@@ -165,13 +165,19 @@ app = FastAPI(
     version="2.0.0"
 )
 
-# Configuration CORS pour permettre les requêtes du frontend
+# Configuration CORS - restreint aux domaines autorisés
+# SECURITY: Never use ["*"] in production with allow_credentials=True
+ALLOWED_ORIGINS = os.environ.get(
+    "ALLOWED_ORIGINS",
+    "https://sivee.pro,https://www.sivee.pro"
+).split(",")
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # En production, restreindre aux domaines autorisés
+    allow_origins=ALLOWED_ORIGINS,
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allow_headers=["Authorization", "Content-Type"],
 )
 
 # Include authentication and API routers
