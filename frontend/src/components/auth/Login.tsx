@@ -1,5 +1,5 @@
 /**
- * Login component - Modern design
+ * Login component - Matching CV form design system
  */
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -21,7 +21,6 @@ export default function Login({ onSwitchToRegister }: LoginProps) {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-  const [focusedField, setFocusedField] = useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -42,37 +41,35 @@ export default function Login({ onSwitchToRegister }: LoginProps) {
   };
 
   return (
-    <div className="w-full">
+    <div className="w-full animate-fade-in">
       {/* Header */}
       <div className="text-center mb-8">
-        <div className="inline-flex items-center justify-center w-14 h-14 bg-brand/10 dark:bg-brand/20 rounded-2xl mb-5">
-          <LogIn className="w-7 h-7 text-brand" />
+        <div className="inline-flex items-center justify-center w-10 h-10 bg-primary-100 dark:bg-primary-200 rounded-xl mb-4">
+          <LogIn className="w-5 h-5 text-primary-600 dark:text-primary-400" />
         </div>
-        <h2 className="text-2xl font-semibold text-primary-900 dark:text-primary-50 mb-1.5 tracking-tight">
+        <h2 className="text-xl sm:text-2xl font-semibold text-primary-900 dark:text-white mb-1.5 tracking-tight">
           {t('auth.login.title')}
         </h2>
-        <p className="text-sm text-primary-500 dark:text-primary-400">
+        <p className="text-sm text-black dark:text-white">
           {t('auth.login.subtitle')}
         </p>
       </div>
 
       {/* Error message */}
       {error && (
-        <div className="mb-6 p-3.5 bg-error-50/80 border border-error-200/50 rounded-xl flex items-center gap-3 animate-shake">
-          <div className="w-9 h-9 bg-error-100 rounded-lg flex items-center justify-center flex-shrink-0">
-            <AlertCircle className="w-4.5 h-4.5 text-error-600" />
+        <div className="mb-5 p-3 bg-error-50 dark:bg-error-100/20 border border-error-200 dark:border-error-500/30 rounded-xl flex items-center gap-3 animate-shake">
+          <div className="w-8 h-8 bg-error-100 dark:bg-error-500/20 rounded-lg flex items-center justify-center flex-shrink-0">
+            <AlertCircle className="w-4 h-4 text-error-600 dark:text-error-500" />
           </div>
-          <div className="flex-1 min-w-0">
-            <p className="text-sm text-error-700 truncate">{error}</p>
-          </div>
+          <p className="text-sm text-error-700 dark:text-error-400 flex-1 min-w-0">{error}</p>
         </div>
       )}
 
-      {/* Google Login Button */}
+      {/* Google Login Button - Style matching CV secondary buttons */}
       <button
         type="button"
         onClick={loginWithGoogle}
-        className="w-full py-3 px-6 bg-surface-0 dark:bg-surface-100 border border-primary-200/80 dark:border-primary-700/80 hover:border-primary-300 dark:hover:border-primary-600 text-primary-700 dark:text-primary-200 font-medium rounded-xl shadow-sm hover:shadow-md transition-all duration-200 flex items-center justify-center gap-3"
+        className="btn-secondary w-full py-3 flex items-center justify-center gap-3"
       >
         <svg className="w-5 h-5" viewBox="0 0 24 24">
           <path
@@ -95,92 +92,76 @@ export default function Login({ onSwitchToRegister }: LoginProps) {
         <span>{t('auth.loginWithGoogle')}</span>
       </button>
 
-      {/* Divider */}
+      {/* Divider - Style matching CV */}
       <div className="relative my-6">
         <div className="absolute inset-0 flex items-center">
-          <div className="w-full border-t border-primary-200/60 dark:border-primary-700/60"></div>
+          <div className="w-full border-t border-primary-200 dark:border-primary-700"></div>
         </div>
         <div className="relative flex justify-center text-sm">
-          <span className="px-3 bg-surface-0 dark:bg-surface-200 text-primary-400 dark:text-primary-500">{t('auth.orContinueWith')}</span>
+          <span className="px-3 bg-surface-0 dark:bg-surface-100 text-black dark:text-white">
+            {t('auth.orContinueWith')}
+          </span>
         </div>
       </div>
 
-      {/* Form */}
+      {/* Form - Using CV form styling */}
       <form onSubmit={handleSubmit} className="space-y-4">
-        {/* Email field */}
-        <div className="space-y-1.5">
-          <label
-            htmlFor="email"
-            className="block text-sm font-medium text-primary-700 dark:text-primary-300"
-          >
+        {/* Email field - CV style */}
+        <div className="form-group">
+          <label htmlFor="email" className="label">
             {t('auth.email')}
           </label>
           <div className="relative">
-            <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
-              <Mail className={`w-[18px] h-[18px] transition-colors duration-200 ${
-                focusedField === 'email' ? 'text-brand' : 'text-primary-400 dark:text-primary-500'
-              }`} />
-            </div>
             <input
               type="email"
               id="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              onFocus={() => setFocusedField('email')}
-              onBlur={() => setFocusedField(null)}
-              className="w-full pl-11 pr-4 py-3 bg-surface-0 dark:bg-surface-100 border border-primary-200/80 dark:border-primary-700/80 rounded-xl text-primary-900 dark:text-primary-100 placeholder-primary-400 dark:placeholder-primary-500 transition-all duration-200 focus:outline-none focus:border-brand/50 focus:ring-4 focus:ring-brand/10 dark:focus:ring-brand/20"
               placeholder={t('auth.emailPlaceholder')}
+              className="input pl-10"
               required
               autoComplete="email"
             />
+            <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-primary-400 dark:text-primary-500" />
           </div>
         </div>
 
-        {/* Password field */}
-        <div className="space-y-1.5">
-          <label
-            htmlFor="password"
-            className="block text-sm font-medium text-primary-700 dark:text-primary-300"
-          >
+        {/* Password field - CV style */}
+        <div className="form-group">
+          <label htmlFor="password" className="label">
             {t('auth.password')}
           </label>
           <div className="relative">
-            <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
-              <Lock className={`w-[18px] h-[18px] transition-colors duration-200 ${
-                focusedField === 'password' ? 'text-brand' : 'text-primary-400 dark:text-primary-500'
-              }`} />
-            </div>
             <input
               type={showPassword ? 'text' : 'password'}
               id="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              onFocus={() => setFocusedField('password')}
-              onBlur={() => setFocusedField(null)}
-              className="w-full pl-11 pr-11 py-3 bg-surface-0 dark:bg-surface-100 border border-primary-200/80 dark:border-primary-700/80 rounded-xl text-primary-900 dark:text-primary-100 placeholder-primary-400 dark:placeholder-primary-500 transition-all duration-200 focus:outline-none focus:border-brand/50 focus:ring-4 focus:ring-brand/10 dark:focus:ring-brand/20"
               placeholder={t('auth.passwordPlaceholder')}
+              className="input pl-10 pr-10"
               required
               autoComplete="current-password"
             />
+            <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-primary-400 dark:text-primary-500" />
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-primary-400 dark:text-primary-500 hover:text-primary-600 dark:hover:text-primary-300 transition-colors"
+              className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-primary-400 dark:text-primary-500 hover:text-primary-600 dark:hover:text-primary-300 transition-colors"
             >
-              {showPassword ? <EyeOff className="w-[18px] h-[18px]" /> : <Eye className="w-[18px] h-[18px]" />}
+              {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
             </button>
           </div>
         </div>
 
-        {/* Submit button */}
+        {/* Submit button - CV brand button style */}
         <button
           type="submit"
           disabled={loading}
-          className="w-full mt-2 py-3 px-6 bg-brand hover:bg-brand-hover text-white font-medium rounded-xl shadow-sm shadow-brand/20 hover:shadow-md hover:shadow-brand/25 transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed disabled:shadow-none flex items-center justify-center gap-2"
+          className="btn-brand w-full py-3 mt-2"
         >
           {loading ? (
             <>
-              <Loader2 className="w-[18px] h-[18px] animate-spin" />
+              <Loader2 className="w-4 h-4 animate-spin" />
               <span>{t('auth.loggingIn')}</span>
             </>
           ) : (
@@ -191,7 +172,7 @@ export default function Login({ onSwitchToRegister }: LoginProps) {
 
       {/* Switch to register */}
       <div className="mt-6 text-center">
-        <p className="text-sm text-primary-500 dark:text-primary-400">
+        <p className="text-sm text-black dark:text-white">
           {t('auth.noAccount')}{' '}
           <button
             onClick={onSwitchToRegister}

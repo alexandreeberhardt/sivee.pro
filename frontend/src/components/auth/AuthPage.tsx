@@ -96,7 +96,7 @@ export default function AuthPage({ onContinueWithoutAuth }: AuthPageProps) {
           <div className="px-4 sm:px-6 h-14 sm:h-16 flex items-center justify-between">
             <div className="flex items-center gap-2">
               <FileText className="w-7 h-7 text-brand" />
-              <span className="text-lg font-semibold text-primary-900 dark:text-primary-50">{t('landing.appName')}</span>
+              <span className="text-lg font-semibold text-primary-900 dark:text-white">{t('landing.appName')}</span>
             </div>
             <div className="flex items-center gap-1.5">
               <ThemeToggle />
