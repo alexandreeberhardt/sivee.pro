@@ -1810,7 +1810,7 @@ function ResumeCard({
 
   // Get template name from resume data
   const templateId = resume.json_content?.template_id?.replace(/_compact|_large/, '') || 'harvard';
-  const personName = resume.json_content?.personal?.name || resume.name;
+  const displayName = resume.name;
 
   return (
     <div
@@ -1871,7 +1871,7 @@ function ResumeCard({
 
       {/* Info */}
       <div className="p-4">
-        <h3 className="font-medium text-primary-900 truncate">{personName}</h3>
+        <h3 className="font-medium text-primary-900 truncate">{displayName}</h3>
         <div className="flex items-center justify-between mt-1.5">
           <span className="text-xs text-primary-400 capitalize">{templateId}</span>
           {resume.created_at && (
