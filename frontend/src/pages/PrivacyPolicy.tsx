@@ -102,14 +102,10 @@ export default function PrivacyPolicy() {
                 </div>
                 <p className="text-primary-700">Vos données sont uniquement transmises aux prestataires techniques nécessaires au fonctionnement du service :</p>
                 <ul className="list-disc list-inside text-primary-700 space-y-2">
-                  <li><strong>OpenAI</strong> (États-Unis) : uniquement pour l'extraction automatique de CV importés</li>
+                  <li><strong>Mistral AI</strong> (France) : uniquement pour l'extraction automatique de CV importés</li>
                   <li><strong>Amazon Web Services</strong> (France - eu-west-3) : stockage sécurisé des fichiers PDF générés</li>
                   <li><strong>Google</strong> : uniquement si vous choisissez la connexion Google</li>
                 </ul>
-                <p className="text-primary-700 mt-4">
-                  <strong>Note sur les transferts hors UE</strong> : OpenAI est basé aux États-Unis.
-                  Ce transfert est encadré par les clauses contractuelles types de la Commission européenne.
-                </p>
               </section>
 
               <section>
@@ -236,14 +232,10 @@ export default function PrivacyPolicy() {
                 </div>
                 <p className="text-primary-700">Your data is only transmitted to technical providers required for the service to function:</p>
                 <ul className="list-disc list-inside text-primary-700 space-y-2">
-                  <li><strong>OpenAI</strong> (United States): only for automatic extraction of imported resumes</li>
+                  <li><strong>Mistral AI</strong> (France): only for automatic extraction of imported resumes</li>
                   <li><strong>Amazon Web Services</strong> (France - eu-west-3): secure storage of generated PDF files</li>
                   <li><strong>Google</strong>: only if you choose Google sign-in</li>
                 </ul>
-                <p className="text-primary-700 mt-4">
-                  <strong>Note on transfers outside the EU</strong>: OpenAI is based in the United States.
-                  This transfer is governed by the European Commission's standard contractual clauses.
-                </p>
               </section>
 
               <section>

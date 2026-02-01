@@ -258,8 +258,8 @@ POSTGRES_USER=cvuser
 POSTGRES_PASSWORD=secure_password
 POSTGRES_DB=cvdatabase
 
-# OpenAI (for PDF import feature)
-OPENAI_API_KEY=sk-...
+# Mistral AI (for PDF import feature)
+MISTRAL_API_KEY=...
 
 # AWS S3 (for file storage)
 AWS_ACCESS_KEY_ID=AKIA...
