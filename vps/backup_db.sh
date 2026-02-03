@@ -3,13 +3,13 @@
 # CV Generator - PostgreSQL Backup Script
 # ===========================================
 # Usage: ./backup_db.sh
-# Cron:  0 3 * * * /opt/cv-generator/vps/backup_db.sh >> /var/log/cv-backup.log 2>&1
+# Cron:  0 3 * * * $HOME/sivee.pro/vps/backup_db.sh >> /var/log/cv-backup.log 2>&1
 
 set -e
 
 # Configuration
-BACKUP_DIR="/var/backups/cv-generator"
-APP_DIR="/opt/cv-generator"
+BACKUP_DIR="$HOME/backups/sivee"
+APP_DIR="$HOME/sivee.pro"
 RETENTION_DAYS=30
 DATE=$(date +%Y-%m-%d_%H-%M-%S)
 BACKUP_FILE="cv_database_${DATE}.sql.gz"

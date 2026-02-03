@@ -194,12 +194,27 @@ cd /opt/cv-generator
 
 ## Production Deployment
 
+### Deploy
+
+```bash
+./deploy.sh
+```
+
+That's it. The script handles everything:
+1. Pulls latest changes from git
+2. Builds Docker images
+3. Starts/restarts services
+4. Waits for database to be ready
+5. Runs database migrations
+6. Shows service status
+
 ### Initial Setup (VPS)
 
 See `vps/SECURITY.md` for the complete security checklist.
 
 ```bash
-# On the VPS
+# Clone and configure
+git clone --recursive <repository-url> /opt/cv-generator
 cd /opt/cv-generator
 cp .env.example .env
 nano .env  # Configure your variables
@@ -207,21 +222,6 @@ nano .env  # Configure your variables
 # Deploy
 ./deploy.sh
 ```
-
-### Subsequent Deployments
-
-```bash
-# On the VPS
-cd /opt/cv-generator
-./deploy.sh
-```
-
-The deploy script will:
-1. Pull latest changes from git
-2. Build Docker images
-3. Start/restart services
-4. Run database migrations
-5. Show service status
 
 ### Database Backups
 
