@@ -15,8 +15,13 @@ A web application to generate professional PDF resumes from a dynamic form inter
 - **Custom sections**: Create personalized sections with custom titles
 - **Real-time editing**: Edit all CV content through an intuitive web interface
 - **PDF generation**: High-quality PDF output using LaTeX compilation
-- **PDF Import**: Import existing CVs using AI-powered extraction
+- **PDF Import**: Import existing CVs using AI-powered extraction with real-time streaming
 - **Responsive design**: Works on desktop and mobile devices
+- **User accounts**: Register, login, and manage multiple CVs
+- **Guest accounts**: Try the app without registration (limited to 3 CVs)
+- **Google OAuth**: Sign in with Google account
+- **GDPR compliance**: Export and delete your data anytime
+- **Smart template sizing**: Auto-fit content to one page with optimal template selection
 
 ## Tech Stack
 
@@ -239,17 +244,55 @@ The deploy script will:
 
 ## API Endpoints
 
+### CV Generation
+
 | Method | Endpoint | Description |
 |--------|----------|-------------|
 | GET | `/default-data` | Returns default CV data |
 | POST | `/generate` | Generates PDF from JSON |
 | POST | `/import` | Import CV from PDF (AI) |
+| POST | `/import-stream` | Import CV with SSE streaming |
+| POST | `/optimal-size` | Find optimal template size |
 | GET | `/api/health` | Health check |
 | GET | `/health_db` | Database health check |
+
+### Authentication
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/api/auth/register` | Register new user |
+| POST | `/api/auth/login` | Login with email/password |
+| POST | `/api/auth/guest` | Create guest account |
+| POST | `/api/auth/upgrade` | Upgrade guest to full account |
+| GET | `/api/auth/google/login` | Redirect to Google OAuth |
+| GET | `/api/auth/google/callback` | Google OAuth callback |
+| POST | `/api/auth/google/exchange` | Exchange OAuth code for JWT |
+| GET | `/api/auth/me` | Get current user info |
+| GET | `/api/auth/me/export` | Export user data (GDPR) |
+| DELETE | `/api/auth/me` | Delete account (GDPR) |
+
+### Resume Management
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/api/resumes` | Create new resume |
+| GET | `/api/resumes` | List all user resumes |
+| GET | `/api/resumes/{id}` | Get specific resume |
+| PUT | `/api/resumes/{id}` | Update resume |
+| DELETE | `/api/resumes/{id}` | Delete resume |
+| POST | `/api/resumes/{id}/generate` | Generate PDF from saved resume |
+
+### Limits
+
+- **Guest users**: 3 resumes max
+- **Registered users**: 50 resumes max
+- **Resume content**: 100 KB max per resume
 
 ---
 
 ## Environment Variables
+
+See `.env.example` for a complete template with descriptions.
 
 ```bash
 # Database (auto-configured in Docker)
@@ -257,6 +300,19 @@ DATABASE_URL=postgresql://user:pass@host:5432/dbname
 POSTGRES_USER=cvuser
 POSTGRES_PASSWORD=secure_password
 POSTGRES_DB=cvdatabase
+
+# JWT Authentication (required)
+JWT_SECRET_KEY=your_jwt_secret_key_here_min_32_chars
+ACCESS_TOKEN_EXPIRE_MINUTES=30
+
+# Google OAuth2 (optional)
+GOOGLE_CLIENT_ID=your_google_client_id.apps.googleusercontent.com
+GOOGLE_CLIENT_SECRET=GOCSPX-your_google_client_secret
+GOOGLE_REDIRECT_URI=https://yourdomain.com/api/auth/google/callback
+
+# CORS & Frontend
+ALLOWED_ORIGINS=https://yourdomain.com,https://www.yourdomain.com
+FRONTEND_URL=https://yourdomain.com
 
 # Mistral AI (for PDF import feature)
 MISTRAL_API_KEY=...
