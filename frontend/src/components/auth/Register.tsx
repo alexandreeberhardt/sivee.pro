@@ -59,16 +59,17 @@ export default function Register({ onSwitchToLogin }: RegisterProps) {
     try {
       await register({ email, password });
       setSuccess(true);
+      setLoading(false);
 
       // Auto-login after successful registration
-      setTimeout(async () => {
-        try {
-          await login({ email, password });
-        } catch {
-          onSwitchToLogin();
-        }
-      }, 1500);
+      await new Promise((resolve) => setTimeout(resolve, 1500));
+      try {
+        await login({ email, password });
+      } catch {
+        onSwitchToLogin();
+      }
     } catch (err) {
+      setLoading(false);
       if (err instanceof ApiError) {
         if (err.status === 400) {
           setError(t('auth.errors.emailExists'));
@@ -78,8 +79,6 @@ export default function Register({ onSwitchToLogin }: RegisterProps) {
       } else {
         setError(t('auth.errors.generic'));
       }
-    } finally {
-      setLoading(false);
     }
   };
 
