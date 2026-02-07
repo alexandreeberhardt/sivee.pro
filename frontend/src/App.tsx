@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   DndContext,
@@ -212,6 +212,68 @@ function App() {
   const [recommendedSize, setRecommendedSize] = useState<SizeVariant>('normal');
   const [autoSizeLoading, setAutoSizeLoading] = useState(false);
   const autoSizeTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Sync internal view state with browser history for back button support
+  type ViewState = { view: 'landing' | 'resumes' | 'editor' };
+
+  const getCurrentView = useCallback((): ViewState['view'] => {
+    if (showLanding) return 'landing';
+    if (showResumesPage) return 'resumes';
+    return 'editor';
+  }, [showLanding, showResumesPage]);
+
+  const applyView = useCallback((view: ViewState['view']) => {
+    switch (view) {
+      case 'landing':
+        setShowLanding(true);
+        setShowResumesPage(false);
+        break;
+      case 'resumes':
+        setShowLanding(false);
+        setShowResumesPage(true);
+        break;
+      case 'editor':
+        setShowLanding(false);
+        setShowResumesPage(false);
+        break;
+    }
+  }, []);
+
+  // Push history state when view changes
+  const previousViewRef = useRef<ViewState['view']>('landing');
+  useEffect(() => {
+    const currentView = getCurrentView();
+    if (currentView !== previousViewRef.current) {
+      // Push new state (don't push if this is the initial load)
+      if (previousViewRef.current !== undefined) {
+        window.history.pushState({ view: currentView }, '');
+      }
+      previousViewRef.current = currentView;
+    }
+  }, [showLanding, showResumesPage, getCurrentView]);
+
+  // Replace initial history entry with current view state
+  useEffect(() => {
+    window.history.replaceState({ view: 'landing' }, '');
+  }, []);
+
+  // Listen for popstate (back/forward button)
+  useEffect(() => {
+    const handlePopState = (event: PopStateEvent) => {
+      const state = event.state as ViewState | null;
+      if (state?.view) {
+        previousViewRef.current = state.view;
+        applyView(state.view);
+      } else {
+        // No state = initial entry, show landing
+        previousViewRef.current = 'landing';
+        applyView('landing');
+      }
+    };
+
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, [applyView]);
 
   const importMessages = [
     t('import.analyzing'),
