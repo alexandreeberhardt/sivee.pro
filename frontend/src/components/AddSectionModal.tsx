@@ -131,7 +131,7 @@ export default function AddSectionModal({ onAdd, onClose }: AddSectionModalProps
                 <div
                   className={`w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center transition-colors flex-shrink-0 ${
                     isSelected
-                      ? 'bg-primary-900 text-white'
+                      ? 'bg-primary-900 text-primary-50'
                       : 'bg-primary-100 text-primary-600 group-hover:bg-primary-200'
                   }`}
                 >
@@ -145,7 +145,7 @@ export default function AddSectionModal({ onAdd, onClose }: AddSectionModalProps
                 </div>
                 {isSelected && (
                   <div className="w-5 h-5 sm:w-6 sm:h-6 bg-primary-900 rounded-full flex items-center justify-center flex-shrink-0">
-                    <Check className="w-3 h-3 sm:w-4 sm:h-4 text-white" />
+                    <Check className="w-3 h-3 sm:w-4 sm:h-4 text-primary-50" />
                   </div>
                 )}
               </button>

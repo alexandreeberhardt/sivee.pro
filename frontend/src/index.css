@@ -155,7 +155,7 @@
   }
 
   .btn-primary {
-    @apply btn bg-primary-900 text-white
+    @apply btn bg-primary-900 text-primary-50
            hover:bg-primary-800 active:bg-primary-950
            focus-visible:ring-primary-900
            shadow-sm hover:shadow-md;
