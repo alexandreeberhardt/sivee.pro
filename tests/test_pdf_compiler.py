@@ -32,6 +32,7 @@ class PdfCompilerTest(unittest.TestCase):
         expected_cmd = [
             "latexmk",
             "-pdf",
+            "-no-shell-escape",
             "-interaction=nonstopmode",
             f"-outdir={self.root}",
             str(tex_path)

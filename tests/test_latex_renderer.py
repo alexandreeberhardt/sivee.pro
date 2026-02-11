@@ -40,20 +40,23 @@ class LatexRendererTest(unittest.TestCase):
             f.write(template_content)
         renderer = LatexRenderer(self.root, "template.tex")
         data = {"text": "a & b % c # d _ e {f} g ~ h ^ i"}
-        expected_output = r"Special chars: a \& b \% c \# d \_ e {f} g \textasciitilde{} h \textasciicircum{} i"
+        # Braces are now escaped too (security: prevents LaTeX injection)
+        expected_output = r"Special chars: a \& b \% c \# d \_ e \{f\} g \textasciitilde{} h \textasciicircum{} i"
 
         result = renderer.render(data)
 
         self.assertEqual(result, expected_output)
 
-    def test_given_data_with_latex_command_when_render_then_preserves_command(self):
+    def test_given_data_with_latex_command_when_render_then_escapes_it(self):
+        """User input containing LaTeX commands is escaped for security."""
         template_path = self.root / "template.tex"
         template_content = r"Latex: \VAR{text | escape_latex}"
         with open(template_path, "w") as f:
             f.write(template_content)
         renderer = LatexRenderer(self.root, "template.tex")
         data = {"text": r"\textbf{Bold}"}
-        expected_output = r"Latex: \textbf{Bold}"
+        # Backslash → \textbackslash{}, then its {} are escaped too → \textbackslash\{\}
+        expected_output = r"Latex: \textbackslash\{\}textbf\{Bold\}"
 
         result = renderer.render(data)
 
