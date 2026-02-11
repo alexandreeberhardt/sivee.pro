@@ -17,7 +17,6 @@ import { SectionType } from '../types';
 interface AddSectionModalProps {
   onAdd: (type: SectionType, title: string) => void;
   onClose: () => void;
-  existingSections: SectionType[];
 }
 
 const sectionIcons: Record<SectionType, React.ReactNode> = {
@@ -42,7 +41,7 @@ const sectionTypes: SectionType[] = [
   'custom',
 ];
 
-export default function AddSectionModal({ onAdd, onClose, existingSections }: AddSectionModalProps) {
+export default function AddSectionModal({ onAdd, onClose }: AddSectionModalProps) {
   const { t } = useTranslation();
   const [selectedType, setSelectedType] = useState<SectionType | null>(null);
   const [customTitle, setCustomTitle] = useState('');
@@ -116,20 +115,16 @@ export default function AddSectionModal({ onAdd, onClose, existingSections }: Ad
         {/* Options */}
         <div className="p-3 sm:p-4 space-y-2 max-h-[50vh] overflow-y-auto custom-scrollbar">
           {sectionTypes.map((type) => {
-            const isExisting = existingSections.includes(type) && type !== 'custom';
             const isSelected = selectedType === type;
 
             return (
               <button
                 key={type}
-                onClick={() => !isExisting && setSelectedType(type)}
-                disabled={isExisting}
+                onClick={() => setSelectedType(type)}
                 className={`w-full flex items-center gap-3 sm:gap-4 p-3 sm:p-4 rounded-xl border-2 transition-all
                            text-left group active:scale-[0.99] ${
                   isSelected
                     ? 'border-primary-900 bg-primary-50'
-                    : isExisting
-                    ? 'border-primary-100 bg-primary-50/50 opacity-50 cursor-not-allowed'
                     : 'border-transparent bg-primary-50/50 hover:border-primary-200 hover:bg-primary-50'
                 }`}
               >
@@ -143,16 +138,9 @@ export default function AddSectionModal({ onAdd, onClose, existingSections }: Ad
                   {sectionIcons[type]}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <span className="font-medium text-primary-900 text-sm sm:text-base">
-                      {getSectionTitle(type)}
-                    </span>
-                    {isExisting && (
-                      <span className="text-xs text-primary-400 bg-primary-100 px-2 py-0.5 rounded-md">
-                        {t('addSection.alreadyAdded')}
-                      </span>
-                    )}
-                  </div>
+                  <span className="font-medium text-primary-900 text-sm sm:text-base">
+                    {getSectionTitle(type)}
+                  </span>
                   <p className="text-xs sm:text-sm text-primary-500 truncate">{getSectionDescription(type)}</p>
                 </div>
                 {isSelected && (

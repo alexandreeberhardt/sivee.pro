@@ -24,7 +24,7 @@ import {
   FileText,
   Sparkles,
   Layout,
-  ArrowRight,
+
   FileUp,
   Eye,
   Menu,
@@ -198,8 +198,6 @@ function App() {
   const [showMobilePreview, setShowMobilePreview] = useState(false);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const nextButtonRef = useRef<HTMLButtonElement>(null);
-  const actionButtonsRef = useRef<HTMLDivElement>(null);
 
   // Resume management state
   const [savedResumes, setSavedResumes] = useState<SavedResume[]>([]);
@@ -338,7 +336,7 @@ function App() {
 
   useEffect(() => {
     // Initialize with translated section titles
-    setData(getEmptyResumeData(getTranslatedSectionTitle));
+    setData(getEmptyResumeData());
     setInitialLoading(false);
   }, []);
 
@@ -351,7 +349,7 @@ function App() {
       setCurrentResumeId(null);
       setResumeName('');
       // Reset editor data so the next user doesn't see stale content
-      setData(getEmptyResumeData(getTranslatedSectionTitle));
+      setData(getEmptyResumeData());
       setHasImported(false);
       setEditorStep(0);
       setShowResumesPage(false);
@@ -429,7 +427,7 @@ function App() {
   };
 
   const handleNewResume = () => {
-    setData(getEmptyResumeData(getTranslatedSectionTitle));
+    setData(getEmptyResumeData());
     setCurrentResumeId(null);
     setShowResumesPage(false);
     setShowLanding(false);
@@ -705,9 +703,9 @@ function App() {
       sections: [...prev.sections, newSection],
     }));
     setShowAddModal(false);
-    // Advance to show the new section
+    // Ensure sections are visible
     if (!hasImported) {
-      setEditorStep((prev) => prev + 1);
+      setEditorStep(1);
     }
   };
 
@@ -1316,24 +1314,15 @@ function App() {
           />
         )}
 
-        {/* Next button after personal info if in step mode */}
+        {/* Add section button after personal info if in step mode */}
         {editorStep === 0 && !hasImported && (
           <div className="flex justify-end">
             <button
-              ref={nextButtonRef}
-              onClick={() => {
-                if (data.sections.length === 0) {
-                  setShowAddModal(true);
-                } else {
-                  setEditorStep(1);
-                  setTimeout(() => nextButtonRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' }), 100);
-                }
-              }}
-              className="btn-brand"
-              style={{ scrollMarginBottom: '2rem' }}
+              onClick={() => setShowAddModal(true)}
+              className="btn-secondary"
             >
-              {t('common.next')}
-              <ArrowRight className="w-4 h-4" />
+              <Plus className="w-4 h-4" />
+              {t('addSection.title')}
             </button>
           </div>
         )}
@@ -1349,82 +1338,40 @@ function App() {
               items={data.sections.map((s) => s.id)}
               strategy={verticalListSortingStrategy}
             >
-              {data.sections.map((section, index) => (
-                (hasImported || editorStep > index) && (
-                  <SortableSection
-                    key={section.id}
-                    section={section}
-                    onUpdate={(updates) => updateSection(section.id, updates)}
-                    onDelete={() => deleteSection(section.id)}
-                  />
-                )
+              {data.sections.map((section) => (
+                <SortableSection
+                  key={section.id}
+                  section={section}
+                  onUpdate={(updates) => updateSection(section.id, updates)}
+                  onDelete={() => deleteSection(section.id)}
+                />
               ))}
             </SortableContext>
           </DndContext>
         )}
 
-        {/* Next button for sections in step mode */}
-        {!hasImported && editorStep >= 1 && editorStep <= data.sections.length && (
-          <div
-            ref={actionButtonsRef}
-            className="flex justify-between"
-            style={{ scrollMarginBottom: '2rem' }}
-          >
+        {/* Action buttons for sections in step mode */}
+        {!hasImported && editorStep >= 1 && (
+          <div className="flex justify-end gap-3">
             <button
-              onClick={() => setEditorStep(editorStep - 1)}
+              onClick={() => setShowAddModal(true)}
               className="btn-secondary"
             >
-              {t('common.previous')}
+              <Plus className="w-4 h-4" />
+              {t('addSection.title')}
             </button>
-            <div className="flex gap-3">
-              <button
-                ref={editorStep < data.sections.length ? nextButtonRef : undefined}
-                onClick={() => {
-                  if (editorStep < data.sections.length) {
-                    setEditorStep(editorStep + 1);
-                    // Scroll to next button, or to action buttons if reaching last section
-                    const isLastSection = editorStep + 1 >= data.sections.length;
-                    setTimeout(() => {
-                      if (isLastSection) {
-                        actionButtonsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
-                      } else {
-                        nextButtonRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
-                      }
-                    }, 100);
-                  } else {
-                    setShowAddModal(true);
-                  }
-                }}
-                className={editorStep >= data.sections.length ? "btn-secondary" : "btn-brand"}
-                style={{ scrollMarginBottom: '2rem' }}
-              >
-                {editorStep < data.sections.length ? (
-                  <>
-                    {t('common.next')}
-                    <ArrowRight className="w-4 h-4" />
-                  </>
-                ) : (
-                  <>
-                    <Plus className="w-4 h-4" />
-                    {t('addSection.addButton')}
-                  </>
-                )}
-              </button>
-              {editorStep >= data.sections.length && (
-                <button
-                  onClick={handleGenerate}
-                  disabled={loading}
-                  className="btn-brand"
-                >
-                  {loading ? (
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                  ) : (
-                    <FileDown className="w-4 h-4" />
-                  )}
-                  {t('common.export')}
-                </button>
+            <button
+              onClick={handleGenerate}
+              disabled={loading}
+              className="btn-brand"
+            >
+              {loading ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : (
+                <FileDown className="w-4 h-4" />
               )}
-            </div>
+              {t('common.export')}
+            </button>
           </div>
         )}
 
@@ -1602,7 +1549,6 @@ function App() {
         <AddSectionModal
           onAdd={addSection}
           onClose={() => setShowAddModal(false)}
-          existingSections={data.sections.map((s) => s.type)}
         />
       )}
 

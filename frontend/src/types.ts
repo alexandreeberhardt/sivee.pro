@@ -454,9 +454,7 @@ export const getBaseTemplateId = (templateId: TemplateId): string => {
 };
 
 // Fonction pour créer les données par défaut avec les titres traduits
-export const getEmptyResumeData = (
-  getSectionTitle: (type: SectionType) => string
-): ResumeData => ({
+export const getEmptyResumeData = (): ResumeData => ({
   personal: {
     name: '',
     title: '',
@@ -465,20 +463,6 @@ export const getEmptyResumeData = (
     phone: '',
     links: [],
   },
-  sections: [
-    {
-      id: generateId(),
-      type: 'summary',
-      title: getSectionTitle('summary'),
-      isVisible: true,
-      items: '',
-    },
-    createSection('education', getSectionTitle('education')),
-    createSection('experiences', getSectionTitle('experiences')),
-    createSection('projects', getSectionTitle('projects')),
-    createSection('skills', getSectionTitle('skills')),
-    createSection('leadership', getSectionTitle('leadership')),
-    createSection('languages', getSectionTitle('languages')),
-  ],
+  sections: [],
   template_id: 'harvard',
 });
