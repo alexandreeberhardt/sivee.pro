@@ -61,7 +61,9 @@ site-CV/
 ├── Dockerfile            # Production image
 ├── Dockerfile.dev        # Development image
 ├── deploy.sh             # Production deployment
-└── migrate.sh            # Database migrations
+├── migrate.sh            # Database migrations
+└── test.sh               # Run test suite
+
 ```
 
 ---
