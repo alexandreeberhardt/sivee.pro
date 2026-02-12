@@ -2,8 +2,7 @@
  * Tests for CVPreview component
  */
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
-import { screen, waitFor } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
+import { screen, act } from '@testing-library/react'
 import { renderWithProviders } from '../test/render'
 import CVPreview from './CVPreview'
 import type { ResumeData } from '../types'
@@ -26,7 +25,6 @@ describe('CVPreview', () => {
   const originalFetch = globalThis.fetch
 
   beforeEach(() => {
-    // Mock fetch to avoid real API calls
     globalThis.fetch = vi.fn().mockResolvedValue({
       ok: true,
       blob: () => Promise.resolve(new Blob(['fake pdf'], { type: 'application/pdf' })),
@@ -37,25 +35,29 @@ describe('CVPreview', () => {
     globalThis.fetch = originalFetch
   })
 
-  it('renders without crashing with empty data', () => {
-    renderWithProviders(<CVPreview data={emptyData} />)
+  it('renders without crashing with empty data', async () => {
+    await act(async () => {
+      renderWithProviders(<CVPreview data={emptyData} />)
+    })
   })
 
-  it('renders without crashing with content data', () => {
-    renderWithProviders(<CVPreview data={dataWithContent} />)
+  it('renders without crashing with content data', async () => {
+    await act(async () => {
+      renderWithProviders(<CVPreview data={dataWithContent} />)
+    })
   })
 
-  it('has collapse/expand toggle', () => {
-    renderWithProviders(<CVPreview data={dataWithContent} />)
+  it('has collapse/expand toggle', async () => {
+    await act(async () => {
+      renderWithProviders(<CVPreview data={dataWithContent} />)
+    })
     const buttons = screen.getAllByRole('button')
     expect(buttons.length).toBeGreaterThan(0)
   })
 
-  it('does not fetch for empty data', async () => {
-    renderWithProviders(<CVPreview data={emptyData} debounceMs={0} />)
-    // Wait a bit to ensure no fetch was made for empty data
-    await new Promise(r => setTimeout(r, 100))
-    // fetch may or may not be called depending on implementation
-    // Just verify component doesn't crash
+  it('does not crash for empty data with no debounce', async () => {
+    await act(async () => {
+      renderWithProviders(<CVPreview data={emptyData} debounceMs={0} />)
+    })
   })
 })

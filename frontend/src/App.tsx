@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   DndContext,
@@ -7,10 +7,8 @@ import {
   PointerSensor,
   useSensor,
   useSensors,
-  DragEndEvent,
 } from '@dnd-kit/core';
 import {
-  arrayMove,
   SortableContext,
   sortableKeyboardCoordinates,
   verticalListSortingStrategy,
@@ -24,7 +22,6 @@ import {
   FileText,
   Sparkles,
   Layout,
-
   FileUp,
   Eye,
   Menu,
@@ -33,139 +30,24 @@ import {
   Save,
   FolderOpen,
   User,
-  Trash2,
-  Pencil,
-  Check,
 } from 'lucide-react';
 import {
   ResumeData,
-  CVSection,
   emptyResumeData,
   getEmptyResumeData,
-  createSection,
-  SectionType,
-  generateId,
   TemplateId,
   AVAILABLE_TEMPLATES,
-  SavedResume,
-  SizeVariant,
   applyTemplateSizeVariant,
   getTemplateSizeVariant,
   getBaseTemplateId,
-  CustomItem,
 } from './types';
-
-// Liste des types de sections connus
-const KNOWN_SECTION_TYPES: SectionType[] = [
-  'summary',
-  'education',
-  'experiences',
-  'projects',
-  'skills',
-  'leadership',
-  'languages',
-  'custom',
-];
-
-/**
- * Vérifie si un type de section est connu
- */
-const isKnownSectionType = (type: string): type is SectionType => {
-  return KNOWN_SECTION_TYPES.includes(type as SectionType);
-};
-
-/**
- * Convertit les items d'une section inconnue en format CustomItem[]
- * Gère différents formats possibles envoyés par le backend
- */
-const convertToCustomItems = (items: unknown): CustomItem[] => {
-  // Si c'est déjà un tableau
-  if (Array.isArray(items)) {
-    return items.map((item) => {
-      // Si c'est une chaîne de caractères simple
-      if (typeof item === 'string') {
-        return {
-          title: '',
-          subtitle: '',
-          dates: '',
-          highlights: [item],
-        };
-      }
-      // Si c'est un objet avec des highlights (tableau de strings)
-      if (typeof item === 'object' && item !== null) {
-        const obj = item as Record<string, unknown>;
-        // Extraire les highlights depuis différentes propriétés possibles
-        let highlights: string[] = [];
-        if (Array.isArray(obj.highlights)) {
-          highlights = obj.highlights.filter((h): h is string => typeof h === 'string');
-        } else if (Array.isArray(obj.points)) {
-          highlights = obj.points.filter((p): p is string => typeof p === 'string');
-        } else if (Array.isArray(obj.items)) {
-          highlights = obj.items.filter((i): i is string => typeof i === 'string');
-        } else if (typeof obj.description === 'string') {
-          highlights = [obj.description];
-        }
-
-        return {
-          title: typeof obj.title === 'string' ? obj.title : (typeof obj.name === 'string' ? obj.name : ''),
-          subtitle: typeof obj.subtitle === 'string' ? obj.subtitle : (typeof obj.organization === 'string' ? obj.organization : ''),
-          dates: typeof obj.dates === 'string' ? obj.dates : (typeof obj.date === 'string' ? obj.date : ''),
-          highlights,
-        };
-      }
-      // Fallback
-      return {
-        title: '',
-        subtitle: '',
-        dates: '',
-        highlights: [],
-      };
-    });
-  }
-  // Si c'est une chaîne (ex: contenu texte simple)
-  if (typeof items === 'string' && items.trim()) {
-    return [{
-      title: '',
-      subtitle: '',
-      dates: '',
-      highlights: [items],
-    }];
-  }
-  // Fallback: tableau vide
-  return [];
-};
-
-/**
- * Normalise une section reçue du backend
- * Si le type est inconnu, convertit en section custom
- */
-const normalizeSection = (sectionData: Record<string, unknown>): CVSection => {
-  const type = sectionData.type as string;
-  const title = (sectionData.title as string) || type || 'Section';
-  const isVisible = sectionData.isVisible !== false;
-  const id = generateId();
-
-  // Si le type est connu, retourner la section telle quelle
-  if (isKnownSectionType(type)) {
-    return {
-      id,
-      type,
-      title,
-      isVisible,
-      items: sectionData.items as CVSection['items'],
-    };
-  }
-
-  // Type inconnu: convertir en section custom
-  console.log(`Section type "${type}" inconnu, conversion en custom avec titre "${title}"`);
-  return {
-    id,
-    type: 'custom',
-    title, // Conserve le titre original (ex: "Centres d'intérêt", "Publications")
-    isVisible,
-    items: convertToCustomItems(sectionData.items),
-  };
-};
+import { getTranslatedSectionTitle, isDefaultTitle } from './utils/sectionTitles';
+import { useViewNavigation } from './hooks/useViewNavigation';
+import { useResumeManager } from './hooks/useResumeManager';
+import { usePdfGeneration } from './hooks/usePdfGeneration';
+import { usePdfImport } from './hooks/usePdfImport';
+import { useSectionManager } from './hooks/useSectionManager';
+import { useAutoSize } from './hooks/useAutoSize';
 import PersonalSection from './components/PersonalSection';
 import SortableSection from './components/SortableSection';
 import AddSectionModal from './components/AddSectionModal';
@@ -175,105 +57,55 @@ import CVPreview from './components/CVPreview';
 import AuthPage from './components/auth/AuthPage';
 import Footer from './components/Footer';
 import GuestUpgradeBanner from './components/GuestUpgradeBanner';
+import FeatureCard from './components/FeatureCard';
+import ResumeCard from './components/ResumeCard';
 import { useAuth } from './context/AuthContext';
-import { listResumes, createResume, updateResume, deleteResume } from './api/resumes';
 import { Link } from 'react-router-dom';
-
-const API_URL = import.meta.env.DEV ? '/api' : '';
 
 function App() {
   const { t, i18n } = useTranslation();
   const { isAuthenticated, isLoading: authLoading, user, logout, loginAsGuest } = useAuth();
 
   const [data, setData] = useState<ResumeData>(emptyResumeData);
-  const [loading, setLoading] = useState(false);
-  const [importLoading, setImportLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [initialLoading, setInitialLoading] = useState(true);
   const [showAddModal, setShowAddModal] = useState(false);
-  const [showLanding, setShowLanding] = useState(true);
   const [hasImported, setHasImported] = useState(false);
-  const [editorStep, setEditorStep] = useState(0); // 0 = personal info, 1+ = sections
-  const [importStep, setImportStep] = useState(0);
+  const [editorStep, setEditorStep] = useState(0);
   const [showMobilePreview, setShowMobilePreview] = useState(false);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Resume management state
-  const [savedResumes, setSavedResumes] = useState<SavedResume[]>([]);
-  const [currentResumeId, setCurrentResumeId] = useState<number | null>(null);
-  const [showResumesPage, setShowResumesPage] = useState(false);
-  const [saveLoading, setSaveLoading] = useState(false);
-  const [showSaveModal, setShowSaveModal] = useState(false);
-  const [resumeName, setResumeName] = useState('');
+  const { showLanding, setShowLanding, showResumesPage, setShowResumesPage } = useViewNavigation();
 
-  // Auto-size state
-  const [autoSize, setAutoSize] = useState(true);
-  const [recommendedSize, setRecommendedSize] = useState<SizeVariant>('normal');
-  const [autoSizeLoading, setAutoSizeLoading] = useState(false);
-  const autoSizeTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const resumeManager = useResumeManager({
+    isAuthenticated,
+    setData,
+    setShowLanding,
+    setShowResumesPage,
+    setHasImported,
+    setEditorStep,
+    setError,
+    data,
+  });
 
-  // Sync internal view state with browser history for back button support
-  type ViewState = { view: 'landing' | 'resumes' | 'editor' };
+  const { loading, handleGenerate } = usePdfGeneration({ data, setError });
 
-  const getCurrentView = useCallback((): ViewState['view'] => {
-    if (showLanding) return 'landing';
-    if (showResumesPage) return 'resumes';
-    return 'editor';
-  }, [showLanding, showResumesPage]);
+  const { importLoading, importStep, fileInputRef, handleImport } = usePdfImport({
+    setData,
+    setShowLanding,
+    setHasImported,
+    setEditorStep,
+    setError,
+  });
 
-  const applyView = useCallback((view: ViewState['view']) => {
-    switch (view) {
-      case 'landing':
-        setShowLanding(true);
-        setShowResumesPage(false);
-        break;
-      case 'resumes':
-        setShowLanding(false);
-        setShowResumesPage(true);
-        break;
-      case 'editor':
-        setShowLanding(false);
-        setShowResumesPage(false);
-        break;
-    }
-  }, []);
+  const { handleDragEnd, updateSection, deleteSection, addSection } = useSectionManager({
+    setData,
+    setShowAddModal,
+    hasImported,
+    setEditorStep,
+  });
 
-  // Push history state when view changes
-  const previousViewRef = useRef<ViewState['view']>('landing');
-  useEffect(() => {
-    const currentView = getCurrentView();
-    if (currentView !== previousViewRef.current) {
-      // Push new state (don't push if this is the initial load)
-      if (previousViewRef.current !== undefined) {
-        window.history.pushState({ view: currentView }, '');
-      }
-      previousViewRef.current = currentView;
-    }
-  }, [showLanding, showResumesPage, getCurrentView]);
-
-  // Replace initial history entry with current view state
-  useEffect(() => {
-    window.history.replaceState({ view: 'landing' }, '');
-  }, []);
-
-  // Listen for popstate (back/forward button)
-  useEffect(() => {
-    const handlePopState = (event: PopStateEvent) => {
-      const state = event.state as ViewState | null;
-      if (state?.view) {
-        previousViewRef.current = state.view;
-        applyView(state.view);
-      } else {
-        // No state = initial entry, show landing
-        previousViewRef.current = 'landing';
-        applyView('landing');
-      }
-    };
-
-    window.addEventListener('popstate', handlePopState);
-    return () => window.removeEventListener('popstate', handlePopState);
-  }, [applyView]);
+  const { autoSize, setAutoSize, recommendedSize, autoSizeLoading } = useAutoSize({ data, setData });
 
   const importMessages = [
     t('import.analyzing'),
@@ -303,411 +135,25 @@ function App() {
     })
   );
 
-  // Helper to get translated section title
-  const getTranslatedSectionTitle = (type: SectionType): string => {
-    const titles: Record<SectionType, string> = {
-      summary: t('sections.summary'),
-      education: t('sections.education'),
-      experiences: t('sections.experience'),
-      projects: t('sections.projects'),
-      skills: t('sections.skills'),
-      leadership: t('sections.leadership'),
-      languages: t('sections.languages'),
-      custom: t('sections.custom'),
-    };
-    return titles[type];
-  };
-
-  // Default titles in all languages (to detect if a title is customized)
-  const defaultTitlesAllLanguages: Record<SectionType, string[]> = {
-    summary: ['Summary', 'Résumé'],
-    education: ['Education', 'Formation'],
-    experiences: ['Experience', 'Expérience'],
-    projects: ['Projects', 'Projets'],
-    skills: ['Skills', 'Compétences'],
-    leadership: ['Leadership', 'Leadership'],
-    languages: ['Languages', 'Langues'],
-    custom: ['Custom', 'Personnalisé'],
-  };
-
-  const isDefaultTitle = (type: SectionType, title: string): boolean => {
-    return defaultTitlesAllLanguages[type]?.includes(title) ?? false;
-  };
-
   useEffect(() => {
-    // Initialize with translated section titles
     setData(getEmptyResumeData());
     setInitialLoading(false);
   }, []);
-
-  // Load saved resumes when authenticated
-  useEffect(() => {
-    if (isAuthenticated) {
-      loadSavedResumes();
-    } else {
-      setSavedResumes([]);
-      setCurrentResumeId(null);
-      setResumeName('');
-      // Reset editor data so the next user doesn't see stale content
-      setData(getEmptyResumeData());
-      setHasImported(false);
-      setEditorStep(0);
-      setShowResumesPage(false);
-      setShowLanding(true);
-    }
-  }, [isAuthenticated]);
-
-  const loadSavedResumes = async () => {
-    try {
-      const response = await listResumes();
-      setSavedResumes(response.resumes);
-    } catch (err) {
-      console.error('Failed to load resumes:', err);
-    }
-  };
-
-  const handleSaveResume = async () => {
-    if (!isAuthenticated) return;
-
-    setSaveLoading(true);
-    try {
-      if (currentResumeId) {
-        // Update existing resume
-        await updateResume(currentResumeId, {
-          json_content: data,
-        });
-      } else {
-        // Create new resume
-        const name = resumeName || data.personal.name || 'Mon CV';
-        const newResume = await createResume(name, data);
-        setCurrentResumeId(newResume.id);
-        setShowSaveModal(false);
-      }
-      await loadSavedResumes();
-      setError(null);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to save resume');
-    } finally {
-      setSaveLoading(false);
-    }
-  };
-
-  const handleOpenResume = async (resume: SavedResume) => {
-    if (resume.json_content) {
-      setData(resume.json_content);
-      setCurrentResumeId(resume.id);
-      setShowResumesPage(false);
-      setShowLanding(false);
-      setHasImported(true);
-      setEditorStep(999);
-    }
-  };
-
-  const handleDeleteResume = async (resumeId: number) => {
-    if (!confirm(t('resumes.deleteConfirm'))) return;
-
-    try {
-      await deleteResume(resumeId);
-      if (currentResumeId === resumeId) {
-        setCurrentResumeId(null);
-      }
-      await loadSavedResumes();
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to delete resume');
-    }
-  };
-
-  const handleRenameResume = async (resumeId: number, newName: string) => {
-    try {
-      await updateResume(resumeId, { name: newName });
-      await loadSavedResumes();
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to rename resume');
-    }
-  };
-
-  const handleNewResume = () => {
-    setData(getEmptyResumeData());
-    setCurrentResumeId(null);
-    setShowResumesPage(false);
-    setShowLanding(false);
-    setHasImported(false);
-    setEditorStep(0);
-  };
 
   // Update default section titles when language changes
   useEffect(() => {
     document.title = t('landing.pageTitle');
 
-    // Update section titles that are still default (not customized)
     setData(prev => ({
       ...prev,
       sections: prev.sections.map(section => {
-        // Only update if the current title is a default title
         if (isDefaultTitle(section.type, section.title)) {
-          return { ...section, title: getTranslatedSectionTitle(section.type) };
+          return { ...section, title: getTranslatedSectionTitle(section.type, t) };
         }
         return section;
       }),
     }));
   }, [i18n.language]);
-
-  // Reset import step when not loading
-  useEffect(() => {
-    if (!importLoading) {
-      setImportStep(0);
-    }
-  }, [importLoading]);
-
-  // Auto-size: call backend to find optimal size when data changes
-  useEffect(() => {
-    if (!autoSize) return;
-
-    // Debounce the API call to avoid excessive requests
-    if (autoSizeTimeoutRef.current) {
-      clearTimeout(autoSizeTimeoutRef.current);
-    }
-
-    // Get current base template to use in API call
-    const currentBase = getBaseTemplateId(data.template_id);
-
-    autoSizeTimeoutRef.current = setTimeout(async () => {
-      setAutoSizeLoading(true);
-      try {
-        // Always use the base template for optimal-size calculation
-        const dataToSend = {
-          ...data,
-          template_id: currentBase,
-          lang: i18n.language.substring(0, 2),
-        };
-
-        const response = await fetch(`${API_URL}/optimal-size`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(dataToSend),
-        });
-
-        if (response.ok) {
-          const result = await response.json();
-          const newRecommendedSize = result.optimal_size as SizeVariant;
-          setRecommendedSize(newRecommendedSize);
-
-          // Apply the optimal template only if different
-          const newTemplateId = result.template_id as TemplateId;
-          setData(prev => {
-            if (prev.template_id !== newTemplateId) {
-              return { ...prev, template_id: newTemplateId };
-            }
-            return prev;
-          });
-        }
-      } catch (err) {
-        console.error('Failed to get optimal size:', err);
-      } finally {
-        setAutoSizeLoading(false);
-      }
-    }, 1000); // 1 second debounce
-
-    return () => {
-      if (autoSizeTimeoutRef.current) {
-        clearTimeout(autoSizeTimeoutRef.current);
-      }
-    };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [JSON.stringify(data.sections), JSON.stringify(data.personal), autoSize]);
-
-  const handleGenerate = async () => {
-    setLoading(true);
-    setError(null);
-
-    try {
-      const response = await fetch(`${API_URL}/generate`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...data, lang: i18n.language.substring(0, 2) }),
-      });
-
-      if (!response.ok) {
-        const errData = await response.json();
-        throw new Error(errData.detail || t('errors.generation'));
-      }
-
-      const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      const fileName = data.personal.name
-        ? `${data.personal.name.trim().replace(/\s+/g, '_')}_CV.pdf`
-        : 'CV.pdf';
-      a.download = fileName;
-      document.body.appendChild(a);
-      a.click();
-      window.URL.revokeObjectURL(url);
-      a.remove();
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Erreur inconnue');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleImport = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
-
-    setImportLoading(true);
-    setError(null);
-    setShowLanding(false);
-
-    // Initialiser avec des données vides pour afficher progressivement
-    const initialData: ResumeData = {
-      personal: { name: '', title: '', location: '', email: '', phone: '', links: [] },
-      sections: [],
-      template_id: 'harvard',
-    };
-    setData(initialData);
-
-    try {
-      const formData = new FormData();
-      formData.append('file', file);
-
-      const response = await fetch(`${API_URL}/import-stream`, {
-        method: 'POST',
-        body: formData,
-      });
-
-      if (!response.ok) {
-        const errData = await response.json();
-        throw new Error(errData.detail || t('errors.import'));
-      }
-
-      const reader = response.body?.getReader();
-      if (!reader) throw new Error('Stream non disponible');
-
-      const decoder = new TextDecoder();
-      let buffer = '';
-
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-
-        buffer += decoder.decode(value, { stream: true });
-        const lines = buffer.split('\n\n');
-        buffer = lines.pop() || '';
-
-        for (const line of lines) {
-          if (line.startsWith('data: ')) {
-            try {
-              const event = JSON.parse(line.slice(6));
-
-              switch (event.type) {
-                case 'status':
-                  // Met à jour le message de statut
-                  if (event.message === 'extracting') {
-                    setImportStep(0);
-                  } else if (event.message === 'processing') {
-                    setImportStep(1);
-                  }
-                  break;
-
-                case 'personal':
-                  // Met à jour les infos personnelles
-                  setData(prev => ({
-                    ...prev,
-                    personal: event.data,
-                  }));
-                  setImportStep(2);
-                  break;
-
-                case 'section':
-                  // Ajoute une section (avec normalisation pour les types inconnus)
-                  const normalizedSection = normalizeSection(event.data as Record<string, unknown>);
-                  setData(prev => ({
-                    ...prev,
-                    sections: [...prev.sections, normalizedSection],
-                  }));
-                  setImportStep(3);
-                  break;
-
-                case 'complete':
-                  // Données finales complètes (avec normalisation des sections)
-                  const processedData: ResumeData = {
-                    ...event.data,
-                    sections: event.data.sections.map((section: Record<string, unknown>) =>
-                      normalizeSection(section)
-                    ),
-                  };
-                  setData(processedData);
-                  setHasImported(true);
-                  setEditorStep(999);
-                  setImportStep(4);
-                  break;
-
-                case 'error':
-                  throw new Error(event.message);
-              }
-            } catch (parseErr) {
-              // Ignorer les erreurs de parsing SSE partielles
-              if (parseErr instanceof Error && parseErr.message !== 'Unexpected end of JSON input') {
-                console.error('SSE parse error:', parseErr);
-              }
-            }
-          }
-        }
-      }
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Erreur lors de l'import");
-    } finally {
-      setImportLoading(false);
-      if (fileInputRef.current) {
-        fileInputRef.current.value = '';
-      }
-    }
-  };
-
-  const handleDragEnd = (event: DragEndEvent) => {
-    const { active, over } = event;
-
-    if (over && active.id !== over.id) {
-      setData((prev) => {
-        const oldIndex = prev.sections.findIndex((s) => s.id === active.id);
-        const newIndex = prev.sections.findIndex((s) => s.id === over.id);
-        return {
-          ...prev,
-          sections: arrayMove(prev.sections, oldIndex, newIndex),
-        };
-      });
-    }
-  };
-
-  const updateSection = (sectionId: string, updates: Partial<CVSection>) => {
-    setData((prev) => ({
-      ...prev,
-      sections: prev.sections.map((s) =>
-        s.id === sectionId ? { ...s, ...updates } : s
-      ),
-    }));
-  };
-
-  const deleteSection = (sectionId: string) => {
-    setData((prev) => ({
-      ...prev,
-      sections: prev.sections.filter((s) => s.id !== sectionId),
-    }));
-  };
-
-  const addSection = (type: SectionType, title: string) => {
-    const newSection = createSection(type, title);
-    setData((prev) => ({
-      ...prev,
-      sections: [...prev.sections, newSection],
-    }));
-    setShowAddModal(false);
-    // Ensure sections are visible
-    if (!hasImported) {
-      setEditorStep(1);
-    }
-  };
 
   // Show loading during auth check
   if (authLoading || initialLoading) {
@@ -970,7 +416,7 @@ function App() {
               <p className="text-sm text-primary-500 mt-1">{t('resumes.pageSubtitle') || 'Gérez et accédez à tous vos CV'}</p>
             </div>
             <button
-              onClick={handleNewResume}
+              onClick={resumeManager.handleNewResume}
               className="btn-brand"
             >
               <Plus className="w-4 h-4" />
@@ -978,7 +424,7 @@ function App() {
             </button>
           </div>
 
-          {savedResumes.length === 0 ? (
+          {resumeManager.savedResumes.length === 0 ? (
             <div className="text-center py-20">
               <div className="w-20 h-20 bg-primary-100 rounded-3xl flex items-center justify-center mx-auto mb-6">
                 <FolderOpen className="w-10 h-10 text-primary-400" />
@@ -986,7 +432,7 @@ function App() {
               <h2 className="text-xl font-semibold text-primary-900 mb-2">{t('resumes.noResumes')}</h2>
               <p className="text-primary-500 mb-6 max-w-md mx-auto">{t('resumes.noResumesHint')}</p>
               <button
-                onClick={handleNewResume}
+                onClick={resumeManager.handleNewResume}
                 className="btn-brand"
               >
                 <Plus className="w-4 h-4" />
@@ -995,14 +441,14 @@ function App() {
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {savedResumes.map((resume) => (
+              {resumeManager.savedResumes.map((resume) => (
                 <ResumeCard
                   key={resume.id}
                   resume={resume}
-                  isActive={currentResumeId === resume.id}
-                  onOpen={() => handleOpenResume(resume)}
-                  onDelete={() => handleDeleteResume(resume.id)}
-                  onRename={(newName) => handleRenameResume(resume.id, newName)}
+                  isActive={resumeManager.currentResumeId === resume.id}
+                  onOpen={() => resumeManager.handleOpenResume(resume)}
+                  onDelete={() => resumeManager.handleDeleteResume(resume.id)}
+                  onRename={(newName) => resumeManager.handleRenameResume(resume.id, newName)}
                 />
               ))}
             </div>
@@ -1045,11 +491,11 @@ function App() {
 
             {/* Save */}
             <button
-              onClick={() => currentResumeId ? handleSaveResume() : setShowSaveModal(true)}
-              disabled={saveLoading}
+              onClick={() => resumeManager.currentResumeId ? resumeManager.handleSaveResume() : resumeManager.setShowSaveModal(true)}
+              disabled={resumeManager.saveLoading}
               className="btn-ghost"
             >
-              {saveLoading ? (
+              {resumeManager.saveLoading ? (
                 <Loader2 className="w-4 h-4 animate-spin" />
               ) : (
                 <Save className="w-4 h-4" />
@@ -1172,13 +618,13 @@ function App() {
               {/* Save */}
               <button
                 onClick={() => {
-                  currentResumeId ? handleSaveResume() : setShowSaveModal(true);
+                  resumeManager.currentResumeId ? resumeManager.handleSaveResume() : resumeManager.setShowSaveModal(true);
                   setShowMobileMenu(false);
                 }}
-                disabled={saveLoading}
+                disabled={resumeManager.saveLoading}
                 className="w-full px-2 py-2.5 text-left text-sm text-primary-700 hover:bg-primary-50 rounded-lg flex items-center gap-3 transition-colors disabled:opacity-50"
               >
-                {saveLoading ? (
+                {resumeManager.saveLoading ? (
                   <Loader2 className="w-4 h-4 animate-spin text-primary-500" />
                 ) : (
                   <Save className="w-4 h-4 text-primary-500" />
@@ -1553,13 +999,13 @@ function App() {
       )}
 
       {/* Save Modal */}
-      {showSaveModal && (
+      {resumeManager.showSaveModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-primary-950/50 backdrop-blur-sm p-4">
           <div className="bg-surface-0 rounded-2xl shadow-xl border border-primary-100/30 w-full max-w-md animate-fade-in">
             <div className="px-5 py-4 border-b border-primary-100/50 flex items-center justify-between">
               <h2 className="text-lg font-semibold text-primary-900">{t('resumes.saveAs')}</h2>
               <button
-                onClick={() => setShowSaveModal(false)}
+                onClick={() => resumeManager.setShowSaveModal(false)}
                 className="p-1.5 text-primary-400 hover:text-primary-600 hover:bg-primary-100 rounded-lg transition-colors"
               >
                 <X className="w-5 h-5" />
@@ -1572,8 +1018,8 @@ function App() {
                 </label>
                 <input
                   type="text"
-                  value={resumeName}
-                  onChange={(e) => setResumeName(e.target.value)}
+                  value={resumeManager.resumeName}
+                  onChange={(e) => resumeManager.setResumeName(e.target.value)}
                   placeholder={t('resumes.resumeNamePlaceholder')}
                   className="input"
                   autoFocus
@@ -1581,17 +1027,17 @@ function App() {
               </div>
               <div className="flex gap-3 pt-1">
                 <button
-                  onClick={() => setShowSaveModal(false)}
+                  onClick={() => resumeManager.setShowSaveModal(false)}
                   className="btn-secondary flex-1"
                 >
                   {t('common.cancel')}
                 </button>
                 <button
-                  onClick={handleSaveResume}
-                  disabled={saveLoading}
+                  onClick={resumeManager.handleSaveResume}
+                  disabled={resumeManager.saveLoading}
                   className="btn-brand flex-1"
                 >
-                  {saveLoading ? (
+                  {resumeManager.saveLoading ? (
                     <Loader2 className="w-4 h-4 animate-spin" />
                   ) : (
                     <Save className="w-4 h-4" />
@@ -1749,214 +1195,6 @@ function App() {
           </div>
         </div>
       )}
-    </div>
-  );
-}
-
-function FeatureCard({
-  icon,
-  title,
-  description,
-}: {
-  icon: React.ReactNode;
-  title: string;
-  description: string;
-}) {
-  return (
-    <div className="p-5 sm:p-6 rounded-2xl bg-surface-0 border border-primary-100/50 hover:border-primary-200/50 hover:shadow-soft transition-all">
-      <div className="w-10 h-10 bg-brand/10 rounded-xl flex items-center justify-center mb-4 text-brand">
-        {icon}
-      </div>
-      <h3 className="text-base font-semibold text-primary-900 mb-1.5">{title}</h3>
-      <p className="text-sm text-primary-500 leading-relaxed">{description}</p>
-    </div>
-  );
-}
-
-// Detect if we're on a mobile device that doesn't support inline PDF
-const isMobileDevice = () => {
-  if (typeof window === 'undefined') return false;
-  const userAgent = navigator.userAgent.toLowerCase();
-  return /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(userAgent);
-};
-
-function ResumeCard({
-  resume,
-  isActive,
-  onOpen,
-  onDelete,
-  onRename,
-}: {
-  resume: SavedResume;
-  isActive: boolean;
-  onOpen: () => void;
-  onDelete: () => void;
-  onRename: (newName: string) => void;
-}) {
-  const { t } = useTranslation();
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [isMobile] = useState(isMobileDevice);
-  const [isEditing, setIsEditing] = useState(false);
-  const [editName, setEditName] = useState(resume.name);
-
-  // Generate preview on mount
-  useEffect(() => {
-    if (resume.json_content) {
-      generatePreview();
-    }
-  }, [resume.id]);
-
-  const generatePreview = async () => {
-    if (!resume.json_content) return;
-
-    setLoading(true);
-    try {
-      const response = await fetch(`${API_URL}/generate`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...resume.json_content, lang: 'fr' }),
-      });
-
-      if (response.ok) {
-        const blob = await response.blob();
-        const url = URL.createObjectURL(blob);
-        setPreviewUrl(url);
-      }
-    } catch (err) {
-      console.error('Failed to generate preview:', err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // Cleanup URL on unmount
-  useEffect(() => {
-    return () => {
-      if (previewUrl) {
-        URL.revokeObjectURL(previewUrl);
-      }
-    };
-  }, [previewUrl]);
-
-  // Get template name from resume data
-  const templateId = resume.json_content?.template_id?.replace(/_compact|_large/, '') || 'harvard';
-  const displayName = resume.name;
-
-  return (
-    <div
-      className={`group bg-surface-0 rounded-2xl border overflow-hidden transition-all cursor-pointer hover:shadow-lg ${
-        isActive
-          ? 'border-brand ring-2 ring-brand/20'
-          : 'border-primary-100 hover:border-primary-200'
-      }`}
-      onClick={onOpen}
-    >
-      {/* Preview */}
-      <div className="relative aspect-[210/297] bg-primary-50 overflow-hidden">
-        {loading ? (
-          <div className="absolute inset-0 flex items-center justify-center">
-            <div className="w-8 h-8 rounded-full border-2 border-primary-200 border-t-brand animate-spin" />
-          </div>
-        ) : previewUrl && !isMobile ? (
-          <object
-            data={previewUrl}
-            type="application/pdf"
-            className="w-full h-full pointer-events-none"
-          >
-            <div className="w-full h-full flex items-center justify-center">
-              <FileText className="w-12 h-12 text-primary-300" />
-            </div>
-          </object>
-        ) : (
-          <div className="w-full h-full flex items-center justify-center">
-            <FileText className="w-12 h-12 text-primary-300" />
-          </div>
-        )}
-
-        {/* Hover overlay */}
-        <div className="absolute inset-0 bg-primary-900/0 group-hover:bg-primary-900/10 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100">
-          <div className="bg-white/95 backdrop-blur-sm rounded-lg px-4 py-2 shadow-lg border border-primary-100">
-            <span className="text-sm font-medium text-primary-700">{t('resumes.open') || 'Ouvrir'}</span>
-          </div>
-        </div>
-
-        {/* Action buttons */}
-        <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-all">
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              setIsEditing(true);
-              setEditName(resume.name);
-            }}
-            className="p-2 bg-white/90 hover:bg-primary-50 text-primary-400 hover:text-primary-700 rounded-lg transition-all shadow-sm"
-            title={t('resumes.rename') || 'Renommer'}
-          >
-            <Pencil className="w-4 h-4" />
-          </button>
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              onDelete();
-            }}
-            className="p-2 bg-white/90 hover:bg-error-50 text-primary-400 hover:text-error-600 rounded-lg transition-all shadow-sm"
-          >
-            <Trash2 className="w-4 h-4" />
-          </button>
-        </div>
-
-        {/* Active indicator */}
-        {isActive && (
-          <div className="absolute top-2 left-2 px-2 py-1 bg-brand text-white text-xs font-medium rounded-md">
-            {t('resumes.current') || 'Actuel'}
-          </div>
-        )}
-      </div>
-
-      {/* Info */}
-      <div className="p-4">
-        {isEditing ? (
-          <div className="flex items-center gap-1" onClick={(e) => e.stopPropagation()}>
-            <input
-              type="text"
-              value={editName}
-              onChange={(e) => setEditName(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' && editName.trim()) {
-                  onRename(editName.trim());
-                  setIsEditing(false);
-                } else if (e.key === 'Escape') {
-                  setIsEditing(false);
-                  setEditName(resume.name);
-                }
-              }}
-              autoFocus
-              className="flex-1 min-w-0 px-2 py-0.5 text-sm font-medium text-primary-900 border border-primary-200 rounded focus:outline-none focus:ring-2 focus:ring-brand/30 focus:border-brand"
-            />
-            <button
-              onClick={() => {
-                if (editName.trim()) {
-                  onRename(editName.trim());
-                  setIsEditing(false);
-                }
-              }}
-              className="p-1 text-brand hover:text-brand-dark rounded transition-colors"
-            >
-              <Check className="w-4 h-4" />
-            </button>
-          </div>
-        ) : (
-          <h3 className="font-medium text-primary-900 truncate">{displayName}</h3>
-        )}
-        <div className="flex items-center justify-between mt-1.5">
-          <span className="text-xs text-primary-400 capitalize">{templateId}</span>
-          {resume.created_at && (
-            <span className="text-xs text-primary-400">
-              {new Date(resume.created_at).toLocaleDateString()}
-            </span>
-          )}
-        </div>
-      </div>
     </div>
   );
 }
