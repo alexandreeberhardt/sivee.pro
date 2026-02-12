@@ -40,9 +40,14 @@ export default function Footer() {
             </Link>
           </nav>
 
-          <p className="text-xs sm:text-sm text-primary-400">
-            {t('landing.madeWith')}
-          </p>
+          <a
+            href="https://github.com/alexandreeberhardt/sivee.pro/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-xs sm:text-sm text-primary-400 hover:text-primary-600 transition-colors"
+          >
+            {t('landing.openSource')}
+          </a>
         </div>
       </div>
     </footer>

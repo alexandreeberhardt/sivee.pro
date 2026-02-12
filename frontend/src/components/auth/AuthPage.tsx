@@ -76,9 +76,14 @@ export default function AuthPage({ onContinueWithoutAuth }: AuthPageProps) {
           </div>
 
           {/* Footer */}
-          <p className="text-sm text-white/60">
-            {t('landing.madeWith')}
-          </p>
+          <a
+            href="https://github.com/alexandreeberhardt/sivee.pro/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-sm text-white/60 hover:text-white/80 transition-colors"
+          >
+            {t('landing.openSource')}
+          </a>
         </div>
       </div>
 
@@ -154,7 +159,14 @@ export default function AuthPage({ onContinueWithoutAuth }: AuthPageProps) {
 
         {/* Footer */}
         <footer className="py-4 px-4 text-center lg:hidden relative z-10">
-          <p className="text-xs text-primary-400 dark:text-primary-500">{t('landing.madeWith')}</p>
+          <a
+            href="https://github.com/alexandreeberhardt/sivee.pro/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-xs text-primary-400 dark:text-primary-500 hover:text-primary-600 transition-colors"
+          >
+            {t('landing.openSource')}
+          </a>
         </footer>
       </div>
     </div>
