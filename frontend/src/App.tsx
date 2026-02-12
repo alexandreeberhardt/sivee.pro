@@ -404,6 +404,29 @@ function App() {
             <div className="flex items-center gap-2">
               <ThemeToggle />
               <LanguageSwitcher />
+
+              <div className="w-px h-5 bg-primary-200/60 mx-1" />
+
+              {/* User menu */}
+              <div className="flex items-center gap-1.5">
+                <span className="text-sm text-primary-500 hidden lg:inline max-w-[140px] truncate">
+                  {user?.email}
+                </span>
+                <Link
+                  to="/account"
+                  className="btn-ghost !p-2 text-primary-500 hover:text-primary-700"
+                  title={t('account.title')}
+                >
+                  <User className="w-4 h-4" />
+                </Link>
+                <button
+                  onClick={logout}
+                  className="btn-ghost !p-2 text-primary-500 hover:text-error-600 hover:bg-error-50"
+                  title={t('common.logout')}
+                >
+                  <LogOut className="w-4 h-4" />
+                </button>
+              </div>
             </div>
           </div>
         </header>

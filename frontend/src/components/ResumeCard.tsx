@@ -156,7 +156,7 @@ export default function ResumeCard({
                 }
               }}
               autoFocus
-              className="flex-1 min-w-0 px-2 py-0.5 text-sm font-medium text-primary-900 border border-primary-200 rounded focus:outline-none focus:ring-2 focus:ring-brand/30 focus:border-brand"
+              className="flex-1 min-w-0 px-2 py-0.5 text-sm font-medium text-primary-900 bg-surface-0 border border-primary-200 rounded focus:outline-none focus:ring-2 focus:ring-brand/30 focus:border-brand"
             />
             <button
               onClick={() => {
