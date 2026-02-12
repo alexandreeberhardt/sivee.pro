@@ -15,18 +15,25 @@ Here are examples of professional resumes generated with the application using d
 
 ## Features
 
-- **Dynamic sections**: Add, remove, reorder, and toggle visibility of CV sections
-- **Drag and drop**: Reorganize sections by dragging them
-- **Custom sections**: Create personalized sections with custom titles
-- **Real-time editing**: Edit all CV content through an intuitive web interface
-- **PDF generation**: High-quality PDF output using LaTeX compilation
-- **PDF Import**: Import existing CVs using AI-powered extraction
-- **Responsive design**: Works on desktop and mobile devices
-- **User accounts**: Register, login, and manage multiple CVs
-- **Guest accounts**: Try the app without registration (limited to 3 CVs)
-- **Google OAuth**: Sign in with Google account
-- **GDPR compliance**: Export and delete your data anytime
-- **Smart template sizing**: Auto-fit content to one page with optimal template selection
+### PDF Generation & Templates
+- **LaTeX Engine**: High-quality typographic PDF generation (superior to standard HTML-to-PDF).
+- **Professional Templates**: Varied choices including Harvard, McKinsey, and Europass styles.
+- **Smart Sizing**: Automatic content fitting to a single page.
+- **PDF Import**: (Experimental) Import existing CVs via AI extraction.
+
+### Editor & Customization
+- **Real-time Editing**: Visualize changes instantly as you type.
+- **Drag and Drop**: Easily reorganize your CV sections.
+- **Dynamic Sections**: Add, rename, hide, or remove any section (Experience, Education, etc.).
+- **Dark/Light Mode**: Interface adapted to your visual preferences.
+- **Multi-language**: Interface available in French and English.
+
+### Accounts & Security
+- **Guest Mode**: Test the application immediately without creating an account (limited to 3 CVs).
+- **Seamless Upgrade**: Convert guest account to permanent without data loss.
+- **Google OAuth**: Fast and secure sign-in with Google.
+- **Privacy (GDPR)**: Export all data or permanently delete account in one click.
+- **Secure Architecture**: Hashed passwords and secure JWT session management.
 
 ## Quick Install (Docker)
 
