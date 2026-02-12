@@ -6,6 +6,7 @@ __pycache__/
 *$py.class
 *.egg-info/
 .pytest_cache/
+.coverage
 
 # Environment
 .env
@@ -31,3 +32,4 @@ temp/
 
 # OS
 .DS_Store
+
