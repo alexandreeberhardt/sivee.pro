@@ -27,6 +27,8 @@
     "passwordPlaceholder": "Your password",
     "confirmPassword": "Confirm password",
     "confirmPasswordPlaceholder": "Confirm your password",
+    "passwordsMatch": "Passwords match",
+    "passwordsDontMatch": "Passwords don't match",
     "loggingIn": "Signing in...",
     "registering": "Registering...",
     "noAccount": "Don't have an account?",
