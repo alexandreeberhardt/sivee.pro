@@ -18,9 +18,15 @@ export function usePdfGeneration({ data, setError }: UsePdfGenerationOptions) {
     setError(null)
 
     try {
+      const token = localStorage.getItem('access_token')
+      const headers: Record<string, string> = { 'Content-Type': 'application/json' }
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`
+      }
+
       const response = await fetch(`${API_URL}/generate`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers,
         body: JSON.stringify({ ...data, lang: i18n.language.substring(0, 2) }),
       })
 

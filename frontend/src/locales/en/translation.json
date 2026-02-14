@@ -323,7 +323,10 @@
     "upgradeBannerTitle": "Save your work",
     "upgradeBannerDesc": "Create a free account to keep your resumes and unlock more features.",
     "createAccount": "Create free account",
-    "limitReached": "Guest accounts are limited to 3 resumes. Create a free account to save more.",
+    "limitReached": "Guest accounts are limited to 1 resume. Create a free account to save more.",
+    "downloadLimitReached": "Monthly download limit reached. Create a free account to get more downloads.",
+    "downloadLimitReachedUser": "Monthly download limit reached. Upgrade to Premium to get more downloads.",
+    "saveLimitReached": "Maximum number of resumes reached. Upgrade to Premium to save more.",
     "upgradeSuccess": "Account created!",
     "upgradeSuccessDesc": "Your resumes have been preserved. Enjoy the full experience!",
     "upgradeModalSubtitle": "Keep your resumes safe"

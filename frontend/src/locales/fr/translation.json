@@ -324,7 +324,10 @@
     "upgradeBannerTitle": "Sauvegardez votre travail",
     "upgradeBannerDesc": "Cr\u00e9ez un compte gratuit pour conserver vos CV et d\u00e9bloquer plus de fonctionnalit\u00e9s.",
     "createAccount": "Cr\u00e9er un compte gratuit",
-    "limitReached": "Les comptes invit\u00e9s sont limit\u00e9s \u00e0 3 CV. Cr\u00e9ez un compte gratuit pour en sauvegarder plus.",
+    "limitReached": "Les comptes invit\u00e9s sont limit\u00e9s \u00e0 1 CV. Cr\u00e9ez un compte gratuit pour en sauvegarder plus.",
+    "downloadLimitReached": "Limite de t\u00e9l\u00e9chargements mensuels atteinte. Cr\u00e9ez un compte gratuit pour plus de t\u00e9l\u00e9chargements.",
+    "downloadLimitReachedUser": "Limite de t\u00e9l\u00e9chargements mensuels atteinte. Passez \u00e0 Premium pour plus de t\u00e9l\u00e9chargements.",
+    "saveLimitReached": "Nombre maximum de CV atteint. Passez \u00e0 Premium pour en sauvegarder plus.",
     "upgradeSuccess": "Compte cr\u00e9\u00e9 !",
     "upgradeSuccessDesc": "Vos CV ont \u00e9t\u00e9 conserv\u00e9s. Profitez de l'exp\u00e9rience compl\u00e8te !",
     "upgradeModalSubtitle": "Gardez vos CV en s\u00e9curit\u00e9"
