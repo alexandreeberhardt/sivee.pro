@@ -332,6 +332,62 @@
     "upgradeSuccessDesc": "Vos CV ont \u00e9t\u00e9 conserv\u00e9s. Profitez de l'exp\u00e9rience compl\u00e8te !",
     "upgradeModalSubtitle": "Gardez vos CV en s\u00e9curit\u00e9"
   },
+  "feedback": {
+    "bannerTitle": "Donnez votre avis",
+    "bannerDesc": "Gagnez +3 CV et +5 exports !",
+    "bannerCta": "Donner mon avis",
+    "modalTitle": "Votre avis compte",
+    "modalSubtitle": "Aidez-nous à améliorer Sivee",
+    "profileLabel": "Quelle est votre situation actuelle ?",
+    "profileOptions": {
+      "student": "Étudiant(e)",
+      "graduate": "Jeune diplômé(e)",
+      "employed": "En poste",
+      "freelance": "Freelance / Indépendant(e)",
+      "unemployed": "En recherche d'emploi",
+      "career_change": "En reconversion",
+      "other": "Autre"
+    },
+    "targetSectorLabel": "Dans quel secteur cherchez-vous ?",
+    "targetSectorPlaceholder": "Ex : Tech, Finance, Conseil...",
+    "sourceLabel": "Comment nous avez-vous connus ?",
+    "sourceOptions": {
+      "search": "Moteur de recherche",
+      "social": "Réseaux sociaux",
+      "wordOfMouth": "Bouche à oreille",
+      "other": "Autre"
+    },
+    "easeRatingLabel": "Notez la facilité d'utilisation",
+    "timeSpentLabel": "Combien de temps pour créer votre CV ?",
+    "timeSpentOptions": {
+      "lt15": "< 15 min",
+      "15to30": "15 – 30 min",
+      "30to60": "30 min – 1h",
+      "gt60": "> 1h"
+    },
+    "obstaclesLabel": "Qu'est-ce qui a été le plus complexe ?",
+    "obstaclesPlaceholder": "Décrivez les difficultés rencontrées...",
+    "alternativeLabel": "Sans Sivee, quel outil auriez-vous utilisé ?",
+    "alternativeOptions": {
+      "canva": "Canva",
+      "word": "Word / Google Docs",
+      "latex": "LaTeX (seul)",
+      "other_tool": "Autre outil en ligne",
+      "none": "Aucun"
+    },
+    "suggestionsLabel": "Quelle fonctionnalité manque-t-il ?",
+    "suggestionsPlaceholder": "Vos idées d'améliorations...",
+    "npsLabel": "Recommanderiez-vous Sivee à un collègue ?",
+    "npsNotLikely": "Pas du tout",
+    "npsVeryLikely": "Absolument",
+    "futureHelpLabel": "Comment pouvons-nous vous aider à décrocher plus d'entretiens ?",
+    "futureHelpPlaceholder": "Vos suggestions...",
+    "submit": "Envoyer mon avis",
+    "submitting": "Envoi...",
+    "successTitle": "Merci pour votre avis !",
+    "successDesc": "Vous avez reçu +{{resumes}} CV et +{{downloads}} exports en bonus.",
+    "alreadyCompleted": "Merci, vous avez déjà donné votre avis !"
+  },
   "account": {
     "title": "Mon compte",
     "profile": "Profil",

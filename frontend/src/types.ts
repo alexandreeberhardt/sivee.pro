@@ -6,6 +6,7 @@ export interface User {
   id: number
   email: string
   isGuest?: boolean
+  feedbackCompleted?: boolean
 }
 
 export interface AuthState {

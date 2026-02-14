@@ -30,6 +30,7 @@ import {
   Save,
   FolderOpen,
   User,
+  Gift,
 } from 'lucide-react'
 import {
   ResumeData,
@@ -57,6 +58,7 @@ import CVPreview from './components/CVPreview'
 import AuthPage from './components/auth/AuthPage'
 import Footer from './components/Footer'
 import GuestUpgradeBanner from './components/GuestUpgradeBanner'
+import { FeedbackModal } from './components/FeedbackBanner'
 import FeatureCard from './components/FeatureCard'
 import ResumeCard from './components/ResumeCard'
 import { useAuth } from './context/AuthContext'
@@ -68,6 +70,8 @@ function App() {
 
   const [data, setData] = useState<ResumeData>(emptyResumeData)
   const [error, setError] = useState<string | null>(null)
+  const [isLimitError, setIsLimitError] = useState(false)
+  const [showFeedbackModal, setShowFeedbackModal] = useState(false)
   const [initialLoading, setInitialLoading] = useState(true)
   const [showAddModal, setShowAddModal] = useState(false)
   const [hasImported, setHasImported] = useState(false)
@@ -77,6 +81,8 @@ function App() {
 
   const { showLanding, setShowLanding, showResumesPage, setShowResumesPage } = useViewNavigation()
 
+  const handleLimitError = () => setIsLimitError(true)
+
   const resumeManager = useResumeManager({
     isAuthenticated,
     setData,
@@ -85,10 +91,11 @@ function App() {
     setHasImported,
     setEditorStep,
     setError,
+    onLimitError: handleLimitError,
     data,
   })
 
-  const { loading, handleGenerate } = usePdfGeneration({ data, setError })
+  const { loading, handleGenerate } = usePdfGeneration({ data, setError, onLimitError: handleLimitError })
 
   const { importLoading, importStep, fileInputRef, handleImport } = usePdfImport({
     setData,
@@ -707,14 +714,27 @@ function App() {
       {/* Error Banner */}
       {error && (
         <div className="max-w-5xl mx-auto px-6 pt-4">
-          <div className="bg-error-50 border border-error-200 rounded-xl p-4 flex items-start gap-3 animate-slide-up">
-            <AlertCircle className="w-5 h-5 text-error-500 flex-shrink-0 mt-0.5" />
+          <div className={`${isLimitError ? 'bg-amber-50 border-amber-200' : 'bg-error-50 border-error-200'} border rounded-xl p-4 flex items-start gap-3 animate-slide-up`}>
+            <AlertCircle className={`w-5 h-5 ${isLimitError ? 'text-amber-500' : 'text-error-500'} flex-shrink-0 mt-0.5`} />
             <div className="flex-1">
-              <p className="text-sm font-medium text-error-700">{error}</p>
+              <p className={`text-sm font-medium ${isLimitError ? 'text-amber-700' : 'text-error-700'}`}>{error}</p>
+              {isLimitError && !user?.isGuest && !user?.feedbackCompleted && (
+                <button
+                  onClick={() => {
+                    setError(null)
+                    setIsLimitError(false)
+                    setShowFeedbackModal(true)
+                  }}
+                  className="mt-2 inline-flex items-center gap-1.5 text-sm font-medium text-brand hover:text-brand/80 transition-colors"
+                >
+                  <Gift className="w-4 h-4" />
+                  {t('feedback.bannerCta')} — {t('feedback.bannerDesc')}
+                </button>
+              )}
             </div>
             <button
-              onClick={() => setError(null)}
-              className="text-error-400 hover:text-error-600 transition-colors"
+              onClick={() => { setError(null); setIsLimitError(false) }}
+              className={`${isLimitError ? 'text-amber-400 hover:text-amber-600' : 'text-error-400 hover:text-error-600'} transition-colors`}
             >
               <span className="sr-only">Fermer</span>
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -728,6 +748,14 @@ function App() {
             </button>
           </div>
         </div>
+      )}
+
+      {/* Feedback Modal (triggered from limit error banner) */}
+      {showFeedbackModal && (
+        <FeedbackModal
+          onClose={() => setShowFeedbackModal(false)}
+          onSuccess={() => setShowFeedbackModal(false)}
+        />
       )}
 
       {/* Main Content */}

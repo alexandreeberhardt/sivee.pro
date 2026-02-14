@@ -89,6 +89,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
                 id: parseInt(decoded.sub, 10),
                 email: decoded.email,
                 isGuest: decoded.is_guest,
+                feedbackCompleted: decoded.feedback_completed,
               })
               setIsGuest(decoded.is_guest || false)
               setIsLoading(false)
@@ -117,6 +118,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
               id: parseInt(decoded.sub, 10),
               email: decoded.email,
               isGuest: decoded.is_guest,
+              feedbackCompleted: decoded.feedback_completed,
             })
             setIsGuest(decoded.is_guest || false)
           } else {
@@ -156,6 +158,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
         id: parseInt(decoded.sub, 10),
         email: decoded.email,
         isGuest: decoded.is_guest,
+        feedbackCompleted: decoded.feedback_completed,
       })
       setIsGuest(decoded.is_guest || false)
     }

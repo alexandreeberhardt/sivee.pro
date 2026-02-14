@@ -19,6 +19,7 @@ import { useAuth } from '../context/AuthContext'
 import ThemeToggle from '../components/ThemeToggle'
 import LanguageSwitcher from '../components/LanguageSwitcher'
 import { exportUserData, deleteUserAccount } from '../api/auth'
+import FeedbackBanner from '../components/FeedbackBanner'
 
 export default function Account() {
   const { t } = useTranslation()
@@ -150,6 +151,9 @@ export default function Account() {
             {t('common.logout')}
           </button>
         </div>
+
+        {/* Feedback Banner */}
+        <FeedbackBanner />
 
         {/* GDPR Actions */}
         <div className="space-y-4">

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { ResumeData, SavedResume, getEmptyResumeData } from '../types'
 import { listResumes, createResume, updateResume, deleteResume } from '../api/resumes'
+import { ApiError } from '../api/client'
 import { useTranslation } from 'react-i18next'
 
 interface UseResumeManagerOptions {
@@ -11,6 +12,7 @@ interface UseResumeManagerOptions {
   setHasImported: (v: boolean) => void
   setEditorStep: (v: number) => void
   setError: (v: string | null) => void
+  onLimitError?: () => void
   data: ResumeData
 }
 
@@ -22,6 +24,7 @@ export function useResumeManager({
   setHasImported,
   setEditorStep,
   setError,
+  onLimitError,
   data,
 }: UseResumeManagerOptions) {
   const { t } = useTranslation()
@@ -74,7 +77,17 @@ export function useResumeManager({
       await loadSavedResumes()
       setError(null)
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to save resume')
+      if (err instanceof ApiError && err.status === 429) {
+        onLimitError?.()
+        const detail = err.detail || ''
+        if (detail.includes('Guest')) {
+          setError(t('guest.limitReached'))
+        } else {
+          setError(t('guest.saveLimitReached'))
+        }
+      } else {
+        setError(err instanceof Error ? err.message : 'Failed to save resume')
+      }
     } finally {
       setSaveLoading(false)
     }

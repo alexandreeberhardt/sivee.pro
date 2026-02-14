@@ -7,9 +7,10 @@ const API_URL = import.meta.env.DEV ? '/api' : ''
 interface UsePdfGenerationOptions {
   data: ResumeData
   setError: (v: string | null) => void
+  onLimitError?: () => void
 }
 
-export function usePdfGeneration({ data, setError }: UsePdfGenerationOptions) {
+export function usePdfGeneration({ data, setError, onLimitError }: UsePdfGenerationOptions) {
   const { t, i18n } = useTranslation()
   const [loading, setLoading] = useState(false)
 
@@ -32,6 +33,14 @@ export function usePdfGeneration({ data, setError }: UsePdfGenerationOptions) {
 
       if (!response.ok) {
         const errData = await response.json()
+        if (response.status === 429) {
+          onLimitError?.()
+          const detail: string = errData.detail || ''
+          if (detail.includes('Guest')) {
+            throw new Error(t('guest.downloadLimitReached'))
+          }
+          throw new Error(t('guest.downloadLimitReachedUser'))
+        }
         throw new Error(errData.detail || t('errors.generation'))
       }
 

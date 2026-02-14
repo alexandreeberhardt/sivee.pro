@@ -31,7 +31,7 @@ export async function loginUser(credentials: LoginCredentials): Promise<AuthResp
  */
 export function decodeToken(
   token: string,
-): { sub: string; email: string; exp: number; is_guest?: boolean } | null {
+): { sub: string; email: string; exp: number; is_guest?: boolean; feedback_completed?: boolean } | null {
   try {
     const payload = token.split('.')[1]
     const decoded = JSON.parse(atob(payload))
@@ -113,4 +113,30 @@ export async function createGuestAccount(): Promise<AuthResponse> {
  */
 export async function upgradeGuestAccount(email: string, password: string): Promise<User> {
   return api.post<User>('/auth/upgrade', { email, password })
+}
+
+/**
+ * Submit feedback and receive bonus limits
+ */
+export interface FeedbackData {
+  profile?: string
+  target_sector?: string
+  source?: string
+  ease_rating: number
+  time_spent?: string
+  obstacles?: string
+  alternative?: string
+  suggestions?: string
+  nps?: number
+  future_help?: string
+}
+
+export interface FeedbackResponse {
+  message: string
+  bonus_resumes: number
+  bonus_downloads: number
+}
+
+export async function submitFeedback(data: FeedbackData): Promise<FeedbackResponse> {
+  return api.post<FeedbackResponse>('/auth/feedback', data)
 }

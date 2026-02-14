@@ -331,6 +331,62 @@
     "upgradeSuccessDesc": "Your resumes have been preserved. Enjoy the full experience!",
     "upgradeModalSubtitle": "Keep your resumes safe"
   },
+  "feedback": {
+    "bannerTitle": "Share your feedback",
+    "bannerDesc": "Get +3 resumes and +5 exports!",
+    "bannerCta": "Give feedback",
+    "modalTitle": "Your feedback matters",
+    "modalSubtitle": "Help us improve Sivee",
+    "profileLabel": "What is your current situation?",
+    "profileOptions": {
+      "student": "Student",
+      "graduate": "Recent graduate",
+      "employed": "Employed",
+      "freelance": "Freelance / Self-employed",
+      "unemployed": "Job seeking",
+      "career_change": "Career change",
+      "other": "Other"
+    },
+    "targetSectorLabel": "What sector are you looking in?",
+    "targetSectorPlaceholder": "e.g. Tech, Finance, Consulting...",
+    "sourceLabel": "How did you hear about us?",
+    "sourceOptions": {
+      "search": "Search engine",
+      "social": "Social media",
+      "wordOfMouth": "Word of mouth",
+      "other": "Other"
+    },
+    "easeRatingLabel": "Rate the ease of use",
+    "timeSpentLabel": "How long did it take to create your resume?",
+    "timeSpentOptions": {
+      "lt15": "< 15 min",
+      "15to30": "15 – 30 min",
+      "30to60": "30 min – 1h",
+      "gt60": "> 1h"
+    },
+    "obstaclesLabel": "What was the most difficult part?",
+    "obstaclesPlaceholder": "Describe any difficulties you encountered...",
+    "alternativeLabel": "Without Sivee, what tool would you have used?",
+    "alternativeOptions": {
+      "canva": "Canva",
+      "word": "Word / Google Docs",
+      "latex": "LaTeX (alone)",
+      "other_tool": "Another online tool",
+      "none": "None"
+    },
+    "suggestionsLabel": "What feature is missing?",
+    "suggestionsPlaceholder": "Your ideas for improvements...",
+    "npsLabel": "Would you recommend Sivee to a colleague?",
+    "npsNotLikely": "Not at all",
+    "npsVeryLikely": "Absolutely",
+    "futureHelpLabel": "How can we help you land more interviews?",
+    "futureHelpPlaceholder": "Your suggestions...",
+    "submit": "Submit feedback",
+    "submitting": "Submitting...",
+    "successTitle": "Thank you for your feedback!",
+    "successDesc": "You received +{{resumes}} resumes and +{{downloads}} exports as a bonus.",
+    "alreadyCompleted": "Thank you, you have already submitted your feedback!"
+  },
   "account": {
     "title": "My Account",
     "profile": "Profile",
