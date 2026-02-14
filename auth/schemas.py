@@ -87,6 +87,35 @@ class GuestUpgrade(BaseModel):
         return v
 
 
+class ForgotPasswordRequest(BaseModel):
+    """Schema for forgot-password request."""
+
+    email: EmailStr
+
+
+class ResetPasswordRequest(BaseModel):
+    """Schema for password reset with token."""
+
+    token: str
+    password: str
+
+    @field_validator("password")
+    @classmethod
+    def validate_password(cls, v: str) -> str:
+        """Validate password strength with strict security requirements."""
+        if len(v) < MIN_PASSWORD_LENGTH:
+            raise ValueError(f"Password must be at least {MIN_PASSWORD_LENGTH} characters long")
+        if not any(c.isupper() for c in v):
+            raise ValueError("Password must contain at least one uppercase letter")
+        if not any(c.islower() for c in v):
+            raise ValueError("Password must contain at least one lowercase letter")
+        if not any(c.isdigit() for c in v):
+            raise ValueError("Password must contain at least one digit")
+        if not re.search(f"[{re.escape(SPECIAL_CHARS)}]", v):
+            raise ValueError("Password must contain at least one special character (!@#$%^&*...)")
+        return v
+
+
 class UserDataExport(BaseModel):
     """Schema for GDPR data export (right to portability)."""
 

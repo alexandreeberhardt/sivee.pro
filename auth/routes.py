@@ -15,14 +15,22 @@ from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 
 from auth.dependencies import CurrentUser
-from auth.schemas import GuestUpgrade, Token, UserCreate, UserDataExport, UserResponse
+from auth.schemas import (
+    ForgotPasswordRequest,
+    GuestUpgrade,
+    ResetPasswordRequest,
+    Token,
+    UserCreate,
+    UserDataExport,
+    UserResponse,
+)
 from auth.security import (
     create_access_token,
     decode_access_token,
     get_password_hash,
     verify_password,
 )
-from core.email import send_welcome_email
+from core.email import send_password_reset_email, send_welcome_email
 from database.db_config import get_db
 from database.models import Resume, User
 
@@ -417,6 +425,77 @@ async def exchange_oauth_code(code: str) -> Token:
         )
 
     return Token(access_token=jwt_token)
+
+
+# ============================================================================
+# Password Reset Endpoints
+# ============================================================================
+
+RESET_TOKEN_EXPIRE_MINUTES = 30
+
+
+@router.post("/forgot-password")
+async def forgot_password(
+    data: ForgotPasswordRequest,
+    background_tasks: BackgroundTasks,
+    db: Annotated[Session, Depends(get_db)],
+) -> dict[str, str]:
+    """Request a password reset email.
+
+    Always returns 200 with a generic message to avoid leaking
+    whether an email is registered.
+    """
+    user = db.query(User).filter(User.email == data.email).first()
+
+    if user and user.password_hash:
+        token = create_access_token(
+            data={
+                "sub": str(user.id),
+                "email": user.email,
+                "type": "password_reset",
+                "hash": user.password_hash[:10],
+            },
+            expires_delta=timedelta(minutes=RESET_TOKEN_EXPIRE_MINUTES),
+        )
+        background_tasks.add_task(send_password_reset_email, user.email, token)
+
+    return {"message": "If this email is registered, a reset link has been sent."}
+
+
+@router.post("/reset-password")
+async def reset_password(
+    data: ResetPasswordRequest,
+    db: Annotated[Session, Depends(get_db)],
+) -> dict[str, str]:
+    """Reset password using a valid reset token."""
+    payload = decode_access_token(data.token)
+    if not payload or payload.get("type") != "password_reset":
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid or expired reset token",
+        )
+
+    user_id = payload.get("sub")
+    hash_prefix = payload.get("hash")
+
+    user = db.query(User).filter(User.id == int(user_id)).first()
+    if not user or not user.password_hash:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid or expired reset token",
+        )
+
+    # Verify token hasn't already been used (password unchanged since token generation)
+    if user.password_hash[:10] != hash_prefix:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="This reset link has already been used",
+        )
+
+    user.password_hash = get_password_hash(data.password)
+    db.commit()
+
+    return {"message": "Password has been reset successfully."}
 
 
 # ============================================================================
