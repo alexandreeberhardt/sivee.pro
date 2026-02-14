@@ -22,4 +22,4 @@ class DataManager:
                     raise ValueError("The YAML file must contain a root object (dict).")
                 return data
             except yaml.YAMLError as e:
-                raise ValueError(f"YAML syntax error: {e}")
+                raise ValueError(f"YAML syntax error: {e}") from e

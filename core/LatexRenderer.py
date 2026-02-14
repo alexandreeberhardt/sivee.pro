@@ -60,7 +60,7 @@ class LatexRenderer:
         try:
             template = self.env.get_template(self.template_name)
             return template.render(**data)
-        except TemplateNotFound:
-            raise FileNotFoundError(f"Template not found: {self.template_name}")
+        except TemplateNotFound as e:
+            raise FileNotFoundError(f"Template not found: {self.template_name}") from e
         except Exception as e:
-            raise RuntimeError(f"Jinja2 rendering error: {e}")
+            raise RuntimeError(f"Jinja2 rendering error: {e}") from e

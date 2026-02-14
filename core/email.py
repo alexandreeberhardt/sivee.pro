@@ -1,5 +1,7 @@
 """Email sending module for Sivee.pro using ZeptoMail transactional API."""
 
+# ruff: noqa: E501
+
 import logging
 import os
 
@@ -45,6 +47,7 @@ def send_welcome_email(email: str) -> None:
     """Send a welcome email to a newly registered user."""
     subject = "Bienvenue sur Sivee.pro !"
 
+    # fmt: off
     html_body = """\
 <!DOCTYPE html>
 <html lang="fr">
@@ -94,6 +97,7 @@ def send_welcome_email(email: str) -> None:
   </table>
 </body>
 </html>"""
+    # fmt: on
     send_email(email, subject, html_body)
 
 
@@ -102,6 +106,7 @@ def send_password_reset_email(email: str, token: str) -> None:
     subject = "Réinitialisation de votre mot de passe - Sivee.pro"
     reset_url = f"https://sivee.pro/reset-password?token={token}"
 
+    # fmt: off
     html_body = f"""\
 <!DOCTYPE html>
 <html lang="fr">
@@ -153,4 +158,5 @@ def send_password_reset_email(email: str, token: str) -> None:
   </table>
 </body>
 </html>"""
+    # fmt: on
     send_email(email, subject, html_body)

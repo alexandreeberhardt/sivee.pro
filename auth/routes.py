@@ -1,5 +1,6 @@
 """Authentication routes for the CV SaaS application."""
 
+import contextlib
 import os
 import secrets
 import time
@@ -697,11 +698,9 @@ async def delete_user_account(
 
             storage = StorageManager()
             for s3_key in s3_keys_to_delete:
-                try:
+                # Log but don't fail - data deletion is more important
+                with contextlib.suppress(Exception):
                     storage.delete_file(s3_key)
-                except Exception:
-                    # Log but don't fail - data deletion is more important
-                    pass
         except Exception:
             # S3 not configured or unavailable - continue with account deletion
             pass

@@ -47,7 +47,7 @@ async def get_current_user(
     try:
         user_id = int(user_id_str)
     except (ValueError, TypeError):
-        raise credentials_exception
+        raise credentials_exception from None
 
     user = db.query(User).filter(User.id == user_id).first()
     if user is None:

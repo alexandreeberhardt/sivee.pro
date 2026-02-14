@@ -1,5 +1,6 @@
 """Tests for database/db_config.py — engine creation, session management, connection check."""
 
+import contextlib
 import os
 
 import pytest
@@ -97,10 +98,8 @@ class TestGetDb:
             session = next(gen)
             assert session is not None
             # Exhaust the generator to trigger close
-            try:
+            with contextlib.suppress(StopIteration):
                 next(gen)
-            except StopIteration:
-                pass
         finally:
             db_cfg.engine = None
             db_cfg.SessionLocal = None

@@ -58,12 +58,25 @@ def upgrade() -> None:
 
 def downgrade() -> None:
     """Restore old feedback columns."""
-    for col in ("future_help", "nps", "suggestions", "alternative", "obstacles", "time_spent", "ease_rating", "target_sector", "profile"):
+    for col in (
+        "future_help",
+        "nps",
+        "suggestions",
+        "alternative",
+        "obstacles",
+        "time_spent",
+        "ease_rating",
+        "target_sector",
+        "profile",
+    ):
         if _column_exists("feedbacks", col):
             op.drop_column("feedbacks", col)
 
     if not _column_exists("feedbacks", "rating"):
-        op.add_column("feedbacks", sa.Column("rating", sa.Integer(), nullable=False, server_default=sa.text("3")))
+        op.add_column(
+            "feedbacks",
+            sa.Column("rating", sa.Integer(), nullable=False, server_default=sa.text("3")),
+        )
     if not _column_exists("feedbacks", "liked"):
         op.add_column("feedbacks", sa.Column("liked", sa.Text(), nullable=True))
     if not _column_exists("feedbacks", "improvement"):

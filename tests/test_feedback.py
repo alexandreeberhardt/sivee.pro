@@ -1,10 +1,9 @@
 """Tests for the feedback endpoint and bonus limits."""
 
-import pytest
+from conftest import VALID_PASSWORD, auth_header, create_authenticated_user, register_user
 from fastapi.testclient import TestClient
 from sqlalchemy.orm import Session
 
-from conftest import VALID_PASSWORD, auth_header, create_authenticated_user, register_user
 from database.models import User
 
 # Minimal valid payload (only ease_rating is required)
@@ -174,12 +173,11 @@ class TestBonusLimits:
             data={"username": email, "password": VALID_PASSWORD},
         )
         token_before = resp.json()["access_token"]
-        import json
-        import base64
 
-        payload_before = json.loads(
-            base64.b64decode(token_before.split(".")[1] + "==")
-        )
+        import base64  # noqa: E402
+        import json  # noqa: E402
+
+        payload_before = json.loads(base64.b64decode(token_before.split(".")[1] + "=="))
         assert payload_before.get("feedback_completed") is False
 
         # Submit feedback
@@ -196,7 +194,5 @@ class TestBonusLimits:
             data={"username": email, "password": VALID_PASSWORD},
         )
         token_after = resp.json()["access_token"]
-        payload_after = json.loads(
-            base64.b64decode(token_after.split(".")[1] + "==")
-        )
+        payload_after = json.loads(base64.b64decode(token_after.split(".")[1] + "=="))
         assert payload_after.get("feedback_completed") is True

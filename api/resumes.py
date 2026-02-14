@@ -1,5 +1,6 @@
 """Resume API routes with JWT authentication."""
 
+import contextlib
 import json
 import shutil
 import tempfile
@@ -416,8 +417,10 @@ async def generate_resume_pdf(
         if current_user.is_guest:
             raise HTTPException(
                 status_code=status.HTTP_429_TOO_MANY_REQUESTS,
-                detail=f"Guest accounts are limited to {MAX_DOWNLOADS_PER_GUEST} download per month. "
-                "Create a free account to get more downloads.",
+                detail=(
+                    f"Guest accounts are limited to {MAX_DOWNLOADS_PER_GUEST} download per month. "
+                    "Create a free account to get more downloads."
+                ),
             )
         if current_user.is_premium:
             raise HTTPException(
@@ -507,18 +510,16 @@ async def generate_resume_pdf(
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"LaTeX compilation error: {e}",
-        )
+        ) from e
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Unexpected error: {e}",
-        )
+        ) from e
     finally:
         # SECURITY: Always clean up temporary files, even on exceptions
-        try:
+        with contextlib.suppress(Exception):
             shutil.rmtree(temp_path)
-        except Exception:
-            pass
 
     # Increment download counter after successful generation
     current_user.download_count += 1

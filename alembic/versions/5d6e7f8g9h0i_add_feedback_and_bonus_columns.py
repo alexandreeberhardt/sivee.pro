@@ -20,7 +20,7 @@ depends_on: str | Sequence[str] | None = None
 
 
 def upgrade() -> None:
-    """Add feedback_completed_at, bonus_resumes, bonus_downloads to users and create feedbacks table."""
+    """Add feedback_completed_at, bonus_resumes, bonus_downloads and feedbacks table."""
     # Add bonus columns to users
     op.add_column(
         "users",

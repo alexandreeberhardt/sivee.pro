@@ -6,6 +6,7 @@ Authentification OAuth2 avec JWT.
 """
 
 import asyncio
+import contextlib
 import os
 import shutil
 import sys
@@ -21,37 +22,37 @@ from dotenv import load_dotenv
 # Charger le fichier .env depuis la racine du projet (dossier parent)
 load_dotenv(Path(__file__).parent.parent / ".env")
 
-import json
-import re
+import json  # noqa: E402
+import re  # noqa: E402
 
-import pdfplumber
-from fastapi import Depends, FastAPI, File, HTTPException, Request, UploadFile
-from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse, StreamingResponse
-from fastapi.staticfiles import StaticFiles
-from mistralai import Mistral
-from pydantic import BaseModel, Field, field_validator
+import pdfplumber  # noqa: E402
+from fastapi import Depends, FastAPI, File, HTTPException, Request, UploadFile  # noqa: E402
+from fastapi.middleware.cors import CORSMiddleware  # noqa: E402
+from fastapi.responses import FileResponse, StreamingResponse  # noqa: E402
+from fastapi.staticfiles import StaticFiles  # noqa: E402
+from mistralai import Mistral  # noqa: E402
+from pydantic import BaseModel, Field, field_validator  # noqa: E402
 
-from core.LatexRenderer import LatexRenderer
-from core.PdfCompiler import PdfCompiler
-from translations import get_section_title
+from core.LatexRenderer import LatexRenderer  # noqa: E402
+from core.PdfCompiler import PdfCompiler  # noqa: E402
+from translations import get_section_title  # noqa: E402
 
 # Limite de taille pour l'import de CV (protection contre les abus)
 # 10 000 caractères ≈ 2 500 tokens, suffisant pour un CV de 3-4 pages
 MAX_CV_TEXT_LENGTH = 10_000
 
 # Authentication imports
-from api.resumes import (
+from api.resumes import (  # noqa: E402
     MAX_DOWNLOADS_PER_GUEST,
     MAX_DOWNLOADS_PER_PREMIUM,
     MAX_DOWNLOADS_PER_USER,
     _get_monthly_download_count,
-    router as resumes_router,
 )
-from auth.routes import router as auth_router
-from auth.security import decode_access_token
-from database.db_config import get_db
-from database.models import User
+from api.resumes import router as resumes_router  # noqa: E402
+from auth.routes import router as auth_router  # noqa: E402
+from auth.security import decode_access_token  # noqa: E402
+from database.db_config import get_db  # noqa: E402
+from database.models import User  # noqa: E402
 
 # === Modèles Pydantic ===
 
@@ -357,7 +358,7 @@ def convert_section_items(section: CVSection, lang: str = "fr") -> dict[str, Any
 async def generate_cv(
     data: ResumeData,
     request: Request,
-    db: Any = Depends(get_db),
+    db: Any = Depends(get_db),  # noqa: B008
 ):
     """
     Génère un CV PDF à partir des données fournies.
@@ -396,11 +397,11 @@ async def generate_cv(
         current_downloads = _get_monthly_download_count(user, db)
         if current_downloads >= max_downloads:
             if user.is_guest:
-                raise HTTPException(
-                    status_code=429,
-                    detail=f"Guest accounts are limited to {MAX_DOWNLOADS_PER_GUEST} download per month. "
-                    "Create a free account to get more downloads.",
+                msg = (
+                    f"Guest accounts are limited to {MAX_DOWNLOADS_PER_GUEST} "
+                    "download per month. Create a free account to get more downloads."
                 )
+                raise HTTPException(status_code=429, detail=msg)
             if user.is_premium:
                 raise HTTPException(
                     status_code=429,
@@ -457,17 +458,15 @@ async def generate_cv(
         pdf_content = pdf_file.read_bytes()
 
     except RuntimeError as e:
-        raise HTTPException(status_code=500, detail=f"Erreur de compilation LaTeX: {e}")
+        raise HTTPException(status_code=500, detail=f"Erreur de compilation LaTeX: {e}") from e
     except HTTPException:
         raise
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Erreur inattendue: {e}")
+        raise HTTPException(status_code=500, detail=f"Erreur inattendue: {e}") from e
     finally:
         # SECURITY: Always clean up temporary files, even on exceptions
-        try:
+        with contextlib.suppress(Exception):
             shutil.rmtree(temp_path)
-        except Exception:
-            pass
 
     # Increment download counter after successful generation
     if user:
@@ -543,10 +542,8 @@ async def find_optimal_size(data: ResumeData):
     finally:
         # Nettoyer tous les dossiers temporaires
         for temp_dir in temp_dirs:
-            try:
+            with contextlib.suppress(Exception):
                 shutil.rmtree(temp_dir)
-            except Exception:
-                pass
 
 
 @app.get("/default-data")
@@ -569,7 +566,7 @@ async def get_default_data():
 
 
 @app.post("/import")
-async def import_cv(file: UploadFile = File(...)):
+async def import_cv(file: UploadFile = File(...)):  # noqa: B008
     """
     Importe un CV depuis un fichier PDF.
 
@@ -598,17 +595,17 @@ async def import_cv(file: UploadFile = File(...)):
         pdf_content = await file.read()
 
         # Créer un fichier temporaire pour pypdf
-        temp_pdf = tempfile.NamedTemporaryFile(delete=False, suffix=".pdf")
-        temp_pdf.write(pdf_content)
-        temp_pdf.close()
+        with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as temp_pdf:
+            temp_pdf.write(pdf_content)
+            temp_pdf_path = temp_pdf.name
 
         try:
-            with pdfplumber.open(temp_pdf.name) as pdf:
+            with pdfplumber.open(temp_pdf_path) as pdf:
                 text_content = ""
                 for page in pdf.pages:
                     text_content += (page.extract_text() or "") + "\n"
         finally:
-            Path(temp_pdf.name).unlink()
+            Path(temp_pdf_path).unlink()
 
         if not text_content.strip():
             raise HTTPException(status_code=400, detail="Impossible d'extraire le texte du PDF")
@@ -651,7 +648,13 @@ Analyse le texte du CV fourni et retourne un JSON avec la structure exacte suiva
       "title": "Education",
       "isVisible": true,
       "items": [
-        {"school": "Nom école", "degree": "Diplôme", "dates": "2020 - 2024", "subtitle": "Mention/GPA", "description": "Description"}
+        {
+            "school": "Nom école",
+            "degree": "Diplôme",
+            "dates": "2020 - 2024",
+            "subtitle": "Mention/GPA",
+            "description": "Description",
+        }
       ]
     },
     {
@@ -660,7 +663,12 @@ Analyse le texte du CV fourni et retourne un JSON avec la structure exacte suiva
       "title": "Experiences",
       "isVisible": true,
       "items": [
-        {"title": "Poste", "company": "Entreprise", "dates": "Jan 2023 - Present", "highlights": ["Point 1", "Point 2"]}
+        {
+            "title": "Poste",
+            "company": "Entreprise",
+            "dates": "Jan 2023 - Present",
+            "highlights": ["Point 1", "Point 2"],
+        }
       ]
     },
     {
@@ -669,7 +677,11 @@ Analyse le texte du CV fourni et retourne un JSON avec la structure exacte suiva
       "title": "Projects",
       "isVisible": true,
       "items": [
-        {"name": "Nom projet", "year": "2023", "highlights": ["Description 1", "Description 2"]}
+        {
+            "name": "Nom projet",
+            "year": "2023",
+            "highlights": ["Description 1", "Description 2"],
+        }
       ]
     },
     {
@@ -677,7 +689,10 @@ Analyse le texte du CV fourni et retourne un JSON avec la structure exacte suiva
       "type": "skills",
       "title": "Technical Skills",
       "isVisible": true,
-      "items": {"languages": "Python, JavaScript, C++", "tools": "Git, Docker, Linux"}
+      "items": {
+          "languages": "Python, JavaScript, C++",
+          "tools": "Git, Docker, Linux",
+      }
     },
     {
       "id": "sec-5",
@@ -685,7 +700,12 @@ Analyse le texte du CV fourni et retourne un JSON avec la structure exacte suiva
       "title": "Leadership",
       "isVisible": true,
       "items": [
-        {"role": "Rôle", "place": "Organisation", "dates": "2022 - 2023", "highlights": ["Action 1"]}
+        {
+            "role": "Rôle",
+            "place": "Organisation",
+            "dates": "2022 - 2023",
+            "highlights": ["Action 1"],
+        }
       ]
     },
     {
@@ -700,7 +720,9 @@ Analyse le texte du CV fourni et retourne un JSON avec la structure exacte suiva
 }
 
 IMPORTANT:
-- "links" est un ARRAY de liens professionnels. Chaque lien a: platform (linkedin, github, portfolio, behance, website, other), username (texte affiché), url (lien complet)
+- "links" est un ARRAY de liens professionnels. Chaque lien a: platform
+  (linkedin, github, portfolio, behance, website, other), username (texte affiché),
+  url (lien complet)
 - N'ajoute que les liens présents dans le CV
 - Pour "skills", items est un OBJET avec "languages" et "tools" (pas un array)
 - Pour "languages", items est une STRING simple
@@ -725,11 +747,11 @@ IMPORTANT:
     except HTTPException:
         raise
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Erreur lors de l'import: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Erreur lors de l'import: {str(e)}") from e
 
 
 @app.post("/import-stream")
-async def import_cv_stream(file: UploadFile = File(...)):
+async def import_cv_stream(file: UploadFile = File(...)):  # noqa: B008
     """
     Importe un CV depuis un fichier PDF avec streaming SSE.
     Envoie les sections au fur et à mesure qu'elles sont extraites.
@@ -755,17 +777,17 @@ async def import_cv_stream(file: UploadFile = File(...)):
             await asyncio.sleep(0)
 
             # Créer un fichier temporaire pour pypdf
-            temp_pdf = tempfile.NamedTemporaryFile(delete=False, suffix=".pdf")
-            temp_pdf.write(pdf_content)
-            temp_pdf.close()
+            with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as temp_pdf:
+                temp_pdf.write(pdf_content)
+                temp_pdf_path = temp_pdf.name
 
             try:
-                with pdfplumber.open(temp_pdf.name) as pdf:
+                with pdfplumber.open(temp_pdf_path) as pdf:
                     text_content = ""
                     for page in pdf.pages:
                         text_content += (page.extract_text() or "") + "\n"
             finally:
-                Path(temp_pdf.name).unlink()
+                Path(temp_pdf_path).unlink()
 
             if not text_content.strip():
                 error_msg = "Impossible d'extraire le texte du PDF"
@@ -815,7 +837,13 @@ Analyse le texte du CV fourni et retourne un JSON avec la structure exacte suiva
       "title": "Education",
       "isVisible": true,
       "items": [
-        {"school": "Nom école", "degree": "Diplôme", "dates": "2020 - 2024", "subtitle": "Mention/GPA", "description": "Description"}
+        {
+            "school": "Nom école",
+            "degree": "Diplôme",
+            "dates": "2020 - 2024",
+            "subtitle": "Mention/GPA",
+            "description": "Description",
+        }
       ]
     },
     {
@@ -824,7 +852,12 @@ Analyse le texte du CV fourni et retourne un JSON avec la structure exacte suiva
       "title": "Experiences",
       "isVisible": true,
       "items": [
-        {"title": "Poste", "company": "Entreprise", "dates": "Jan 2023 - Present", "highlights": ["Point 1", "Point 2"]}
+        {
+            "title": "Poste",
+            "company": "Entreprise",
+            "dates": "Jan 2023 - Present",
+            "highlights": ["Point 1", "Point 2"],
+        }
       ]
     },
     {
@@ -833,7 +866,11 @@ Analyse le texte du CV fourni et retourne un JSON avec la structure exacte suiva
       "title": "Projects",
       "isVisible": true,
       "items": [
-        {"name": "Nom projet", "year": "2023", "highlights": ["Description 1", "Description 2"]}
+        {
+            "name": "Nom projet",
+            "year": "2023",
+            "highlights": ["Description 1", "Description 2"],
+        }
       ]
     },
     {
@@ -841,7 +878,10 @@ Analyse le texte du CV fourni et retourne un JSON avec la structure exacte suiva
       "type": "skills",
       "title": "Technical Skills",
       "isVisible": true,
-      "items": {"languages": "Python, JavaScript, C++", "tools": "Git, Docker, Linux"}
+      "items": {
+          "languages": "Python, JavaScript, C++",
+          "tools": "Git, Docker, Linux",
+      }
     },
     {
       "id": "sec-5",
@@ -849,7 +889,12 @@ Analyse le texte du CV fourni et retourne un JSON avec la structure exacte suiva
       "title": "Leadership",
       "isVisible": true,
       "items": [
-        {"role": "Rôle", "place": "Organisation", "dates": "2022 - 2023", "highlights": ["Action 1"]}
+        {
+            "role": "Rôle",
+            "place": "Organisation",
+            "dates": "2022 - 2023",
+            "highlights": ["Action 1"],
+        }
       ]
     },
     {
@@ -865,8 +910,18 @@ Analyse le texte du CV fourni et retourne un JSON avec la structure exacte suiva
       "title": "Centres d'intérêt",
       "isVisible": true,
       "items": [
-        {"title": "Sport", "subtitle": "", "dates": "", "highlights": ["Football en club", "Course à pied"]},
-        {"title": "Musique", "subtitle": "", "dates": "", "highlights": ["Piano depuis 10 ans"]}
+        {
+            "title": "Sport",
+            "subtitle": "",
+            "dates": "",
+            "highlights": ["Football en club", "Course à pied"],
+        },
+        {
+            "title": "Musique",
+            "subtitle": "",
+            "dates": "",
+            "highlights": ["Piano depuis 10 ans"],
+        }
       ]
     }
   ],
@@ -874,18 +929,26 @@ Analyse le texte du CV fourni et retourne un JSON avec la structure exacte suiva
 }
 
 IMPORTANT:
-- "links" est un ARRAY de liens professionnels. Chaque lien a: platform (linkedin, github, portfolio, behance, website, other), username (texte affiché), url (lien complet)
+- "links" est un ARRAY de liens professionnels. Chaque lien a: platform
+  (linkedin, github, portfolio, behance, website, other), username (texte affiché),
+  url (lien complet)
 - N'ajoute que les liens présents dans le CV
 - Pour "skills", items est un OBJET avec "languages" et "tools" (pas un array)
 - Pour "languages", items est une STRING simple
-- Pour "custom", items est un ARRAY d'objets avec: title, subtitle (optionnel), dates (optionnel), highlights (array de strings)
-- Pour les autres types (education, experiences, projects, leadership), items est un ARRAY d'objets selon leur structure respective
-- Les types de section connus sont: summary, education, experiences, projects, skills, leadership, languages
-- Pour TOUTE autre section du CV (Centres d'intérêt, Publications, Certifications, Bénévolat, Hobbies, Récompenses, etc.), utilise type="custom" avec le titre original de la section
+- Pour "custom", items est un ARRAY d'objets avec: title, subtitle (optionnel),
+  dates (optionnel), highlights (array de strings)
+- Pour les autres types (education, experiences, projects, leadership), items est
+  un ARRAY d'objets selon leur structure respective
+- Les types de section connus sont: summary, education, experiences, projects,
+  skills, leadership, languages
+- Pour TOUTE autre section du CV (Centres d'intérêt, Publications, Certifications,
+  Bénévolat, Hobbies, Récompenses, etc.), utilise type="custom" avec le titre
+  original de la section
 - Génère des IDs uniques pour chaque section (sec-1, sec-2, etc.)
 - Si une info n'est pas dans le CV, utilise une chaîne vide "" ou un array vide []
 - N'invente pas d'informations, extrais uniquement ce qui est présent
-- EXTRAIS TOUTES les sections présentes dans le CV, même celles qui ne correspondent pas aux types standards"""
+- EXTRAIS TOUTES les sections présentes dans le CV, même celles qui ne
+  correspondent pas aux types standards"""
 
             # Streaming depuis Mistral (async)
             stream = await client.chat.stream_async(
@@ -931,7 +994,7 @@ IMPORTANT:
                         if text[end] == '"' and text[end - 1] != "\\":
                             try:
                                 return json.loads(text[start : end + 1]), end + 1
-                            except:
+                            except Exception:
                                 return None, -1
                         end += 1
                     return None, -1
@@ -970,7 +1033,8 @@ IMPORTANT:
                     if not sent_personal and '"personal"' in accumulated_json:
                         personal_data, _ = extract_json_object(accumulated_json, "personal")
                         if personal_data:
-                            yield f"data: {json.dumps({'type': 'personal', 'data': personal_data})}\n\n"
+                            msg = json.dumps({"type": "personal", "data": personal_data})
+                            yield f"data: {msg}\n\n"
                             await asyncio.sleep(0)
                             sent_personal = True
 
@@ -1003,7 +1067,10 @@ IMPORTANT:
                                                 "id" in section
                                                 and section["id"] not in sent_section_ids
                                             ):
-                                                yield f"data: {json.dumps({'type': 'section', 'data': section})}\n\n"
+                                                msg = json.dumps(
+                                                    {"type": "section", "data": section}
+                                                )
+                                                yield f"data: {msg}\n\n"
                                                 await asyncio.sleep(0)
                                                 sent_section_ids.add(section["id"])
                                         except json.JSONDecodeError:
@@ -1014,9 +1081,13 @@ IMPORTANT:
             # Parser le JSON final complet
             try:
                 result = json.loads(accumulated_json)
-                yield f"data: {json.dumps({'type': 'complete', 'data': result})}\n\n"
+                msg = json.dumps({"type": "complete", "data": result})
+                yield f"data: {msg}\n\n"
             except json.JSONDecodeError as e:
-                yield f"data: {json.dumps({'type': 'error', 'message': f'Erreur parsing JSON: {str(e)}'})}\n\n"
+                error_msg = json.dumps(
+                    {"type": "error", "message": f"Erreur parsing JSON: {str(e)}"}
+                )
+                yield f"data: {error_msg}\n\n"
 
         except Exception as e:
             yield f"data: {json.dumps({'type': 'error', 'message': str(e)})}\n\n"

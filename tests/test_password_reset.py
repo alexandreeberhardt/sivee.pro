@@ -115,7 +115,12 @@ class TestResetPassword:
         register_user(client, email="user@example.com")
 
         token = create_access_token(
-            data={"sub": "1", "email": "user@example.com", "type": "password_reset", "hash": "x" * 10},
+            data={
+                "sub": "1",
+                "email": "user@example.com",
+                "type": "password_reset",
+                "hash": "x" * 10,
+            },
             expires_delta=timedelta(seconds=-1),
         )
         resp = client.post(
@@ -166,10 +171,10 @@ class TestResetPassword:
         token = self._get_reset_token(client)
 
         weak_passwords = [
-            "short1!A",          # too short
+            "short1!A",  # too short
             "alllowercase123!",  # no uppercase
             "ALLUPPERCASE123!",  # no lowercase
-            "NoDigitsHere!!!",   # no digit
+            "NoDigitsHere!!!",  # no digit
             "NoSpecialChar123",  # no special char
         ]
         for pwd in weak_passwords:
