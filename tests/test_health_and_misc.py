@@ -153,7 +153,10 @@ class TestGenerateEndpoint:
                     "type": "skills",
                     "title": "Skills",
                     "isVisible": True,
-                    "items": {"languages": "Python", "tools": "Git"},
+                    "items": [
+                        {"id": "sk-1", "category": "Programming Languages", "skills": "Python"},
+                        {"id": "sk-2", "category": "Tools", "skills": "Git"},
+                    ],
                 },
                 {
                     "id": "s5",

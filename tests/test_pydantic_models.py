@@ -18,7 +18,6 @@ from app import (
     ProfessionalLink,
     ProjectItem,
     ResumeData,
-    SkillsItem,
 )
 
 
@@ -134,16 +133,6 @@ class TestProjectItem:
         assert item.year == ""
 
 
-class TestSkillsItem:
-    def test_valid(self):
-        item = SkillsItem(languages="Python, JS", tools="Git, Docker")
-        assert item.languages == "Python, JS"
-
-    def test_defaults(self):
-        item = SkillsItem()
-        assert item.languages == ""
-        assert item.tools == ""
-
 
 class TestLeadershipItem:
     def test_valid(self):
@@ -182,9 +171,14 @@ class TestCVSection:
             id="sec-2",
             type="skills",
             title="Skills",
-            items={"languages": "Python", "tools": "Git"},
+            items=[
+                {"id": "sk-1", "category": "Programming Languages", "skills": "Python"},
+                {"id": "sk-2", "category": "Tools", "skills": "Git"},
+            ],
         )
-        assert section.items["languages"] == "Python"
+        assert isinstance(section.items, list)
+        assert len(section.items) == 2
+        assert section.items[0]["skills"] == "Python"
 
     def test_valid_summary_section(self):
         section = CVSection(
@@ -238,7 +232,7 @@ class TestResumeData:
                 CVSection(id="sec-3", type="experiences", title="Exp", items=[]),
                 CVSection(id="sec-4", type="projects", title="Proj", items=[]),
                 CVSection(
-                    id="sec-5", type="skills", title="Skills", items={"languages": "", "tools": ""}
+                    id="sec-5", type="skills", title="Skills", items=[]
                 ),
                 CVSection(id="sec-6", type="leadership", title="Lead", items=[]),
                 CVSection(id="sec-7", type="languages", title="Lang", items="French"),

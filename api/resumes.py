@@ -369,9 +369,18 @@ def _convert_section_items(section: dict[str, Any], lang: str = "fr") -> dict[st
 
     items = section.get("items", [])
     if section_type == "skills":
-        section_dict["content"] = (
-            items if isinstance(items, dict) else {"languages": "", "tools": ""}
-        )
+        # Compatibilité avec l'ancien format {languages, tools}
+        if isinstance(items, dict):
+            categories = []
+            if (items.get("languages") or "").strip():
+                categories.append({"category": "Programming Languages", "skills": items["languages"]})
+            if (items.get("tools") or "").strip():
+                categories.append({"category": "Tools", "skills": items["tools"]})
+            section_dict["content"] = categories
+        elif isinstance(items, list):
+            section_dict["content"] = items
+        else:
+            section_dict["content"] = []
     elif section_type in ("languages", "summary"):
         section_dict["content"] = str(items) if items else ""
     else:

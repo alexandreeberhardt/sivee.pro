@@ -8,7 +8,6 @@ os.environ.setdefault("DATABASE_URL", "sqlite://")
 from app import (
     CVSection,
     EducationItem,
-    SkillsItem,
     convert_section_items,
     get_base_template,
     get_template_with_size,
@@ -38,7 +37,7 @@ class TestGetBaseTemplate:
 
 
 class TestConvertSectionSkillsDict:
-    """Test skills section with dict items."""
+    """Test skills section with old dict items (backward compatibility)."""
 
     def test_skills_with_dict(self):
         section = CVSection(
@@ -48,7 +47,10 @@ class TestConvertSectionSkillsDict:
             items={"languages": "Python, JS", "tools": "Git, Docker"},
         )
         result = convert_section_items(section, "fr")
-        assert result["content"]["languages"] == "Python, JS"
+        assert isinstance(result["content"], list)
+        assert len(result["content"]) == 2
+        assert result["content"][0] == {"category": "Programming Languages", "skills": "Python, JS"}
+        assert result["content"][1] == {"category": "Tools", "skills": "Git, Docker"}
         assert result["has_content"] is True
 
     def test_skills_empty_dict(self):
@@ -59,6 +61,7 @@ class TestConvertSectionSkillsDict:
             items={"languages": "", "tools": ""},
         )
         result = convert_section_items(section, "fr")
+        assert result["content"] == []
         assert result["has_content"] is False
 
     def test_skills_whitespace_only(self):
@@ -69,39 +72,65 @@ class TestConvertSectionSkillsDict:
             items={"languages": "   ", "tools": "  "},
         )
         result = convert_section_items(section, "fr")
+        assert result["content"] == []
         assert result["has_content"] is False
 
-
-class TestConvertSectionSkillsModel:
-    """Test skills section with Pydantic model items."""
-
-    def test_skills_with_model(self):
-        skills = SkillsItem(languages="Python", tools="Docker")
-        section = CVSection(id="s1", type="skills", title="Skills", items=skills)
+    def test_skills_partial_dict(self):
+        section = CVSection(
+            id="s1",
+            type="skills",
+            title="Skills",
+            items={"languages": "Python", "tools": ""},
+        )
         result = convert_section_items(section, "fr")
-        assert result["content"]["languages"] == "Python"
+        assert result["content"] == [{"category": "Programming Languages", "skills": "Python"}]
         assert result["has_content"] is True
 
-    def test_skills_with_empty_model(self):
-        skills = SkillsItem(languages="", tools="")
-        section = CVSection(id="s1", type="skills", title="Skills", items=skills)
+
+class TestConvertSectionSkillsList:
+    """Test skills section with new list format."""
+
+    def test_skills_with_list(self):
+        items = [
+            {"id": "sk-1", "category": "Programming Languages", "skills": "Python"},
+            {"id": "sk-2", "category": "Tools", "skills": "Docker"},
+        ]
+        section = CVSection(id="s1", type="skills", title="Skills", items=items)
+        result = convert_section_items(section, "fr")
+        assert isinstance(result["content"], list)
+        assert len(result["content"]) == 2
+        assert result["content"][0]["skills"] == "Python"
+        assert result["has_content"] is True
+
+    def test_skills_with_empty_list(self):
+        section = CVSection(id="s1", type="skills", title="Skills", items=[])
+        result = convert_section_items(section, "fr")
+        assert result["content"] == []
+        assert result["has_content"] is False
+
+    def test_skills_with_empty_skills_in_list(self):
+        items = [
+            {"id": "sk-1", "category": "Programming Languages", "skills": ""},
+            {"id": "sk-2", "category": "Tools", "skills": ""},
+        ]
+        section = CVSection(id="s1", type="skills", title="Skills", items=items)
         result = convert_section_items(section, "fr")
         assert result["has_content"] is False
 
 
 class TestConvertSectionSkillsFallback:
-    """Test skills section with non-dict/non-model items."""
+    """Test skills section with non-dict/non-list items."""
 
     def test_skills_with_none(self):
         section = CVSection(id="s1", type="skills", title="Skills", items=None)
         result = convert_section_items(section, "fr")
-        assert result["content"] == {"languages": "", "tools": ""}
+        assert result["content"] == []
         assert result["has_content"] is False
 
     def test_skills_with_string(self):
         section = CVSection(id="s1", type="skills", title="Skills", items="something weird")
         result = convert_section_items(section, "fr")
-        assert result["content"] == {"languages": "", "tools": ""}
+        assert result["content"] == []
         assert result["has_content"] is False
 
 

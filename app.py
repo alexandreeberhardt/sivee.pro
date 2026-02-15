@@ -124,9 +124,10 @@ class ProjectItem(BaseModel):
         return str(v) if v is not None else ""
 
 
-class SkillsItem(BaseModel):
-    languages: str = Field(default="", max_length=2000)
-    tools: str = Field(default="", max_length=2000)
+class SkillCategory(BaseModel):
+    id: str = Field(default="")
+    category: str = Field(default="", max_length=500)
+    skills: str = Field(default="", max_length=2000)
 
 
 class LeadershipItem(BaseModel):
@@ -317,22 +318,26 @@ def convert_section_items(section: CVSection, lang: str = "fr") -> dict[str, Any
     has_content = False
 
     if section.type == "skills":
-        # Skills est un dictionnaire
+        # Skills est une liste de catégories [{category, skills}, ...]
+        # Compatibilité avec l'ancien format {languages, tools}
         if isinstance(section.items, dict):
+            # Ancien format: convertir en nouveau format
+            categories = []
+            if (section.items.get("languages") or "").strip():
+                categories.append({"category": "Programming Languages", "skills": section.items["languages"]})
+            if (section.items.get("tools") or "").strip():
+                categories.append({"category": "Tools", "skills": section.items["tools"]})
+            section_dict["content"] = categories
+            has_content = bool(categories)
+        elif isinstance(section.items, list):
             section_dict["content"] = section.items
-            # Vérifier si languages OU tools contiennent du contenu
-            has_content = bool(
-                (section.items.get("languages") or "").strip()
-                or (section.items.get("tools") or "").strip()
-            )
-        elif hasattr(section.items, "model_dump"):
-            content = section.items.model_dump()
-            section_dict["content"] = content
-            has_content = bool(
-                (content.get("languages") or "").strip() or (content.get("tools") or "").strip()
+            has_content = any(
+                (cat.get("skills") or "").strip() if isinstance(cat, dict)
+                else (cat.skills.strip() if hasattr(cat, "skills") else False)
+                for cat in section.items
             )
         else:
-            section_dict["content"] = {"languages": "", "tools": ""}
+            section_dict["content"] = []
             has_content = False
     elif section.type in ("languages", "summary"):
         # Languages et Summary sont des strings
@@ -696,10 +701,10 @@ Analyse le texte du CV fourni et retourne un JSON avec la structure exacte suiva
       "type": "skills",
       "title": "Technical Skills",
       "isVisible": true,
-      "items": {
-          "languages": "Python, JavaScript, C++",
-          "tools": "Git, Docker, Linux",
-      }
+      "items": [
+          {"id": "sk-1", "category": "Programming Languages", "skills": "Python, JavaScript, C++"},
+          {"id": "sk-2", "category": "Tools", "skills": "Git, Docker, Linux"}
+      ]
     },
     {
       "id": "sec-6",
@@ -732,7 +737,7 @@ IMPORTANT:
   url (lien complet)
 - N'ajoute que les liens présents dans le CV
 - Pour "summary", items est une STRING (le texte du résumé/profil)
-- Pour "skills", items est un OBJET avec "languages" et "tools" (pas un array)
+- Pour "skills", items est un ARRAY d'objets avec: id (unique), category (nom de la catégorie), skills (compétences séparées par virgules)
 - Pour "languages", items est une STRING simple
 - Pour les autres types, items est un ARRAY d'objets
 - Génère des IDs uniques pour chaque section (sec-1, sec-2, etc.)
@@ -893,10 +898,10 @@ Analyse le texte du CV fourni et retourne un JSON avec la structure exacte suiva
       "type": "skills",
       "title": "Technical Skills",
       "isVisible": true,
-      "items": {
-          "languages": "Python, JavaScript, C++",
-          "tools": "Git, Docker, Linux",
-      }
+      "items": [
+          {"id": "sk-1", "category": "Programming Languages", "skills": "Python, JavaScript, C++"},
+          {"id": "sk-2", "category": "Tools", "skills": "Git, Docker, Linux"}
+      ]
     },
     {
       "id": "sec-6",
@@ -949,7 +954,7 @@ IMPORTANT:
   url (lien complet)
 - N'ajoute que les liens présents dans le CV
 - Pour "summary", items est une STRING (le texte du résumé/profil)
-- Pour "skills", items est un OBJET avec "languages" et "tools" (pas un array)
+- Pour "skills", items est un ARRAY d'objets avec: id (unique), category (nom de la catégorie), skills (compétences séparées par virgules)
 - Pour "languages", items est une STRING simple
 - Pour "custom", items est un ARRAY d'objets avec: title, subtitle (optionnel),
   dates (optionnel), highlights (array de strings)

@@ -19,17 +19,29 @@ class TestConvertSectionItemsAPI:
             "items": {"languages": "Python", "tools": "Git"},
         }
         result = _convert_section_items(section, "fr")
-        assert result["content"]["languages"] == "Python"
+        assert isinstance(result["content"], list)
+        assert len(result["content"]) == 2
+        assert result["content"][0] == {"category": "Programming Languages", "skills": "Python"}
+        assert result["content"][1] == {"category": "Tools", "skills": "Git"}
 
     def test_skills_non_dict(self):
         section = {"id": "s1", "type": "skills", "title": "Skills", "items": "not a dict"}
         result = _convert_section_items(section, "fr")
-        assert result["content"] == {"languages": "", "tools": ""}
+        assert result["content"] == []
 
     def test_skills_empty_dict(self):
         section = {"id": "s1", "type": "skills", "title": "Skills", "items": {}}
         result = _convert_section_items(section, "fr")
-        assert result["content"] == {}
+        assert result["content"] == []
+
+    def test_skills_list_passthrough(self):
+        items = [
+            {"id": "sk-1", "category": "Programming Languages", "skills": "Python"},
+            {"id": "sk-2", "category": "Tools", "skills": "Git"},
+        ]
+        section = {"id": "s1", "type": "skills", "title": "Skills", "items": items}
+        result = _convert_section_items(section, "fr")
+        assert result["content"] == items
 
     def test_summary_string(self):
         section = {"id": "s1", "type": "summary", "title": "Summary", "items": "My bio"}

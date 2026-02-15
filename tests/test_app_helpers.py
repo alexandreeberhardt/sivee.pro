@@ -101,7 +101,10 @@ class TestConvertSectionItems:
             items={"languages": "Python, JS", "tools": "Git, Docker"},
         )
         result = convert_section_items(section, "en")
-        assert result["content"]["languages"] == "Python, JS"
+        assert isinstance(result["content"], list)
+        assert len(result["content"]) == 2
+        assert result["content"][0] == {"category": "Programming Languages", "skills": "Python, JS"}
+        assert result["content"][1] == {"category": "Tools", "skills": "Git, Docker"}
         assert result["has_content"] is True
 
     def test_skills_empty(self):
@@ -112,6 +115,7 @@ class TestConvertSectionItems:
             items={"languages": "", "tools": ""},
         )
         result = convert_section_items(section, "en")
+        assert result["content"] == []
         assert result["has_content"] is False
 
     def test_summary_section(self):
@@ -191,7 +195,10 @@ class TestConvertSectionItemsAPI:
             "items": {"languages": "Python", "tools": "Docker"},
         }
         result = _convert_section_items(section, "en")
-        assert result["content"]["languages"] == "Python"
+        assert isinstance(result["content"], list)
+        assert len(result["content"]) == 2
+        assert result["content"][0] == {"category": "Programming Languages", "skills": "Python"}
+        assert result["content"][1] == {"category": "Tools", "skills": "Docker"}
 
     def test_skills_non_dict_fallback(self):
         section = {
@@ -201,7 +208,7 @@ class TestConvertSectionItemsAPI:
             "items": "not a dict",
         }
         result = _convert_section_items(section, "en")
-        assert result["content"] == {"languages": "", "tools": ""}
+        assert result["content"] == []
 
     def test_summary_string(self):
         section = {

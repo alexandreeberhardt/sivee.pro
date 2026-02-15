@@ -33,8 +33,11 @@
 
 \BLOCK{if section.type == 'skills'}
 \section{\VAR{section.title | escape_latex}}
-\cvitem{Languages}{\VAR{section.content.languages | escape_latex}}
-\cvitem{Tools}{\VAR{section.content.tools | escape_latex}}
+\BLOCK{for cat in section.content}
+\BLOCK{if cat.skills}
+\cvitem{\VAR{cat.category | escape_latex}}{\VAR{cat.skills | escape_latex}}
+\BLOCK{endif}
+\BLOCK{endfor}
 \BLOCK{endif}
 
 \BLOCK{if section.type == 'summary'}

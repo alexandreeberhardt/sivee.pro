@@ -185,13 +185,14 @@
 \BLOCK{endif}
 
 \BLOCK{if section.type == 'skills'}
-\BLOCK{if section.content.languages}
-{\small \textbf{Languages:} \VAR{section.content.languages | escape_latex}}
+\BLOCK{for cat in section.content}
+\BLOCK{if cat.skills}
+{\small \textbf{\VAR{cat.category | escape_latex}:} \VAR{cat.skills | escape_latex}}
+\BLOCK{if not loop.last}
 \par\vspace{0.2em}
 \BLOCK{endif}
-\BLOCK{if section.content.tools}
-{\small \textbf{Tools:} \VAR{section.content.tools | escape_latex}}
 \BLOCK{endif}
+\BLOCK{endfor}
 \BLOCK{endif}
 
 \BLOCK{if section.type == 'projects'}

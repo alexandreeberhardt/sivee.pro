@@ -19,7 +19,6 @@ from app import (
     ProfessionalLink,
     ProjectItem,
     ResumeData,
-    SkillsItem,
 )
 
 
@@ -119,11 +118,19 @@ class TestCVSection:
         section = CVSection(id="s1", type="summary", title="Summary", items="My bio text")
         assert section.items == "My bio text"
 
-    def test_skills_section_dict(self):
+    def test_skills_section_list(self):
         section = CVSection(
-            id="s2", type="skills", title="Skills", items={"languages": "Python", "tools": "Git"}
+            id="s2",
+            type="skills",
+            title="Skills",
+            items=[
+                {"id": "sk-1", "category": "Programming Languages", "skills": "Python"},
+                {"id": "sk-2", "category": "Tools", "skills": "Git"},
+            ],
         )
-        assert section.items["languages"] == "Python"
+        assert isinstance(section.items, list)
+        assert len(section.items) == 2
+        assert section.items[0]["skills"] == "Python"
 
     def test_education_section_list(self):
         section = CVSection(id="s3", type="education", title="Education", items=[])
@@ -209,12 +216,6 @@ class TestExperienceItem:
         )
         assert len(item.highlights) == 2
 
-
-class TestSkillsItem:
-    def test_defaults(self):
-        item = SkillsItem()
-        assert item.languages == ""
-        assert item.tools == ""
 
 
 class TestLeadershipItem:
