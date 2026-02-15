@@ -644,6 +644,13 @@ Analyse le texte du CV fourni et retourne un JSON avec la structure exacte suiva
   "sections": [
     {
       "id": "sec-1",
+      "type": "summary",
+      "title": "Summary",
+      "isVisible": true,
+      "items": "Professionnel expérimenté avec X années d'expérience en..."
+    },
+    {
+      "id": "sec-2",
       "type": "education",
       "title": "Education",
       "isVisible": true,
@@ -658,7 +665,7 @@ Analyse le texte du CV fourni et retourne un JSON avec la structure exacte suiva
       ]
     },
     {
-      "id": "sec-2",
+      "id": "sec-3",
       "type": "experiences",
       "title": "Experiences",
       "isVisible": true,
@@ -672,7 +679,7 @@ Analyse le texte du CV fourni et retourne un JSON avec la structure exacte suiva
       ]
     },
     {
-      "id": "sec-3",
+      "id": "sec-4",
       "type": "projects",
       "title": "Projects",
       "isVisible": true,
@@ -685,7 +692,7 @@ Analyse le texte du CV fourni et retourne un JSON avec la structure exacte suiva
       ]
     },
     {
-      "id": "sec-4",
+      "id": "sec-5",
       "type": "skills",
       "title": "Technical Skills",
       "isVisible": true,
@@ -695,7 +702,7 @@ Analyse le texte du CV fourni et retourne un JSON avec la structure exacte suiva
       }
     },
     {
-      "id": "sec-5",
+      "id": "sec-6",
       "type": "leadership",
       "title": "Leadership",
       "isVisible": true,
@@ -709,7 +716,7 @@ Analyse le texte du CV fourni et retourne un JSON avec la structure exacte suiva
       ]
     },
     {
-      "id": "sec-6",
+      "id": "sec-7",
       "type": "languages",
       "title": "Languages",
       "isVisible": true,
@@ -724,6 +731,7 @@ IMPORTANT:
   (linkedin, github, portfolio, behance, website, other), username (texte affiché),
   url (lien complet)
 - N'ajoute que les liens présents dans le CV
+- Pour "summary", items est une STRING (le texte du résumé/profil)
 - Pour "skills", items est un OBJET avec "languages" et "tools" (pas un array)
 - Pour "languages", items est une STRING simple
 - Pour les autres types, items est un ARRAY d'objets
@@ -833,6 +841,13 @@ Analyse le texte du CV fourni et retourne un JSON avec la structure exacte suiva
   "sections": [
     {
       "id": "sec-1",
+      "type": "summary",
+      "title": "Summary",
+      "isVisible": true,
+      "items": "Professionnel expérimenté avec X années d'expérience en..."
+    },
+    {
+      "id": "sec-2",
       "type": "education",
       "title": "Education",
       "isVisible": true,
@@ -847,7 +862,7 @@ Analyse le texte du CV fourni et retourne un JSON avec la structure exacte suiva
       ]
     },
     {
-      "id": "sec-2",
+      "id": "sec-3",
       "type": "experiences",
       "title": "Experiences",
       "isVisible": true,
@@ -861,7 +876,7 @@ Analyse le texte du CV fourni et retourne un JSON avec la structure exacte suiva
       ]
     },
     {
-      "id": "sec-3",
+      "id": "sec-4",
       "type": "projects",
       "title": "Projects",
       "isVisible": true,
@@ -874,7 +889,7 @@ Analyse le texte du CV fourni et retourne un JSON avec la structure exacte suiva
       ]
     },
     {
-      "id": "sec-4",
+      "id": "sec-5",
       "type": "skills",
       "title": "Technical Skills",
       "isVisible": true,
@@ -884,7 +899,7 @@ Analyse le texte du CV fourni et retourne un JSON avec la structure exacte suiva
       }
     },
     {
-      "id": "sec-5",
+      "id": "sec-6",
       "type": "leadership",
       "title": "Leadership",
       "isVisible": true,
@@ -898,14 +913,14 @@ Analyse le texte du CV fourni et retourne un JSON avec la structure exacte suiva
       ]
     },
     {
-      "id": "sec-6",
+      "id": "sec-7",
       "type": "languages",
       "title": "Languages",
       "isVisible": true,
       "items": "Français (natif), Anglais (courant)"
     },
     {
-      "id": "sec-7",
+      "id": "sec-8",
       "type": "custom",
       "title": "Centres d'intérêt",
       "isVisible": true,
@@ -933,6 +948,7 @@ IMPORTANT:
   (linkedin, github, portfolio, behance, website, other), username (texte affiché),
   url (lien complet)
 - N'ajoute que les liens présents dans le CV
+- Pour "summary", items est une STRING (le texte du résumé/profil)
 - Pour "skills", items est un OBJET avec "languages" et "tools" (pas un array)
 - Pour "languages", items est une STRING simple
 - Pour "custom", items est un ARRAY d'objets avec: title, subtitle (optionnel),
