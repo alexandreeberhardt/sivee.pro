@@ -71,6 +71,7 @@ export const createEmptyLink = (): ProfessionalLink => ({
 })
 
 export interface EducationItem {
+  id: string
   school: string
   degree: string
   dates: string
@@ -79,6 +80,7 @@ export interface EducationItem {
 }
 
 export interface ExperienceItem {
+  id: string
   title: string
   company: string
   dates: string
@@ -86,6 +88,7 @@ export interface ExperienceItem {
 }
 
 export interface ProjectItem {
+  id: string
   name: string
   year: string
   highlights: string[]
@@ -97,6 +100,7 @@ export interface SkillsItem {
 }
 
 export interface LeadershipItem {
+  id: string
   role: string
   place: string
   dates: string
@@ -104,6 +108,7 @@ export interface LeadershipItem {
 }
 
 export interface CustomItem {
+  id: string
   title: string
   subtitle?: string
   dates?: string
@@ -244,6 +249,7 @@ export interface ResumeData {
 // === Helpers pour créer des sections vides ===
 
 export const createEmptyEducation = (): EducationItem => ({
+  id: generateId(),
   school: '',
   degree: '',
   dates: '',
@@ -252,6 +258,7 @@ export const createEmptyEducation = (): EducationItem => ({
 })
 
 export const createEmptyExperience = (): ExperienceItem => ({
+  id: generateId(),
   title: '',
   company: '',
   dates: '',
@@ -259,6 +266,7 @@ export const createEmptyExperience = (): ExperienceItem => ({
 })
 
 export const createEmptyProject = (): ProjectItem => ({
+  id: generateId(),
   name: '',
   year: '',
   highlights: [],
@@ -270,6 +278,7 @@ export const createEmptySkills = (): SkillsItem => ({
 })
 
 export const createEmptyLeadership = (): LeadershipItem => ({
+  id: generateId(),
   role: '',
   place: '',
   dates: '',
@@ -277,6 +286,7 @@ export const createEmptyLeadership = (): LeadershipItem => ({
 })
 
 export const createEmptyCustomItem = (): CustomItem => ({
+  id: generateId(),
   title: '',
   subtitle: '',
   dates: '',
@@ -498,6 +508,27 @@ export const getTemplateSizeVariant = (templateId: TemplateId): SizeVariant => {
  */
 export const getBaseTemplateId = (templateId: TemplateId): string => {
   return templateId.replace(/_compact|_large/, '')
+}
+
+// Ajoute des IDs aux items existants qui n'en ont pas (compatibilité avec les CV sauvegardés)
+export const ensureItemIds = (data: ResumeData): ResumeData => {
+  return {
+    ...data,
+    sections: data.sections.map((section) => {
+      if (!Array.isArray(section.items)) return section
+
+      const items = section.items as unknown as Array<Record<string, unknown>>
+      const needsIds = items.some((item) => !item.id)
+      if (!needsIds) return section
+
+      return {
+        ...section,
+        items: items.map((item) =>
+          item.id ? item : { ...item, id: generateId() },
+        ) as unknown as SectionItems,
+      }
+    }),
+  }
 }
 
 // Fonction pour créer les données par défaut avec les titres traduits

@@ -20,6 +20,7 @@ export const convertToCustomItems = (items: unknown): CustomItem[] => {
     return items.map((item) => {
       if (typeof item === 'string') {
         return {
+          id: generateId(),
           title: '',
           subtitle: '',
           dates: '',
@@ -40,6 +41,7 @@ export const convertToCustomItems = (items: unknown): CustomItem[] => {
         }
 
         return {
+          id: generateId(),
           title:
             typeof obj.title === 'string'
               ? obj.title
@@ -62,6 +64,7 @@ export const convertToCustomItems = (items: unknown): CustomItem[] => {
         }
       }
       return {
+        id: generateId(),
         title: '',
         subtitle: '',
         dates: '',
@@ -72,6 +75,7 @@ export const convertToCustomItems = (items: unknown): CustomItem[] => {
   if (typeof items === 'string' && items.trim()) {
     return [
       {
+        id: generateId(),
         title: '',
         subtitle: '',
         dates: '',

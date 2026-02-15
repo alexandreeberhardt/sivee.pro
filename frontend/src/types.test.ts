@@ -26,7 +26,12 @@ describe('createEmpty* factories', () => {
 
   it('createEmptyEducation returns empty education item', () => {
     const edu = createEmptyEducation()
-    expect(edu).toEqual({ school: '', degree: '', dates: '', subtitle: '', description: '' })
+    expect(edu.school).toBe('')
+    expect(edu.degree).toBe('')
+    expect(edu.dates).toBe('')
+    expect(edu.subtitle).toBe('')
+    expect(edu.description).toBe('')
+    expect(edu.id).toBeDefined()
   })
 
   it('createEmptyExperience returns empty experience with empty highlights', () => {

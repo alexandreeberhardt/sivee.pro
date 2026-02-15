@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { ResumeData, SavedResume, getEmptyResumeData } from '../types'
+import { ResumeData, SavedResume, getEmptyResumeData, ensureItemIds } from '../types'
 import { listResumes, createResume, updateResume, deleteResume } from '../api/resumes'
 import { ApiError } from '../api/client'
 import { useTranslation } from 'react-i18next'
@@ -96,7 +96,7 @@ export function useResumeManager({
 
   const handleOpenResume = async (resume: SavedResume) => {
     if (resume.json_content) {
-      setData(resume.json_content)
+      setData(ensureItemIds(resume.json_content))
       setCurrentResumeId(resume.id)
       setShowResumesPage(false)
       setShowLanding(false)

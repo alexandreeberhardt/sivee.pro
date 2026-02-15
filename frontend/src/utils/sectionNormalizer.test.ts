@@ -39,13 +39,14 @@ describe('convertToCustomItems', () => {
   it('converts an array of strings to CustomItems with highlights', () => {
     const result = convertToCustomItems(['Built a website', 'Led a team'])
     expect(result).toHaveLength(2)
-    expect(result[0]).toEqual({
+    expect(result[0]).toMatchObject({
       title: '',
       subtitle: '',
       dates: '',
       highlights: ['Built a website'],
     })
-    expect(result[1]).toEqual({
+    expect(result[0].id).toBeDefined()
+    expect(result[1]).toMatchObject({
       title: '',
       subtitle: '',
       dates: '',
@@ -102,7 +103,7 @@ describe('convertToCustomItems', () => {
   it('converts a single string to a single CustomItem', () => {
     const result = convertToCustomItems('Some description text')
     expect(result).toHaveLength(1)
-    expect(result[0]).toEqual({
+    expect(result[0]).toMatchObject({
       title: '',
       subtitle: '',
       dates: '',
@@ -140,8 +141,8 @@ describe('convertToCustomItems', () => {
     const result = convertToCustomItems(items)
     expect(result).toHaveLength(2)
     // Falls through to fallback empty CustomItem
-    expect(result[0]).toEqual({ title: '', subtitle: '', dates: '', highlights: [] })
-    expect(result[1]).toEqual({ title: '', subtitle: '', dates: '', highlights: [] })
+    expect(result[0]).toMatchObject({ title: '', subtitle: '', dates: '', highlights: [] })
+    expect(result[1]).toMatchObject({ title: '', subtitle: '', dates: '', highlights: [] })
   })
 
   it('filters out non-string values from highlights arrays', () => {

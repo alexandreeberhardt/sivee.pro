@@ -1,3 +1,4 @@
+import React from 'react'
 import { describe, it, expect, vi } from 'vitest'
 import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
@@ -15,6 +16,19 @@ vi.mock('@dnd-kit/sortable', () => ({
     transition: null,
     isDragging: false,
   }),
+  SortableContext: ({ children }: { children: React.ReactNode }) => children,
+  verticalListSortingStrategy: {},
+  sortableKeyboardCoordinates: vi.fn(),
+  arrayMove: vi.fn(),
+}))
+
+vi.mock('@dnd-kit/core', () => ({
+  DndContext: ({ children }: { children: React.ReactNode }) => children,
+  closestCenter: vi.fn(),
+  KeyboardSensor: vi.fn(),
+  PointerSensor: vi.fn(),
+  useSensor: vi.fn(),
+  useSensors: () => [],
 }))
 
 vi.mock('@dnd-kit/utilities', () => ({

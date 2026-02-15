@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react'
-import { ResumeData } from '../types'
+import { ResumeData, ensureItemIds } from '../types'
 import { normalizeSection } from '../utils/sectionNormalizer'
 import { useTranslation } from 'react-i18next'
 
@@ -108,12 +108,12 @@ export function usePdfImport({
                 }
 
                 case 'complete': {
-                  const processedData: ResumeData = {
+                  const processedData: ResumeData = ensureItemIds({
                     ...event.data,
                     sections: event.data.sections.map((section: Record<string, unknown>) =>
                       normalizeSection(section),
                     ),
-                  }
+                  })
                   setData(processedData)
                   setHasImported(true)
                   setEditorStep(999)
