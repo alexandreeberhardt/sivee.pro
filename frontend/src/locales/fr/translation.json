@@ -263,12 +263,14 @@
       "deleteProject": "Supprimer ce projet"
     },
     "skills": {
-      "languages": "Langages de programmation",
-      "languagesPlaceholder": "Python, JavaScript, TypeScript, Go, Rust...",
-      "languagesHint": "Séparez les langages par des virgules",
-      "tools": "Outils et technologies",
-      "toolsPlaceholder": "Git, Docker, AWS, PostgreSQL, React...",
-      "toolsHint": "Frameworks, outils DevOps, bases de données, etc."
+      "category": "Catégorie",
+      "categoryPlaceholder": "Langages de programmation, Frameworks, Outils...",
+      "skills": "Compétences",
+      "skillsPlaceholder": "Python, JavaScript, Docker, AWS...",
+      "skillsHint": "Séparez les compétences par des virgules",
+      "addCategory": "Ajouter une catégorie",
+      "deleteCategory": "Supprimer cette catégorie",
+      "emptyHint": "Ajoutez des catégories pour organiser vos compétences (ex: Langages, Outils, Frameworks...)"
     },
     "leadership": {
       "role": "Rôle",

@@ -45,9 +45,9 @@ describe('createEmpty* factories', () => {
     expect(proj.highlights).toEqual([])
   })
 
-  it('createEmptySkills returns empty skills', () => {
+  it('createEmptySkills returns empty array', () => {
     const skills = createEmptySkills()
-    expect(skills).toEqual({ languages: '', tools: '' })
+    expect(skills).toEqual([])
   })
 
   it('createEmptyLeadership returns empty leadership with empty highlights', () => {
@@ -79,9 +79,9 @@ describe('createSection', () => {
     expect(section.items).toEqual([])
   })
 
-  it('creates a skills section with empty skills object', () => {
+  it('creates a skills section with empty array', () => {
     const section = createSection('skills', 'Skills')
-    expect(section.items).toEqual({ languages: '', tools: '' })
+    expect(section.items).toEqual([])
   })
 
   it('creates a languages section with empty string items', () => {
@@ -294,7 +294,10 @@ describe('estimateContentDensity', () => {
         type: 'skills',
         title: 'Skills',
         isVisible: true,
-        items: { languages: 'a'.repeat(200), tools: 'b'.repeat(200) },
+        items: [
+          { id: '1', category: 'Languages', skills: 'a'.repeat(200) },
+          { id: '2', category: 'Tools', skills: 'b'.repeat(200) },
+        ],
       },
     ])
     // (200 + 200) / 50 = 8 → large

@@ -8,53 +8,53 @@ import type { SkillsItem } from '../../types'
 describe('SkillsEditor', () => {
   const user = userEvent.setup()
 
-  const sampleData: SkillsItem = {
-    languages: 'Python, JavaScript, TypeScript',
-    tools: 'Git, Docker, AWS',
-  }
+  const sampleData: SkillsItem = [
+    { id: '1', category: 'Programming Languages', skills: 'Python, JavaScript, TypeScript' },
+    { id: '2', category: 'Tools', skills: 'Git, Docker, AWS' },
+  ]
 
-  it('renders languages field with current value', () => {
+  it('renders category fields with current values', () => {
     renderWithProviders(<SkillsEditor data={sampleData} onChange={vi.fn()} />)
-    expect(screen.getByDisplayValue('Python, JavaScript, TypeScript')).toBeInTheDocument()
+    expect(screen.getByDisplayValue('Programming Languages')).toBeInTheDocument()
+    expect(screen.getByDisplayValue('Tools')).toBeInTheDocument()
   })
 
-  it('renders tools field with current value', () => {
+  it('renders skills fields with current values', () => {
     renderWithProviders(<SkillsEditor data={sampleData} onChange={vi.fn()} />)
+    expect(screen.getByDisplayValue('Python, JavaScript, TypeScript')).toBeInTheDocument()
     expect(screen.getByDisplayValue('Git, Docker, AWS')).toBeInTheDocument()
   })
 
-  it('calls onChange when editing languages', async () => {
+  it('calls onChange when editing a category name', async () => {
     const onChange = vi.fn()
     renderWithProviders(<SkillsEditor data={sampleData} onChange={onChange} />)
 
-    const languagesInput = screen.getByDisplayValue('Python, JavaScript, TypeScript')
-    await user.type(languagesInput, ', Go')
+    const categoryInput = screen.getByDisplayValue('Programming Languages')
+    await user.type(categoryInput, '!')
 
     expect(onChange).toHaveBeenCalled()
-    // First keystroke
     const firstCall = onChange.mock.calls[0][0]
-    expect(firstCall.languages).toContain('Python, JavaScript, TypeScript')
-    // Tools should remain unchanged
-    expect(firstCall.tools).toBe('Git, Docker, AWS')
+    expect(firstCall[0].category).toContain('Programming Languages')
+    expect(firstCall[1].skills).toBe('Git, Docker, AWS')
   })
 
-  it('calls onChange when editing tools', async () => {
+  it('calls onChange when editing skills', async () => {
     const onChange = vi.fn()
     renderWithProviders(<SkillsEditor data={sampleData} onChange={onChange} />)
 
-    const toolsInput = screen.getByDisplayValue('Git, Docker, AWS')
-    await user.type(toolsInput, '!')
+    const skillsInput = screen.getByDisplayValue('Git, Docker, AWS')
+    await user.type(skillsInput, '!')
 
     expect(onChange).toHaveBeenCalled()
     const firstCall = onChange.mock.calls[0][0]
-    expect(firstCall.tools).toBe('Git, Docker, AWS!')
-    expect(firstCall.languages).toBe('Python, JavaScript, TypeScript')
+    expect(firstCall[1].skills).toBe('Git, Docker, AWS!')
+    expect(firstCall[0].category).toBe('Programming Languages')
   })
 
   it('renders with empty data', () => {
-    const emptyData: SkillsItem = { languages: '', tools: '' }
+    const emptyData: SkillsItem = []
     renderWithProviders(<SkillsEditor data={emptyData} onChange={vi.fn()} />)
-    const inputs = screen.getAllByRole('textbox')
-    expect(inputs.length).toBeGreaterThanOrEqual(2)
+    // Should show empty hint
+    expect(screen.queryByRole('textbox')).not.toBeInTheDocument()
   })
 })

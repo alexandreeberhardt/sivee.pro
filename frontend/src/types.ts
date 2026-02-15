@@ -94,10 +94,13 @@ export interface ProjectItem {
   highlights: string[]
 }
 
-export interface SkillsItem {
-  languages: string
-  tools: string
+export interface SkillCategory {
+  id: string
+  category: string
+  skills: string
 }
+
+export type SkillsItem = SkillCategory[]
 
 export interface LeadershipItem {
   id: string
@@ -272,10 +275,13 @@ export const createEmptyProject = (): ProjectItem => ({
   highlights: [],
 })
 
-export const createEmptySkills = (): SkillsItem => ({
-  languages: '',
-  tools: '',
+export const createEmptySkillCategory = (): SkillCategory => ({
+  id: generateId(),
+  category: '',
+  skills: '',
 })
+
+export const createEmptySkills = (): SkillsItem => []
 
 export const createEmptyLeadership = (): LeadershipItem => ({
   id: generateId(),
@@ -455,9 +461,13 @@ export const estimateContentDensity = (data: ResumeData): SizeVariant => {
       case 'skills': {
         const skills = section.items as SkillsItem
         // Points basés sur la longueur des compétences
-        const languagesLen = skills?.languages?.length || 0
-        const toolsLen = skills?.tools?.length || 0
-        score += Math.floor((languagesLen + toolsLen) / 50)
+        let totalLen = 0
+        if (Array.isArray(skills)) {
+          skills.forEach((cat) => {
+            totalLen += (cat.skills?.length || 0)
+          })
+        }
+        score += Math.floor(totalLen / 50)
         break
       }
 

@@ -28,7 +28,10 @@ const skillsSection: CVSection = {
   type: 'skills',
   title: 'Technical Skills',
   isVisible: true,
-  items: { languages: 'Python, JS', tools: 'Git, Docker' },
+  items: [
+    { id: '1', category: 'Programming Languages', skills: 'Python, JS' },
+    { id: '2', category: 'Tools', skills: 'Git, Docker' },
+  ],
 }
 
 const hiddenSection: CVSection = {

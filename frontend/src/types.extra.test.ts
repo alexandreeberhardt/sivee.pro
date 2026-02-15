@@ -64,10 +64,9 @@ describe('createEmptyProject', () => {
 })
 
 describe('createEmptySkills', () => {
-  it('returns empty skills item', () => {
-    const item = createEmptySkills()
-    expect(item.languages).toBe('')
-    expect(item.tools).toBe('')
+  it('returns empty skills array', () => {
+    const items = createEmptySkills()
+    expect(items).toEqual([])
   })
 })
 
@@ -127,9 +126,9 @@ describe('createSection', () => {
     expect(section.items).toEqual([])
   })
 
-  it('creates skills section with empty skills object', () => {
+  it('creates skills section with empty array', () => {
     const section = createSection('skills', 'Skills')
-    expect(section.items).toEqual({ languages: '', tools: '' })
+    expect(section.items).toEqual([])
   })
 
   it('creates leadership section with empty array', () => {

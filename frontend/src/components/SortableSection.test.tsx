@@ -249,7 +249,7 @@ describe('SortableSection', () => {
   it('renders skills editor for skills section', () => {
     renderWithProviders(
       <SortableSection
-        section={makeSection({ type: 'skills', items: { languages: '', tools: '' } })}
+        section={makeSection({ type: 'skills', items: [] })}
         onUpdate={vi.fn()}
         onDelete={vi.fn()}
       />,
