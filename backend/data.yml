@@ -1,0 +1,77 @@
+personal:
+  name: Alexandre Eberhardt
+  title: Computer Engineering Student | Dual Degree UTC & Laval
+  location: Quebec, Canada
+  email: alexandre.eberhardt@etu.utc.fr
+  phone: "+33 6 23 31 97 87"
+  github: github.com/alexandreeberhardt
+  github_url: https://github.com/alexandreeberhardt
+
+summary: "Dual-degree Computer Science student at Université Laval and UTC, specializing in computer vision, robotics, and embedded systems. Experienced in software engineering and GPU-optimized deep learning model integration. Actively involved in student life and bilingual in French and English."
+
+education:
+  - school: Université Laval
+    degree: Master's in Computer Engineering (M.Sc)
+    dates: Aug 2025 – Apr 2027
+    subtitle: "GPA: 4.17/4"
+    description: |
+      \textbf{Courses:} Computer Vision, Mobile Robotics, Algorithms, SOLID Principles, Kalman Filtering, Computational Complexity.
+
+  - school: Université de Technologie de Compiègne (UTC)
+    degree: Computer Engineering Degree
+    dates: 2021 – Apr 2027
+    subtitle: "GPA: 4.66/5"
+    description: |
+      \textbf{Courses:} Algorithms & Data Structures, Operational Research & Optimization, Computer Security, Distributed Systems, Real-time & Embedded Systems, AI & Logic Programming, Control Systems for Robotics.
+experiences:
+  - title: Software Engineer Intern
+    company: Savoir-faire Linux — Montreal, Canada
+    dates: Aug 2024 – Feb 2025
+    highlights:
+      - "Modernization of the extension system for \\textbf{Jami} (Open-source P2P Softphone)."
+      - "Integration of Deep Learning models \\textbf{(YOLOv11-seg)} for video masking with \\textbf{ONNX Runtime} in C++."
+      - "Performance optimization: inference time reduction (0.3s to 0.01s) via \\textbf{NVIDIA CUDA/cuDNN} hardware acceleration."
+      - "Resolution of complex cross-platform compilation issues (Android NDK, macOS) and development of reactive interfaces in \\textbf{QML}."
+
+projects:
+  - name: Mastery Bot Brawl Stars
+    year: 2024
+    highlights:
+      - "Development of an automation bot in \\textbf{Python} to optimize game progression."
+      - "Implementation of \\textbf{Computer Vision} (image/state detection) for real-time screen analysis."
+      - "Programming of input simulation scripts and decision-making logic."
+
+  - name: Eye Tracking System (Computer Vision)
+    year: 2025
+    highlights:
+      - "Development of an eye-controlled mouse interface for people with reduced mobility (Course GIF-7001)."
+      - "Design of a stereoscopic system (2 cameras) with \\textbf{Thin Plate Spline} calibration for precise gaze projection on screen."
+      - "Use of \\textbf{MediaPipe} for facial landmark extraction and \\textbf{OpenCV/NumPy} for image processing and 3D reconstruction."
+      - "Implementation of voluntary blink detection for clicking and \\textbf{Tkinter} interface."
+
+skills:
+  languages: "C++, C, Python, Java, JavaScript, CUDA, SQL, MATLAB, Rust, QML"
+  tools: "Git, Docker, CMake, ONNX Runtime, Android Studio, Linux, Qt, Gerrit"
+
+leadership:
+  - role: Student Vice-President
+    place: UTC, Council of Studies and University Life
+    dates: Nov 2023 – Nov 2025
+    highlights:
+      - "Elected representative of 5,000 students, voting on academic reforms and budgets."
+      - "Management of grants for student initiatives."
+  
+  - role: Secretary & Board Member
+    place: Technology and Entrepreneurship Cluster (UTC)
+    dates: Feb 2025 – Aug 2025
+    highlights:
+      - "Updated statutes (Law 1901) and provided administrative support for 17 student clubs."
+
+  - role: President & Association Manager
+    place: UTC (Various Associations)
+    dates: 2021 – 2025
+    highlights:
+      - "President of the Comic Book Library, President of the Japanese Culture Club."
+      - "IT Manager for end-of-semester events."
+
+languages_spoken: "French (Native), English (Fluent)"

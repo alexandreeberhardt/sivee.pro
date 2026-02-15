@@ -1,0 +1,134 @@
+\documentclass[11pt,a4paper,sans]{moderncv}
+
+% --- Style options ---
+\moderncvstyle{classic}
+\moderncvcolor{blue}
+
+% --- Encoding ---
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+
+% --- Margins ---
+\usepackage[scale=0.90]{geometry}
+
+% --- Reduce hints column width ---
+\setlength{\hintscolumnwidth}{2.5cm}
+
+% --- Personal data ---
+\name{\VAR{personal.name | escape_latex}}{}
+\BLOCK{if personal.title}\title{\VAR{personal.title | escape_latex}}\BLOCK{endif}
+\address{\VAR{personal.location | escape_latex}}{}{}
+\phone[mobile]{\VAR{personal.phone | escape_latex}}
+\email{\VAR{personal.email | escape_latex}}
+\BLOCK{for link in personal.links}\BLOCK{if link.platform == 'linkedin'}\social[linkedin]{\VAR{link.username | escape_latex}}\BLOCK{endif}\BLOCK{if link.platform == 'github'}\social[github]{\VAR{link.username | escape_latex}}\BLOCK{endif}\BLOCK{if link.platform not in ['linkedin', 'github'] and link.url}\homepage{\VAR{link.url | escape_latex}}\BLOCK{endif}\BLOCK{endfor}
+
+\begin{document}
+\pagestyle{empty}
+
+\makecvtitle
+
+\BLOCK{for section in sections}
+\BLOCK{if section.isVisible and section.has_content}
+
+\BLOCK{if section.type == 'skills'}
+\section{\VAR{section.title | escape_latex}}
+\BLOCK{for cat in section.content}
+\BLOCK{if cat.skills}
+\cvitem{\VAR{cat.category | escape_latex}}{\VAR{cat.skills | escape_latex}}
+\BLOCK{endif}
+\BLOCK{endfor}
+\BLOCK{endif}
+
+\BLOCK{if section.type == 'summary'}
+\section{\VAR{section.title | escape_latex}}
+\cvitem{}{\VAR{section.content | escape_latex}}
+\BLOCK{endif}
+
+\BLOCK{if section.type == 'experiences'}
+\section{\VAR{section.title | escape_latex}}
+\BLOCK{for exp in section.content}
+\cventry{\VAR{exp.dates | escape_latex}}
+  {\VAR{exp.title | escape_latex}}
+  {\VAR{exp.company | escape_latex}}
+  {}{}
+  {\BLOCK{if exp.highlights}
+    \begin{itemize}
+    \BLOCK{for item in exp.highlights}
+      \item \VAR{item | escape_latex}
+    \BLOCK{endfor}
+    \end{itemize}
+  \BLOCK{endif}}
+\BLOCK{endfor}
+\BLOCK{endif}
+
+\BLOCK{if section.type == 'education'}
+\section{\VAR{section.title | escape_latex}}
+\BLOCK{for edu in section.content}
+\cventry{\VAR{edu.dates | escape_latex}}
+  {\VAR{edu.degree | escape_latex}}
+  {\VAR{edu.school | escape_latex}}
+  {\BLOCK{if edu.subtitle}\VAR{edu.subtitle | escape_latex}\BLOCK{endif}}{}
+  {\BLOCK{if edu.description}\VAR{edu.description | escape_latex}\BLOCK{endif}}
+\BLOCK{endfor}
+\BLOCK{endif}
+
+\BLOCK{if section.type == 'projects'}
+\section{\VAR{section.title | escape_latex}}
+\BLOCK{for proj in section.content}
+\cventry{\VAR{proj.year | escape_latex}}
+  {\VAR{proj.name | escape_latex}}
+  {}{}{}
+  {\BLOCK{if proj.highlights}
+    \begin{itemize}
+    \BLOCK{for item in proj.highlights}
+      \item \VAR{item | escape_latex}
+    \BLOCK{endfor}
+    \end{itemize}
+  \BLOCK{endif}}
+\BLOCK{endfor}
+\BLOCK{endif}
+
+\BLOCK{if section.type == 'leadership'}
+\section{\VAR{section.title | escape_latex}}
+\BLOCK{for lead in section.content}
+\cventry{\VAR{lead.dates | escape_latex}}
+  {\VAR{lead.role | escape_latex}}
+  {\BLOCK{if lead.place}\VAR{lead.place | escape_latex}\BLOCK{endif}}
+  {}{}
+  {\BLOCK{if lead.highlights}
+    \begin{itemize}
+    \BLOCK{for item in lead.highlights}
+      \item \VAR{item | escape_latex}
+    \BLOCK{endfor}
+    \end{itemize}
+  \BLOCK{endif}}
+\BLOCK{endfor}
+\BLOCK{endif}
+
+\BLOCK{if section.type == 'languages'}
+\section{\VAR{section.title | escape_latex}}
+\cvitem{}{\VAR{section.content | escape_latex}}
+\BLOCK{endif}
+
+\BLOCK{if section.type == 'custom'}
+\section{\VAR{section.title | escape_latex}}
+\BLOCK{for item in section.content}
+\cventry{\BLOCK{if item.dates}\VAR{item.dates | escape_latex}\BLOCK{endif}}
+  {\VAR{item.title | escape_latex}}
+  {\BLOCK{if item.subtitle}\VAR{item.subtitle | escape_latex}\BLOCK{endif}}
+  {}{}
+  {\BLOCK{if item.highlights}
+    \begin{itemize}
+    \BLOCK{for hl in item.highlights}
+      \item \VAR{hl | escape_latex}
+    \BLOCK{endfor}
+    \end{itemize}
+  \BLOCK{endif}}
+\BLOCK{endfor}
+\BLOCK{endif}
+
+\BLOCK{endif}
+\BLOCK{endfor}
+
+\end{document}

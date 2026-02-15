@@ -1,0 +1,153 @@
+\documentclass[9pt,a4paper]{article}
+
+% ---------- PAGE LAYOUT ----------
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{geometry}
+\geometry{
+    top    = 0.5in,
+    bottom = 0.5in,
+    left   = 0.55in,
+    right  = 0.55in
+}
+
+\setlength\parindent{0pt}
+\setlength\parskip{1pt}
+
+\usepackage[sc]{mathpazo}
+\linespread{1.08}
+
+\usepackage{enumitem}
+\setlist[itemize]{leftmargin=*, topsep=2pt, itemsep=2pt, parsep=0pt, partopsep=0pt}
+
+\usepackage{hyperref}
+\usepackage{titlesec}
+\usepackage{xcolor}
+\usepackage{tabularx}
+
+% ---------- SECTION FORMATTING ----------
+\titleformat{\section}
+  {\large\bfseries\uppercase}
+  {}
+  {0pt}
+  {}
+  [\vspace{-0.9em}\rule{\linewidth}{0.4pt}\vspace{0.3em}]
+
+\titlespacing*{\section}{0pt}{1.8ex}{0.8ex}
+
+\begin{document}
+\pagestyle{empty}
+
+
+% ---------- NAME, TITLE & CONTACT ----------
+\begin{tabularx}{\linewidth}{X r}
+{\Huge\textbf{\VAR{personal.name | escape_latex}}} &
+\href{mailto:\VAR{personal.email}}{\VAR{personal.email | escape_latex}} \\
+\BLOCK{if personal.title}{\large \VAR{personal.title | escape_latex}} &\BLOCK{endif}
+\BLOCK{for link in personal.links}\BLOCK{if link.url and link.username and loop.first}\href{\VAR{link.url | escape_latex}}{\VAR{link.username | escape_latex}}\BLOCK{endif}\BLOCK{endfor}\\
+\VAR{personal.location | escape_latex}  &
+\VAR{personal.phone | escape_latex}\BLOCK{for link in personal.links}\BLOCK{if link.url and link.username and not loop.first} | \href{\VAR{link.url | escape_latex}}{\VAR{link.username | escape_latex}}\BLOCK{endif}\BLOCK{endfor} \\
+
+\end{tabularx}
+
+\vspace{0.3cm}
+
+\BLOCK{for section in sections}
+\BLOCK{if section.isVisible and section.has_content}
+
+\section*{\VAR{section.title | escape_latex}}
+
+\BLOCK{if section.type == 'education'}
+\BLOCK{for edu in section.content}
+\vspace{0.15cm}
+\textbf{\VAR{edu.school | escape_latex}}\BLOCK{if edu.degree}, \VAR{edu.degree | escape_latex}\BLOCK{endif} \hfill \VAR{edu.dates | escape_latex}
+\BLOCK{if edu.subtitle}
+\\
+\textit{\VAR{edu.subtitle | escape_latex}}
+\BLOCK{endif}
+\BLOCK{if edu.description}
+\\
+{\small \textit{\VAR{edu.description | escape_latex}}}
+\BLOCK{endif}
+
+\BLOCK{endfor}
+\BLOCK{endif}
+
+\BLOCK{if section.type == 'summary'}
+\VAR{section.content | escape_latex}
+\BLOCK{endif}
+
+\BLOCK{if section.type == 'experiences'}
+\BLOCK{for exp in section.content}
+\vspace{0.2cm}
+\textbf{\VAR{exp.title | escape_latex}}, \textit{\VAR{exp.company | escape_latex}} \hfill \VAR{exp.dates | escape_latex}
+\BLOCK{if exp.highlights}
+\begin{itemize}
+  \BLOCK{for item in exp.highlights}
+  \item \VAR{item | escape_latex}
+  \BLOCK{endfor}
+\end{itemize}
+\BLOCK{endif}
+\BLOCK{endfor}
+\BLOCK{endif}
+
+\BLOCK{if section.type == 'projects'}
+\BLOCK{for proj in section.content}
+\vspace{0.2cm}
+\textbf{\VAR{proj.name | escape_latex}} \hfill \VAR{proj.year | escape_latex}
+\BLOCK{if proj.highlights}
+\begin{itemize}
+  \BLOCK{for item in proj.highlights}
+  \item \VAR{item | escape_latex}
+  \BLOCK{endfor}
+\end{itemize}
+\BLOCK{endif}
+\BLOCK{endfor}
+\BLOCK{endif}
+
+\BLOCK{if section.type == 'skills'}
+\BLOCK{for cat in section.content}
+\BLOCK{if cat.skills}
+\textbf{\VAR{cat.category | escape_latex}:} \VAR{cat.skills | escape_latex} \BLOCK{if not loop.last}\\
+\BLOCK{endif}
+\BLOCK{endif}
+\BLOCK{endfor}
+\BLOCK{endif}
+
+\BLOCK{if section.type == 'leadership'}
+\BLOCK{for lead in section.content}
+\textbf{\VAR{lead.role | escape_latex}}\BLOCK{if lead.place}: \VAR{lead.place | escape_latex}\BLOCK{endif} \BLOCK{if lead.dates}\hfill \VAR{lead.dates | escape_latex}\BLOCK{endif}
+\BLOCK{if lead.highlights}
+\begin{itemize}
+  \BLOCK{for item in lead.highlights}
+  \item \VAR{item | escape_latex}
+  \BLOCK{endfor}
+\end{itemize}
+\BLOCK{else}
+\\
+\BLOCK{endif}
+\BLOCK{endfor}
+\BLOCK{endif}
+
+\BLOCK{if section.type == 'languages'}
+\VAR{section.content | escape_latex}
+\BLOCK{endif}
+
+\BLOCK{if section.type == 'custom'}
+\BLOCK{for item in section.content}
+\vspace{0.2cm}
+\textbf{\VAR{item.title | escape_latex}}\BLOCK{if item.subtitle} — \VAR{item.subtitle | escape_latex}\BLOCK{endif} \BLOCK{if item.dates}\hfill \VAR{item.dates | escape_latex}\BLOCK{endif}
+\BLOCK{if item.highlights}
+\begin{itemize}
+  \BLOCK{for hl in item.highlights}
+  \item \VAR{hl | escape_latex}
+  \BLOCK{endfor}
+\end{itemize}
+\BLOCK{endif}
+\BLOCK{endfor}
+\BLOCK{endif}
+
+\BLOCK{endif}
+\BLOCK{endfor}
+
+\end{document}
