@@ -109,6 +109,9 @@
 \BLOCK{for cat in section.content}
 \BLOCK{if cat.skills}
 \textbf{\VAR{cat.category | escape_latex}:} \VAR{cat.skills | escape_latex}
+\BLOCK{if not loop.last}
+
+\BLOCK{endif}
 \BLOCK{endif}
 \BLOCK{endfor}
 \par\vspace{0.2em}
