@@ -42,7 +42,7 @@ class PdfCompilerTest(unittest.TestCase):
         compiler.compile(clean=False)
 
         mock_subprocess_run.assert_called_once_with(
-            expected_cmd, check=True, stdout=subprocess.DEVNULL, stderr=subprocess.PIPE
+            expected_cmd, check=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT
         )
 
     @patch("subprocess.run")

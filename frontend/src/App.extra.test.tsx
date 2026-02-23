@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
-import { screen, fireEvent, waitFor } from '@testing-library/react'
+import { act, screen, fireEvent, waitFor } from '@testing-library/react'
 import App from './App'
 import { renderWithProviders } from './test/render'
 
@@ -10,6 +10,13 @@ vi.mock('./api/auth', async (importOriginal) => {
     resendVerification: vi.fn().mockResolvedValue(undefined),
   }
 })
+
+vi.mock('./api/resumes', () => ({
+  listResumes: vi.fn().mockResolvedValue({ resumes: [] }),
+  createResume: vi.fn().mockResolvedValue({}),
+  updateResume: vi.fn().mockResolvedValue({}),
+  deleteResume: vi.fn().mockResolvedValue({}),
+}))
 
 const verifiedUser = {
   id: 1,
@@ -25,66 +32,72 @@ const unverifiedUser = {
 }
 
 describe('App – loading state', () => {
-  it('shows loading spinner during auth check', () => {
+  it('shows loading spinner during auth check', async () => {
     renderWithProviders(<App />, {
       authValue: { isLoading: true, isAuthenticated: false },
     })
+    await act(async () => {})
     expect(document.querySelector('.animate-spin')).toBeTruthy()
   })
 })
 
 describe('App – unverified user screen', () => {
-  it('shows "Check your inbox" heading', () => {
+  it('shows "Check your inbox" heading', async () => {
     renderWithProviders(<App />, {
       authValue: {
         isAuthenticated: true,
         user: unverifiedUser,
       },
     })
+    await act(async () => {})
     expect(screen.getByText('Check your inbox')).toBeTruthy()
   })
 
-  it('displays the user email', () => {
+  it('displays the user email', async () => {
     renderWithProviders(<App />, {
       authValue: {
         isAuthenticated: true,
         user: unverifiedUser,
       },
     })
+    await act(async () => {})
     expect(screen.getByText('test@example.com')).toBeTruthy()
   })
 
-  it('shows the resend verification button', () => {
+  it('shows the resend verification button', async () => {
     renderWithProviders(<App />, {
       authValue: {
         isAuthenticated: true,
         user: unverifiedUser,
       },
     })
+    await act(async () => {})
     expect(screen.getByText('Resend verification email')).toBeTruthy()
   })
 
-  it('shows the change email button', () => {
+  it('shows the change email button', async () => {
     renderWithProviders(<App />, {
       authValue: {
         isAuthenticated: true,
         user: unverifiedUser,
       },
     })
+    await act(async () => {})
     expect(screen.getByText('Change email')).toBeTruthy()
   })
 
-  it('shows logout button', () => {
+  it('shows logout button', async () => {
     renderWithProviders(<App />, {
       authValue: {
         isAuthenticated: true,
         user: unverifiedUser,
       },
     })
+    await act(async () => {})
     expect(screen.getByTestId('logout-unverified')).toBeTruthy()
   })
 
-  it('calls logout when clicking logout button', () => {
+  it('calls logout when clicking logout button', async () => {
     const logout = vi.fn()
     renderWithProviders(<App />, {
       authValue: {
@@ -93,6 +106,7 @@ describe('App – unverified user screen', () => {
         logout,
       },
     })
+    await act(async () => {})
     fireEvent.click(screen.getByTestId('logout-unverified'))
     expect(logout).toHaveBeenCalledOnce()
   })
@@ -112,6 +126,7 @@ describe('App – resend verification email', () => {
         user: unverifiedUser,
       },
     })
+    await act(async () => {})
 
     fireEvent.click(screen.getByText('Resend verification email'))
 
@@ -127,6 +142,7 @@ describe('App – resend verification email', () => {
         user: unverifiedUser,
       },
     })
+    await act(async () => {})
 
     fireEvent.click(screen.getByText('Resend verification email'))
 
@@ -144,6 +160,7 @@ describe('App – resend verification email', () => {
         user: unverifiedUser,
       },
     })
+    await act(async () => {})
 
     fireEvent.click(screen.getByText('Resend verification email'))
 
@@ -154,13 +171,14 @@ describe('App – resend verification email', () => {
 })
 
 describe('App – change email modal', () => {
-  it('opens ChangeEmailModal when clicking change email button', () => {
+  it('opens ChangeEmailModal when clicking change email button', async () => {
     renderWithProviders(<App />, {
       authValue: {
         isAuthenticated: true,
         user: unverifiedUser,
       },
     })
+    await act(async () => {})
 
     fireEvent.click(screen.getByText('Change email'))
     expect(screen.getByText('Change email address')).toBeTruthy()
@@ -178,7 +196,7 @@ describe('App – localStorage draft for unverified users', () => {
     localStorage.clear()
   })
 
-  it('restores draft from localStorage when user becomes verified', () => {
+  it('restores draft from localStorage when user becomes verified', async () => {
     const draft = {
       personal: {
         name: 'Jean Dupont',
@@ -199,19 +217,21 @@ describe('App – localStorage draft for unverified users', () => {
         user: verifiedUser,
       },
     })
+    await act(async () => {})
 
     // The draft restoration runs in a useEffect. After the effect,
     // localStorage entry should be removed.
     expect(localStorage.getItem(draftKey)).toBeNull()
   })
 
-  it('does not restore draft when localStorage is empty', () => {
+  it('does not restore draft when localStorage is empty', async () => {
     renderWithProviders(<App />, {
       authValue: {
         isAuthenticated: true,
         user: verifiedUser,
       },
     })
+    await act(async () => {})
 
     // No draft in localStorage – nothing should break
     expect(localStorage.getItem(draftKey)).toBeNull()

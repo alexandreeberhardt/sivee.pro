@@ -177,8 +177,8 @@ describe('emptyResumeData constant', () => {
 })
 
 describe('AVAILABLE_TEMPLATES', () => {
-  it('has 21 templates (7 bases * 3 variants)', () => {
-    expect(AVAILABLE_TEMPLATES).toHaveLength(21)
+  it('has 33 templates (11 bases * 3 variants)', () => {
+    expect(AVAILABLE_TEMPLATES).toHaveLength(33)
   })
 
   it('includes all base templates', () => {

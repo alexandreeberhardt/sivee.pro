@@ -83,15 +83,18 @@ class TestValidTemplates:
     """Verify the template configuration is consistent."""
 
     def test_all_base_templates_have_variants(self):
-        bases = {"harvard", "europass", "mckinsey", "aurianne", "stephane", "michel", "double"}
+        bases = {
+            "harvard", "europass", "mckinsey", "aurianne", "stephane",
+            "michel", "double", "sidebar", "banking", "minimal", "deedy",
+        }
         for base in bases:
             assert base in VALID_TEMPLATES
             assert f"{base}_compact" in VALID_TEMPLATES
             assert f"{base}_large" in VALID_TEMPLATES
 
     def test_valid_templates_count(self):
-        # 7 bases * 3 variants = 21
-        assert len(VALID_TEMPLATES) == 21
+        # 11 bases * 3 variants = 33
+        assert len(VALID_TEMPLATES) == 33
 
     def test_size_variants(self):
         assert SIZE_VARIANTS == ["large", "normal", "compact"]

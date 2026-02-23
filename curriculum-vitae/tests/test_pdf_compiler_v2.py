@@ -68,22 +68,24 @@ class TestCompile:
         assert kwargs["check"] is True
 
     @patch("core.PdfCompiler.subprocess.run")
-    def test_stdout_suppressed(self, mock_run, tex_file):
+    def test_stdout_captured(self, mock_run, tex_file):
+        """stdout=PIPE to capture combined output for error reporting."""
         mock_run.return_value = MagicMock()
         compiler = PdfCompiler(tex_file)
         compiler.compile(clean=False)
 
         kwargs = mock_run.call_args[1]
-        assert kwargs["stdout"] == subprocess.DEVNULL
+        assert kwargs["stdout"] == subprocess.PIPE
 
     @patch("core.PdfCompiler.subprocess.run")
-    def test_stderr_captured(self, mock_run, tex_file):
+    def test_stderr_merged_into_stdout(self, mock_run, tex_file):
+        """stderr=STDOUT merges LaTeX errors into stdout for unified capture."""
         mock_run.return_value = MagicMock()
         compiler = PdfCompiler(tex_file)
         compiler.compile(clean=False)
 
         kwargs = mock_run.call_args[1]
-        assert kwargs["stderr"] == subprocess.PIPE
+        assert kwargs["stderr"] == subprocess.STDOUT
 
     @patch("core.PdfCompiler.subprocess.run")
     def test_compilation_failure_raises_runtime_error(self, mock_run, tex_file):
