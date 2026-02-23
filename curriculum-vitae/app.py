@@ -677,6 +677,9 @@ async def generate_cv(
         pdf_content = pdf_file.read_bytes()
 
     except RuntimeError as e:
+        # Keep temp files on LaTeX error for debugging (do not cleanup in finally).
+        with contextlib.suppress(Exception):
+            Path(temp_path / "KEEP_ON_ERROR").write_text("latex_error", encoding="utf-8")
         raise HTTPException(status_code=500, detail=f"Erreur de compilation LaTeX: {e}") from e
     except HTTPException:
         raise
@@ -684,8 +687,12 @@ async def generate_cv(
         raise HTTPException(status_code=500, detail=f"Erreur inattendue: {e}") from e
     finally:
         # SECURITY: Always clean up temporary files, even on exceptions
+        # Debug: keep temp dir if a LaTeX error occurred (marked by KEEP_ON_ERROR).
         with contextlib.suppress(Exception):
-            shutil.rmtree(temp_path)
+            if (temp_path / "KEEP_ON_ERROR").exists():
+                print(f"🧪 LaTeX error debug retained at: {temp_path}")
+            else:
+                shutil.rmtree(temp_path)
 
     if not preview:
         # Increment download counter only for explicit exports/downloads.

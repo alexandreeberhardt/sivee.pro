@@ -25,8 +25,8 @@
 
 % === HEADER ===
 \begin{center}
-  {\Huge\bfseries\VAR{personal.name | escape_latex}}\\[0.4em]
-  \BLOCK{if personal.title}{\large\VAR{personal.title | escape_latex}}\\[0.3em]\BLOCK{endif}
+  {\Huge\textbf{\VAR{personal.name | escape_latex}}}\\[0.4em]
+  \BLOCK{if personal.title}{\large \VAR{personal.title | escape_latex}}\\[0.3em]\BLOCK{endif}
   {\normalsize%
   \BLOCK{if personal.location}\VAR{personal.location | escape_latex}\BLOCK{endif}%
   \BLOCK{if personal.email} $\cdot$ \href{mailto:\VAR{personal.email}}{\VAR{personal.email | escape_latex}}\BLOCK{endif}%
@@ -50,7 +50,7 @@
 \textbf{\VAR{edu.school | escape_latex}}\BLOCK{if edu.degree} -- \VAR{edu.degree | escape_latex}\BLOCK{endif}
 \hfill \VAR{edu.dates | escape_latex}
 \BLOCK{if edu.subtitle}\\[0.15em]\VAR{edu.subtitle | escape_latex}\BLOCK{endif}
-\BLOCK{if edu.description}\\[0.15em]{\small\VAR{edu.description | escape_latex}}\BLOCK{endif}
+\BLOCK{if edu.description}\\[0.15em]{\small \VAR{edu.description | escape_latex}}\BLOCK{endif}
 \par\vspace{0.5em}
 \BLOCK{endfor}
 \BLOCK{endif}

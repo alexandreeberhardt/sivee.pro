@@ -40,7 +40,7 @@
     \color{white}
     \hspace{0.5cm}%
     \begin{minipage}[c][1.8cm]{0.50\linewidth}
-      {\fontsize{22}{26}\selectfont\bfseries\VAR{personal.name | escape_latex}}%
+      {\fontsize{22}{26}\selectfont\textbf{\VAR{personal.name | escape_latex}}}%
       \BLOCK{if personal.title}\\[0.1em]{\color{gray}\VAR{personal.title | escape_latex}}\BLOCK{endif}
     \end{minipage}%
     \hfill
@@ -78,7 +78,7 @@
 \BLOCK{if section.isVisible and section.has_content and section.type in ['education', 'skills', 'languages']}
 
 \vspace{0.2em}
-{\bfseries\color{accentcolor}\VAR{section.title | escape_latex}}\\[-0.3em]
+{\color{accentcolor}\textbf{\VAR{section.title | escape_latex}}}\\[-0.3em]
 {\color{accentcolor}\rule{\linewidth}{0.8pt}}
 \vspace{0.1em}
 
@@ -86,8 +86,8 @@
 \BLOCK{for edu in section.content}
 {\footnotesize\textbf{\VAR{edu.school | escape_latex}}}\hfill {\footnotesize\color{greytext}\VAR{edu.dates | escape_latex}}
 \BLOCK{if edu.degree}\\{\footnotesize\textit{\VAR{edu.degree | escape_latex}}}\BLOCK{endif}
-\BLOCK{if edu.subtitle}\\{\footnotesize\VAR{edu.subtitle | escape_latex}}\BLOCK{endif}
-\BLOCK{if edu.description}\\{\footnotesize\VAR{edu.description | escape_latex}}\BLOCK{endif}
+\BLOCK{if edu.subtitle}\\{\footnotesize \VAR{edu.subtitle | escape_latex}}\BLOCK{endif}
+\BLOCK{if edu.description}\\{\footnotesize \VAR{edu.description | escape_latex}}\BLOCK{endif}
 \par\vspace{0.25em}
 \BLOCK{endfor}
 \BLOCK{endif}
@@ -95,14 +95,14 @@
 \BLOCK{if section.type == 'skills'}
 \BLOCK{for cat in section.content}
 \BLOCK{if cat.skills}
-{\footnotesize\textbf{\VAR{cat.category | escape_latex}:}} {\footnotesize\VAR{cat.skills | escape_latex}}\\[0.15em]
+{\footnotesize\textbf{\VAR{cat.category | escape_latex}:}} {\footnotesize \VAR{cat.skills | escape_latex}}\\[0.15em]
 \BLOCK{endif}
 \BLOCK{endfor}
 \par\vspace{0.05em}
 \BLOCK{endif}
 
 \BLOCK{if section.type == 'languages'}
-{\footnotesize\VAR{section.content | escape_latex}}
+{\footnotesize \VAR{section.content | escape_latex}}
 \par\vspace{0.25em}
 \BLOCK{endif}
 
@@ -121,12 +121,12 @@
 \BLOCK{if section.isVisible and section.has_content and section.type not in ['education', 'skills', 'languages']}
 
 \vspace{0.2em}
-{\bfseries\color{accentcolor}\VAR{section.title | escape_latex}}\\[-0.3em]
+{\color{accentcolor}\textbf{\VAR{section.title | escape_latex}}}\\[-0.3em]
 {\color{accentcolor}\rule{\linewidth}{0.8pt}}
 \vspace{0.1em}
 
 \BLOCK{if section.type == 'summary'}
-{\footnotesize\VAR{section.content | escape_latex}}
+{\footnotesize \VAR{section.content | escape_latex}}
 \par\vspace{0.25em}
 \BLOCK{endif}
 
@@ -136,7 +136,7 @@
 \BLOCK{if exp.highlights}
 \begin{itemize}
   \BLOCK{for item in exp.highlights}
-  \item {\footnotesize\VAR{item | escape_latex}}
+  \item {\footnotesize \VAR{item | escape_latex}}
   \BLOCK{endfor}
 \end{itemize}
 \BLOCK{endif}
@@ -150,7 +150,7 @@
 \BLOCK{if proj.highlights}
 \begin{itemize}
   \BLOCK{for item in proj.highlights}
-  \item {\footnotesize\VAR{item | escape_latex}}
+  \item {\footnotesize \VAR{item | escape_latex}}
   \BLOCK{endfor}
 \end{itemize}
 \BLOCK{endif}
@@ -164,7 +164,7 @@
 \BLOCK{if lead.highlights}
 \begin{itemize}
   \BLOCK{for item in lead.highlights}
-  \item {\footnotesize\VAR{item | escape_latex}}
+  \item {\footnotesize \VAR{item | escape_latex}}
   \BLOCK{endfor}
 \end{itemize}
 \BLOCK{endif}
@@ -178,7 +178,7 @@
 \BLOCK{if item.highlights}
 \begin{itemize}
   \BLOCK{for hl in item.highlights}
-  \item {\footnotesize\VAR{hl | escape_latex}}
+  \item {\footnotesize \VAR{hl | escape_latex}}
   \BLOCK{endfor}
 \end{itemize}
 \BLOCK{endif}

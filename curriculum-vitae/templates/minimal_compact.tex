@@ -25,7 +25,7 @@
 
 % === HEADER ===
 \begin{center}
-  {\Large\bfseries\VAR{personal.name | escape_latex}}\\[0.2em]
+  {\Large\textbf{\VAR{personal.name | escape_latex}}}\\[0.2em]
   \BLOCK{if personal.title}{\VAR{personal.title | escape_latex}}\\[0.15em]\BLOCK{endif}
   {\footnotesize%
   \BLOCK{if personal.location}\VAR{personal.location | escape_latex}\BLOCK{endif}%
@@ -50,7 +50,7 @@
 \textbf{\VAR{edu.school | escape_latex}}\BLOCK{if edu.degree} -- \VAR{edu.degree | escape_latex}\BLOCK{endif}
 \hfill \VAR{edu.dates | escape_latex}
 \BLOCK{if edu.subtitle}\\[0.05em]\VAR{edu.subtitle | escape_latex}\BLOCK{endif}
-\BLOCK{if edu.description}\\[0.05em]{\footnotesize\VAR{edu.description | escape_latex}}\BLOCK{endif}
+\BLOCK{if edu.description}\\[0.05em]{\footnotesize \VAR{edu.description | escape_latex}}\BLOCK{endif}
 \par\vspace{0.25em}
 \BLOCK{endfor}
 \BLOCK{endif}

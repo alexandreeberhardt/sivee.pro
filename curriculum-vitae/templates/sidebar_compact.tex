@@ -50,7 +50,7 @@
 \vspace*{0.35cm}
 
 % Name
-{\fontsize{16}{20}\selectfont\bfseries\VAR{personal.name | escape_latex}}
+{\fontsize{16}{20}\selectfont\textbf{\VAR{personal.name | escape_latex}}}
 
 \BLOCK{if personal.title}
 \vspace{0.1em}
@@ -63,17 +63,17 @@
 
 % Contact
 \BLOCK{if personal.email}
-{\footnotesize\faEnvelope\hspace{0.3em}\href{mailto:\VAR{personal.email}}{\color{lighttext}\footnotesize\VAR{personal.email | escape_latex}}}\\[0.2em]
+{\footnotesize\faEnvelope\hspace{0.3em}\href{mailto:\VAR{personal.email}}{\color{lighttext}\footnotesize \VAR{personal.email | escape_latex}}}\\[0.2em]
 \BLOCK{endif}
 \BLOCK{if personal.phone}
-{\footnotesize\faPhone\hspace{0.3em}\footnotesize\VAR{personal.phone | escape_latex}}\\[0.2em]
+{\footnotesize\faPhone\hspace{0.3em}\footnotesize \VAR{personal.phone | escape_latex}}\\[0.2em]
 \BLOCK{endif}
 \BLOCK{if personal.location}
-{\footnotesize\faMapMarker*\hspace{0.3em}\footnotesize\VAR{personal.location | escape_latex}}\\[0.2em]
+{\footnotesize\faMapMarker*\hspace{0.3em}\footnotesize \VAR{personal.location | escape_latex}}\\[0.2em]
 \BLOCK{endif}
 \BLOCK{for link in personal.links}
 \BLOCK{if link.url and link.username}
-{\footnotesize\faLink\hspace{0.3em}\href{\VAR{link.url | escape_latex}}{\color{lighttext}\footnotesize\VAR{link.username | escape_latex}}}\\[0.2em]
+{\footnotesize\faLink\hspace{0.3em}\href{\VAR{link.url | escape_latex}}{\color{lighttext}\footnotesize \VAR{link.username | escape_latex}}}\\[0.2em]
 \BLOCK{endif}
 \BLOCK{endfor}
 
@@ -83,19 +83,19 @@
 \vspace{0.35em}
 {\color{mutedtext}\rule{\linewidth}{0.4pt}}
 \vspace{0.15em}
-{\bfseries\VAR{section.title | escape_latex}}
+{\textbf{\VAR{section.title | escape_latex}}}
 \vspace{0.15em}
 
 \BLOCK{if section.type == 'skills'}
 \BLOCK{for cat in section.content}
 \BLOCK{if cat.skills}
-{\footnotesize\textbf{\VAR{cat.category | escape_latex}:}} {\footnotesize\VAR{cat.skills | escape_latex}}\\[0.2em]
+{\footnotesize\textbf{\VAR{cat.category | escape_latex}:}} {\footnotesize \VAR{cat.skills | escape_latex}}\\[0.2em]
 \BLOCK{endif}
 \BLOCK{endfor}
 \BLOCK{endif}
 
 \BLOCK{if section.type == 'languages'}
-{\footnotesize\VAR{section.content | escape_latex}}
+{\footnotesize \VAR{section.content | escape_latex}}
 \BLOCK{endif}
 
 \BLOCK{endif}
@@ -114,20 +114,20 @@
 \BLOCK{if section.isVisible and section.has_content and section.type not in ['skills', 'languages']}
 
 \vspace{0.25em}
-{\bfseries\color{sidebarcolor}\VAR{section.title | escape_latex}}\\[-0.35em]
+{\color{sidebarcolor}\textbf{\VAR{section.title | escape_latex}}}\\[-0.35em]
 {\color{accentcolor}\rule{\linewidth}{1pt}}
 \vspace{0.1em}
 
 \BLOCK{if section.type == 'summary'}
-{\footnotesize\VAR{section.content | escape_latex}}
+{\footnotesize \VAR{section.content | escape_latex}}
 \par\vspace{0.2em}
 \BLOCK{endif}
 
 \BLOCK{if section.type == 'education'}
 \BLOCK{for edu in section.content}
-{\footnotesize\textbf{\VAR{edu.school | escape_latex}}}\BLOCK{if edu.degree}, \textit{\footnotesize\VAR{edu.degree | escape_latex}}\BLOCK{endif}\hfill {\footnotesize\color{greytext}\VAR{edu.dates | escape_latex}}
+{\footnotesize\textbf{\VAR{edu.school | escape_latex}}}\BLOCK{if edu.degree}, \textit{\footnotesize \VAR{edu.degree | escape_latex}}\BLOCK{endif}\hfill {\footnotesize\color{greytext}\VAR{edu.dates | escape_latex}}
 \BLOCK{if edu.subtitle}\\{\footnotesize\textit{\VAR{edu.subtitle | escape_latex}}}\BLOCK{endif}
-\BLOCK{if edu.description}\\{\footnotesize\VAR{edu.description | escape_latex}}\BLOCK{endif}
+\BLOCK{if edu.description}\\{\footnotesize \VAR{edu.description | escape_latex}}\BLOCK{endif}
 \par\vspace{0.25em}
 \BLOCK{endfor}
 \BLOCK{endif}
@@ -138,7 +138,7 @@
 \BLOCK{if exp.highlights}
 \begin{itemize}
   \BLOCK{for item in exp.highlights}
-  \item {\footnotesize\VAR{item | escape_latex}}
+  \item {\footnotesize \VAR{item | escape_latex}}
   \BLOCK{endfor}
 \end{itemize}
 \BLOCK{endif}
@@ -152,7 +152,7 @@
 \BLOCK{if proj.highlights}
 \begin{itemize}
   \BLOCK{for item in proj.highlights}
-  \item {\footnotesize\VAR{item | escape_latex}}
+  \item {\footnotesize \VAR{item | escape_latex}}
   \BLOCK{endfor}
 \end{itemize}
 \BLOCK{endif}
@@ -167,7 +167,7 @@
 \BLOCK{if lead.highlights}
 \begin{itemize}
   \BLOCK{for item in lead.highlights}
-  \item {\footnotesize\VAR{item | escape_latex}}
+  \item {\footnotesize \VAR{item | escape_latex}}
   \BLOCK{endfor}
 \end{itemize}
 \BLOCK{endif}
@@ -181,7 +181,7 @@
 \BLOCK{if item.highlights}
 \begin{itemize}
   \BLOCK{for hl in item.highlights}
-  \item {\footnotesize\VAR{hl | escape_latex}}
+  \item {\footnotesize \VAR{hl | escape_latex}}
   \BLOCK{endfor}
 \end{itemize}
 \BLOCK{endif}

@@ -42,7 +42,7 @@
     \color{white}
     \hspace{0.4cm}%
     \begin{minipage}[c][1.3cm]{0.54\linewidth}
-      {\fontsize{20}{24}\selectfont\bfseries\VAR{personal.name | escape_latex}}%
+      {\fontsize{20}{24}\selectfont\textbf{\VAR{personal.name | escape_latex}}}%
       \BLOCK{if personal.title}\\[0.1em]{\VAR{personal.title | escape_latex}}\BLOCK{endif}
     \end{minipage}%
     \hfill
@@ -78,7 +78,7 @@
 \BLOCK{for edu in section.content}
 \textbf{\VAR{edu.school | escape_latex}}\BLOCK{if edu.degree} --- \textit{\VAR{edu.degree | escape_latex}}\BLOCK{endif}\hfill {\color{greytext}\VAR{edu.dates | escape_latex}}
 \BLOCK{if edu.subtitle}\\[0.05em]\textit{\VAR{edu.subtitle | escape_latex}}\BLOCK{endif}
-\BLOCK{if edu.description}\\[0.05em]{\small\VAR{edu.description | escape_latex}}\BLOCK{endif}
+\BLOCK{if edu.description}\\[0.05em]{\small \VAR{edu.description | escape_latex}}\BLOCK{endif}
 \par\vspace{0.25em}
 \BLOCK{endfor}
 \BLOCK{endif}
