@@ -1,7 +1,7 @@
 \documentclass[9pt,a4paper]{article}
 
 % --- Page layout ---
-\usepackage[left=0.4cm, right=0.4cm, top=0.4cm, bottom=0.4cm]{geometry}
+\usepackage[left=0.7cm, right=0.7cm, top=0.6cm, bottom=0.6cm]{geometry}
 \usepackage[T1]{fontenc}
 \usepackage[utf8]{inputenc}
 \usepackage[default]{lato}
@@ -36,10 +36,10 @@
 
 % === DARK HEADER (full-width) ===
 \setlength{\fboxsep}{0pt}%
-\noindent\hspace*{-0.4cm}\colorbox{headercolor}{%
-  \begin{minipage}[c][1.8cm]{\dimexpr\linewidth+0.8cm\relax}
+\noindent\hspace*{-0.7cm}\colorbox{headercolor}{%
+  \begin{minipage}[c][1.8cm]{\dimexpr\linewidth+1.4cm\relax}
     \color{white}
-    \hspace{0.5cm}%
+    \hspace{0.8cm}%
     \begin{minipage}[c][1.8cm]{0.50\linewidth}
       {\fontsize{22}{26}\selectfont\textbf{\VAR{personal.name | escape_latex}}}%
       \BLOCK{if personal.title}\\[0.1em]{\color{gray}\VAR{personal.title | escape_latex}}\BLOCK{endif}
@@ -56,9 +56,9 @@
       \BLOCK{endif}
       \BLOCK{endfor}
     \end{minipage}
-    \hspace{0.3cm}
+    \hspace{0.6cm}
   \end{minipage}%
-}\hspace*{-0.4cm}
+}\hspace*{-0.7cm}
 
 % === LIGHT GRAY BACKGROUND FOR LEFT COLUMN ===
 \newlength{\cvSideX}
@@ -70,7 +70,7 @@
     rectangle ([xshift=\cvSideX] current page.south west);
 \end{tikzpicture}
 
-\vspace{0.35cm}
+\vspace{0.6cm}
 
 \begin{paracol}{2}
 
