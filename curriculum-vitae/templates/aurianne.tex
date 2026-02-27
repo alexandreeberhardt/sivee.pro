@@ -28,7 +28,7 @@
 
 % ---------- SECTION FORMATTING ----------
 \titleformat{\section}
-  {\large\bfseries\uppercase}
+  {\large\bfseries\MakeUppercase}
   {}
   {0pt}
   {}
@@ -45,8 +45,7 @@
 \begin{tabularx}{\linewidth}{X r}
 {\Huge\textbf{\VAR{personal.name | escape_latex}}} &
 \href{mailto:\VAR{personal.email}}{\VAR{personal.email | escape_latex}} \\
-\BLOCK{if personal.title}{\large \VAR{personal.title | escape_latex}} &\BLOCK{endif}
-\BLOCK{for link in personal.links}\BLOCK{if link.url and link.username and loop.first}\href{\VAR{link.url | escape_latex}}{\VAR{link.username | escape_latex}}\BLOCK{endif}\BLOCK{endfor}\\
+\BLOCK{if personal.title}{\large \VAR{personal.title | escape_latex}}\BLOCK{endif} & \BLOCK{for link in personal.links}\BLOCK{if link.url and link.username and loop.first}\href{\VAR{link.url | escape_latex}}{\VAR{link.username | escape_latex}}\BLOCK{endif}\BLOCK{endfor}\\
 \VAR{personal.location | escape_latex}  &
 \VAR{personal.phone | escape_latex}\BLOCK{for link in personal.links}\BLOCK{if link.url and link.username and not loop.first} | \href{\VAR{link.url | escape_latex}}{\VAR{link.username | escape_latex}}\BLOCK{endif}\BLOCK{endfor} \\
 
@@ -125,8 +124,6 @@
   \item \VAR{item | escape_latex}
   \BLOCK{endfor}
 \end{itemize}
-\BLOCK{else}
-\\
 \BLOCK{endif}
 \BLOCK{endfor}
 \BLOCK{endif}

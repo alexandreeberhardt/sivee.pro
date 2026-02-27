@@ -35,9 +35,13 @@
 \begin{document}
 
 % --- Full-height sidebar background ---
+\newlength{\cvSideX}
+\setlength{\cvSideX}{\oddsidemargin}
+\addtolength{\cvSideX}{1in}
+\addtolength{\cvSideX}{0.34\textwidth}
 \begin{tikzpicture}[remember picture, overlay]
   \fill[sidebarcolor] (current page.north west)
-    rectangle ([xshift=0.36\paperwidth] current page.south west);
+    rectangle ([xshift=\cvSideX] current page.south west);
 \end{tikzpicture}
 
 \begin{paracol}{2}

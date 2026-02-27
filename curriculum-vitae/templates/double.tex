@@ -57,7 +57,7 @@
 % Macro pour les tags de compétences
 \newcommand{\cvtag}[1]{%
     \begin{tikzpicture}[baseline=(temp.base)]
-        \node[inner sep=3pt, text width=2cm, align=center] (temp) {\textbf{#1}};
+        \node[inner sep=3pt] (temp) {\textbf{#1}};
         \draw[thick, black] (temp.south west) -- (temp.south east);
     \end{tikzpicture}%
 }
@@ -80,7 +80,7 @@
 \begin{minipage}[c]{0.25\textwidth}
     \begin{flushright}
         \begin{tikzpicture}
-            \node[circle, fill=primary, minimum size=3cm, text=white, font=\fontsize{26}{26}\selectfont] {\VAR{personal.name | escape_latex | truncate(2, True, '') | upper}};
+            \node[circle, fill=primary, minimum size=3cm, text=white, font=\fontsize{26}{26}\selectfont] {\VAR{personal.name | initials(2)}};
         \end{tikzpicture}
     \end{flushright}
 \end{minipage}

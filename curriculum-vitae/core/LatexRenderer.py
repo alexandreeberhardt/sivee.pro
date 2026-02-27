@@ -20,6 +20,7 @@ class LatexRenderer:
             lstrip_blocks=True,
         )
         self.env.filters["escape_latex"] = self.escape_latex
+        self.env.filters["initials"] = self.initials
         self.template_name = template_name
 
     @staticmethod
@@ -54,6 +55,14 @@ class LatexRenderer:
         for char, replacement in replacements.items():
             text = text.replace(char, replacement)
         return text
+
+    @staticmethod
+    def initials(text: str, n: int = 2) -> str:
+        """Extracts the N first initials (first letter of each word)."""
+        if not isinstance(text, str):
+            return ""
+        words = text.strip().split()
+        return "".join(w[0].upper() for w in words[:n] if w)
 
     def render(self, data: dict[str, Any]) -> str:
         """Renders the template with provided data."""

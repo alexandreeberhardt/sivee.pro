@@ -60,9 +60,13 @@
 }\hspace*{-0.5cm}
 
 % === LIGHT GRAY BACKGROUND FOR LEFT COLUMN ===
+\newlength{\cvSideX}
+\setlength{\cvSideX}{\oddsidemargin}
+\addtolength{\cvSideX}{1in}
+\addtolength{\cvSideX}{0.36\textwidth}
 \begin{tikzpicture}[remember picture, overlay]
   \fill[sidecolor] ([yshift=-2.2cm]current page.north west)
-    rectangle ([xshift=0.36\paperwidth] current page.south west);
+    rectangle ([xshift=\cvSideX] current page.south west);
 \end{tikzpicture}
 
 \vspace{0.5cm}

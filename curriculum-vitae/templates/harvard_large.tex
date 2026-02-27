@@ -9,7 +9,6 @@
 }
 \setlength\parindent{0pt}
 \setlength\parskip{2pt}
-\usepackage{multicol}
 \usepackage[T1]{fontenc}
 \usepackage{textcomp}
 \usepackage[sc]{mathpazo}
@@ -43,12 +42,11 @@
 \begin{center}
   {\Huge\textbf{\VAR{personal.name | escape_latex}}}\\[0.4em]
   \BLOCK{if personal.title}{\large \VAR{personal.title | escape_latex}}\\[0.4em]\BLOCK{endif}
-  \VAR{personal.location | escape_latex} \;|\;
-  \href{mailto:\VAR{personal.email}}{\VAR{personal.email | escape_latex}} \;|\;
-  \VAR{personal.phone | escape_latex}%
-  \BLOCK{for link in personal.links}%
-  \BLOCK{if link.url and link.username} \;|\; \href{\VAR{link.url | escape_latex}}{\VAR{link.username | escape_latex}}\BLOCK{endif}%
-  \BLOCK{endfor}
+  \BLOCK{set sep = namespace(first=true)}%
+  \BLOCK{if personal.location}\VAR{personal.location | escape_latex}\BLOCK{set sep.first=false}\BLOCK{endif}%
+  \BLOCK{if personal.email}\BLOCK{if not sep.first} \;|\; \BLOCK{endif}\href{mailto:\VAR{personal.email}}{\VAR{personal.email | escape_latex}}\BLOCK{set sep.first=false}\BLOCK{endif}%
+  \BLOCK{if personal.phone}\BLOCK{if not sep.first} \;|\; \BLOCK{endif}\VAR{personal.phone | escape_latex}\BLOCK{set sep.first=false}\BLOCK{endif}%
+  \BLOCK{for link in personal.links}\BLOCK{if link.url and link.username}\BLOCK{if not sep.first} \;|\; \BLOCK{endif}\href{\VAR{link.url | escape_latex}}{\VAR{link.username | escape_latex}}\BLOCK{set sep.first=false}\BLOCK{endif}\BLOCK{endfor}
 \end{center}
 
 \BLOCK{for section in sections}

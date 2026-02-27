@@ -1,0 +1,50 @@
+{
+  "personal": {
+    "name": "Alice Martin",
+    "title": "",
+    "location": "",
+    "email": "",
+    "phone": "",
+    "links": []
+  },
+  "sections": [
+    {
+      "id": "summary",
+      "type": "summary",
+      "title": "Profil",
+      "isVisible": true,
+      "has_content": true,
+      "content": "Développeuse web passionnée."
+    },
+    {
+      "id": "experiences",
+      "type": "experiences",
+      "title": "Expériences",
+      "isVisible": true,
+      "has_content": true,
+      "content": [
+        {
+          "title": "Développeuse Frontend",
+          "company": "Acme Corp",
+          "dates": "2022 – présent",
+          "highlights": []
+        }
+      ]
+    },
+    {
+      "id": "leadership",
+      "type": "leadership",
+      "title": "Leadership",
+      "isVisible": true,
+      "has_content": true,
+      "content": [
+        {
+          "role": "Responsable associative",
+          "place": "",
+          "dates": "2020",
+          "highlights": []
+        }
+      ]
+    }
+  ]
+}

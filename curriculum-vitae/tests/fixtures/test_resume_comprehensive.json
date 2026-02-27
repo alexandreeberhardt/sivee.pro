@@ -1,0 +1,192 @@
+{
+  "personal": {
+    "name": "Jean-Pierre Dupont-Lefebvre",
+    "title": "Senior Software Engineering Manager",
+    "location": "Paris, France",
+    "email": "jean-pierre.dupont-lefebvre@longenterprisename.com",
+    "phone": "+33 6 12 34 56 78",
+    "links": [
+      {
+        "platform": "linkedin",
+        "username": "jean-pierre-dupont",
+        "url": "https://linkedin.com/in/jean-pierre-dupont"
+      },
+      {
+        "platform": "github",
+        "username": "jpd-dev",
+        "url": "https://github.com/jpd-dev"
+      },
+      {
+        "platform": "other",
+        "username": "jpd.dev",
+        "url": "https://jpd.dev"
+      }
+    ]
+  },
+  "sections": [
+    {
+      "id": "summary",
+      "type": "summary",
+      "title": "Profil",
+      "isVisible": true,
+      "has_content": true,
+      "content": "Ingénieur logiciel senior avec 10 ans d'expérience en développement web et cloud. Expertise en Python, TypeScript et architecture microservices."
+    },
+    {
+      "id": "experiences",
+      "type": "experiences",
+      "title": "Expériences",
+      "isVisible": true,
+      "has_content": true,
+      "content": [
+        {
+          "title": "Senior Software Engineering Manager",
+          "company": "Global Technology Solutions International",
+          "dates": "2020 – présent",
+          "highlights": [
+            "Dirigé une équipe de 12 ingénieurs sur 3 continents",
+            "Réduit le time-to-market de 40% grâce à l'automatisation CI/CD",
+            "Architecturé la migration vers Kubernetes (100+ microservices)"
+          ]
+        },
+        {
+          "title": "Développeur Backend Senior",
+          "company": "StartupTech Paris",
+          "dates": "2017 – 2020",
+          "highlights": [
+            "Développement d'une API REST haute performance (10k req/s)",
+            "Mise en place du monitoring avec Prometheus et Grafana"
+          ]
+        },
+        {
+          "title": "Développeur Full Stack",
+          "company": "Agence Web Créative",
+          "dates": "2015 – 2017",
+          "highlights": []
+        }
+      ]
+    },
+    {
+      "id": "education",
+      "type": "education",
+      "title": "Éducation",
+      "isVisible": true,
+      "has_content": true,
+      "content": [
+        {
+          "school": "École Polytechnique de Paris",
+          "degree": "Diplôme d'Ingénieur – Informatique",
+          "dates": "2012 – 2015",
+          "subtitle": "Spécialisation Intelligence Artificielle",
+          "description": "Major de promotion, prix de l'innovation numérique."
+        },
+        {
+          "school": "Université Paris-Saclay",
+          "degree": "Licence Mathématiques",
+          "dates": "2009 – 2012",
+          "subtitle": "",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "id": "projects",
+      "type": "projects",
+      "title": "Projets",
+      "isVisible": true,
+      "has_content": true,
+      "content": [
+        {
+          "name": "Open Source CV Generator",
+          "year": "2023",
+          "highlights": [
+            "Plus de 2000 stars sur GitHub",
+            "Supporte 15 langues et 10 templates"
+          ]
+        },
+        {
+          "name": "Distributed Cache Library",
+          "year": "2022",
+          "highlights": []
+        }
+      ]
+    },
+    {
+      "id": "skills",
+      "type": "skills",
+      "title": "Compétences",
+      "isVisible": true,
+      "has_content": true,
+      "content": [
+        {
+          "id": "cat1",
+          "category": "Langages de programmation",
+          "skills": "Python, TypeScript, Go, Rust"
+        },
+        {
+          "id": "cat2",
+          "category": "Cloud & DevOps",
+          "skills": "AWS, GCP, Kubernetes, Terraform, Docker"
+        },
+        {
+          "id": "cat3",
+          "category": "Bases de données",
+          "skills": "PostgreSQL, Redis, Elasticsearch, MongoDB"
+        }
+      ]
+    },
+    {
+      "id": "leadership",
+      "type": "leadership",
+      "title": "Responsabilités",
+      "isVisible": true,
+      "has_content": true,
+      "content": [
+        {
+          "role": "Président du bureau des étudiants",
+          "place": "École Polytechnique",
+          "dates": "2014 – 2015",
+          "highlights": [
+            "Organisation de 20+ événements par an",
+            "Gestion d'un budget de 50 000 €"
+          ]
+        },
+        {
+          "role": "Mentor bénévole",
+          "place": "",
+          "dates": "2018 – présent",
+          "highlights": []
+        }
+      ]
+    },
+    {
+      "id": "languages",
+      "type": "languages",
+      "title": "Langues",
+      "isVisible": true,
+      "has_content": true,
+      "content": "Français (natif) · Anglais (C2 – courant) · Espagnol (B2 – intermédiaire)"
+    },
+    {
+      "id": "custom",
+      "type": "custom",
+      "title": "Certifications",
+      "isVisible": true,
+      "has_content": true,
+      "content": [
+        {
+          "title": "AWS Solutions Architect Professional",
+          "subtitle": "Amazon Web Services",
+          "dates": "2023",
+          "highlights": ["Score : 892/1000"]
+        },
+        {
+          "title": "Certified Kubernetes Administrator",
+          "subtitle": "CNCF",
+          "dates": "2022",
+          "highlights": []
+        }
+      ]
+    }
+  ]
+}

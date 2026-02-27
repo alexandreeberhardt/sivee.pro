@@ -12,7 +12,7 @@
 \setlength\parindent{0pt}
 \setlength\parskip{1pt}
 
-\usepackage{fontawesome}
+\usepackage{fontawesome5}
 \usepackage[sc]{mathpazo}
 \linespread{1.02}
 
@@ -71,7 +71,7 @@
 \BLOCK{endif}
 
 \BLOCK{if section.type == 'experiences'}
-\section*{\faSuitcase\ \VAR{section.title | escape_latex}}
+\section*{\faBriefcase\ \VAR{section.title | escape_latex}}
 \BLOCK{for exp in section.content}
 \textbf{\VAR{exp.title | escape_latex}} | \textit{\VAR{exp.company | escape_latex}} \hfill \VAR{exp.dates | escape_latex}
 \BLOCK{if exp.highlights}
@@ -86,7 +86,7 @@
 \BLOCK{endif}
 
 \BLOCK{if section.type == 'education'}
-\section*{\faMortarBoard\ \VAR{section.title | escape_latex}}
+\section*{\faGraduationCap\ \VAR{section.title | escape_latex}}
 \BLOCK{for edu in section.content}
 \textbf{\VAR{edu.school | escape_latex}} \hfill \VAR{edu.dates | escape_latex}\\
 \textit{\VAR{edu.degree | escape_latex}}
