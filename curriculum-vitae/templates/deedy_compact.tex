@@ -88,7 +88,7 @@
 
 \BLOCK{if section.type == 'education'}
 \BLOCK{for edu in section.content}
-{\footnotesize\textbf{\VAR{edu.school | escape_latex}}}\hfill {\footnotesize\color{greytext}\VAR{edu.dates | escape_latex}}
+{\footnotesize\textbf{\VAR{edu.school | escape_latex}}}\\{\footnotesize\color{greytext}\VAR{edu.dates | escape_latex}}
 \BLOCK{if edu.degree}\\{\footnotesize\textit{\VAR{edu.degree | escape_latex}}}\BLOCK{endif}
 \BLOCK{if edu.subtitle}\\{\footnotesize \VAR{edu.subtitle | escape_latex}}\BLOCK{endif}
 \BLOCK{if edu.description}\\{\footnotesize \VAR{edu.description | escape_latex}}\BLOCK{endif}
@@ -99,7 +99,7 @@
 \BLOCK{if section.type == 'skills'}
 \BLOCK{for cat in section.content}
 \BLOCK{if cat.skills}
-{\footnotesize\textbf{\VAR{cat.category | escape_latex}:}} {\footnotesize \VAR{cat.skills | escape_latex}}\\[0.15em]
+{\footnotesize\textbf{\VAR{cat.category | escape_latex}:}}\\{\footnotesize \VAR{cat.skills | escape_latex}}\\[0.15em]
 \BLOCK{endif}
 \BLOCK{endfor}
 \par\vspace{0.05em}

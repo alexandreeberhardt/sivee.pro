@@ -89,6 +89,8 @@ def compile_template(template_name: str, render_data: dict) -> dict:
             cwd=str(tmp_path),
             capture_output=True,
             text=True,
+            encoding="utf-8",
+            errors="replace",
             timeout=60,
         )
 

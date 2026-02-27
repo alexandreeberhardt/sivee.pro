@@ -1,0 +1,41 @@
+======================================================================
+COMPILATION REPORT
+======================================================================
+
+Template                        Status   Exit   Overfull   Errors 
+----------------------------------------------------------------------
+harvard                           OK               0         0    
+harvard_compact                   OK               0         0    
+harvard_large                     OK               0         0    
+mckinsey                          OK               0         0    
+mckinsey_compact                  OK               0         0    
+mckinsey_large                    OK               0         0    
+europass                          OK               0         0    
+europass_compact                  OK               0         0    
+europass_large                    OK               0         0    
+stephane                          OK               0         0    
+stephane_compact                  OK               0         0    
+stephane_large                    OK               0         0    
+aurianne                          OK               0         0    
+aurianne_compact                  OK               0         0    
+aurianne_large                    OK               0         0    
+michel                            OK               0         0    
+michel_compact                    OK               0         0    
+michel_large                      OK               0         0    
+double                            OK               2         0    
+double_compact                    OK               1         0    
+double_large                      OK               1         0    
+sidebar                           OK               4         0    
+sidebar_compact                   OK               3         0    
+sidebar_large                     OK               3         0    
+banking                           OK               1         0    
+banking_compact                   OK               1         0    
+banking_large                     OK               1         0    
+minimal                           OK               0         0    
+minimal_compact                   OK               0         0    
+minimal_large                     OK               0         0    
+deedy                             OK               0         0    
+deedy_compact                     OK               0         0    
+deedy_large                       OK               0         0    
+----------------------------------------------------------------------
+Total: 33 OK, 0 FAILED out of 33
