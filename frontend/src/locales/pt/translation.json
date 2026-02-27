@@ -417,6 +417,10 @@
   "account": {
     "title": "A minha conta",
     "profile": "Perfil",
+    "accountType": "Tipo de conta",
+    "accountTypeGuest": "Convidado",
+    "accountTypePremium": "Premium",
+    "accountTypeFree": "Gratuito",
     "exportData": "Exportar os meus dados",
     "exportDataDesc": "Descarregue uma cópia de todos os seus dados pessoais em formato JSON (direito à portabilidade RGPD).",
     "downloadData": "Descarregar os meus dados",

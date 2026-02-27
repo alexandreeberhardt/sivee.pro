@@ -138,6 +138,22 @@ export default function Account() {
             <div className="flex-1">
               <h2 className="text-lg font-semibold text-primary-900">{t('account.profile')}</h2>
               <p className="text-primary-500">{user?.email}</p>
+              <div className="mt-2 flex items-center gap-2">
+                <span className="text-xs text-primary-400">{t('account.accountType')} :</span>
+                {user?.isGuest ? (
+                  <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-primary-100 text-primary-600">
+                    {t('account.accountTypeGuest')}
+                  </span>
+                ) : user?.isPremium ? (
+                  <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-700">
+                    {t('account.accountTypePremium')}
+                  </span>
+                ) : (
+                  <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-brand/10 text-brand">
+                    {t('account.accountTypeFree')}
+                  </span>
+                )}
+              </div>
             </div>
           </div>
           <button

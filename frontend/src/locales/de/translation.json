@@ -417,6 +417,10 @@
   "account": {
     "title": "Mein Konto",
     "profile": "Profil",
+    "accountType": "Kontotyp",
+    "accountTypeGuest": "Gast",
+    "accountTypePremium": "Premium",
+    "accountTypeFree": "Kostenlos",
     "exportData": "Meine Daten exportieren",
     "exportDataDesc": "Laden Sie eine Kopie aller Ihrer persönlichen Daten im JSON-Format herunter (DSGVO-Recht auf Datenübertragbarkeit).",
     "downloadData": "Meine Daten herunterladen",
