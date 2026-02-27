@@ -200,10 +200,10 @@ function App() {
     { id: 'michel', name: 'Michel', imgBase: '/exemples/Luke_Michel' },
     { id: 'stephane', name: 'Stephane', imgBase: '/exemples/Luke_Stephane' },
     { id: 'aurianne', name: 'Aurianne', imgBase: '/exemples/Homer_Aurianne' },
-    { id: 'sidebar', name: 'Sidebar', imgBase: '/exemples/sidebar' },
-    { id: 'banking', name: 'Banking', imgBase: '/exemples/banking' },
-    { id: 'minimal', name: 'Minimal', imgBase: '/exemples/minimal' },
-    { id: 'deedy', name: 'Deedy', imgBase: '/exemples/deedy' },
+    { id: 'sidebar', name: 'Sidebar', imgBase: '/exemples/Charlie_Sidebar' },
+    { id: 'banking', name: 'Banking', imgBase: '/exemples/Charlie_Banking' },
+    { id: 'minimal', name: 'Minimal', imgBase: '/exemples/Charlie_Minimal' },
+    { id: 'deedy', name: 'Deedy', imgBase: '/exemples/Charlie_Deedy' },
   ]
 
   const getTemplateImage = (imgBase: string, size: string) => {
