@@ -210,11 +210,11 @@ export default function CVPreview({ data, debounceMs = 1000 }: CVPreviewProps) {
                   data-testid="cv-preview-frame"
                   className="w-full h-full pointer-events-none"
                 >
-                  <iframe
-                    src={pdfUrl}
-                    className="w-full h-full border-0 pointer-events-none"
-                    title="CV Preview"
-                  />
+                  <div className="w-full h-full flex items-center justify-center p-4 text-center text-primary-500 text-xs">
+                    <a href={pdfUrl} target="_blank" rel="noopener noreferrer" className="underline hover:text-primary-700">
+                      {t('preview.openFallback', 'Ouvrir l’aperçu PDF')}
+                    </a>
+                  </div>
                 </object>
               )
             ) : (
@@ -298,11 +298,11 @@ export default function CVPreview({ data, debounceMs = 1000 }: CVPreviewProps) {
                 {/* Main paper */}
                 <div className="relative bg-white rounded-xl shadow-2xl overflow-hidden w-full h-full">
                   <object data={`${pdfUrl}#toolbar=0&navpanes=0&scrollbar=0`} type="application/pdf" className="w-full h-full">
-                    <iframe
-                      src={`${pdfUrl}#toolbar=0&navpanes=0&scrollbar=0`}
-                      className="w-full h-full border-0"
-                      title="CV Preview Fullscreen"
-                    />
+                    <div className="w-full h-full flex items-center justify-center p-4 text-center text-primary-500 text-sm">
+                      <a href={pdfUrl} target="_blank" rel="noopener noreferrer" className="underline hover:text-primary-700">
+                        {t('preview.openFallback', 'Ouvrir l’aperçu PDF')}
+                      </a>
+                    </div>
                   </object>
                   {/* Overlay to block Safari's floating PDF toolbar at the bottom */}
                   <div className="absolute bottom-0 left-0 right-0 h-12 z-10" />
