@@ -194,7 +194,7 @@ sudo systemctl status certbot.timer
 
 ```bash
 # Copier la configuration
-sudo cp /opt/cv-generator/vps/nginx_saas.conf /etc/nginx/sites-available/cv-generator
+sudo cp /opt/cv-generator/infra/vps/nginx_saas.conf /etc/nginx/sites-available/cv-generator
 
 # Activer le site
 sudo ln -s /etc/nginx/sites-available/cv-generator /etc/nginx/sites-enabled/
@@ -253,7 +253,7 @@ sudo fail2ban-client status
 cd /opt/cv-generator
 
 # Premier déploiement
-./deploy.sh
+./scripts/deploy.sh
 
 # Vérifier que tout fonctionne
 curl -I https://cv.alexeber.fr/api/health
@@ -318,7 +318,7 @@ docker compose ps
 cd /opt/cv-generator && docker compose restart
 
 # Mise à jour de l'application
-cd /opt/cv-generator && ./deploy.sh
+cd /opt/cv-generator && ./scripts/deploy.sh
 
 # Backup manuel
 ./backup_db.sh

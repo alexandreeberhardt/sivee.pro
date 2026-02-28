@@ -102,7 +102,7 @@ class User(Base):
 2. Generate the migration:
 
 ```bash
-./migrate.sh generate "Add profile photo to users"
+./scripts/migrate.sh generate "Add profile photo to users"
 ```
 
 3. Review the generated file in `curriculum-vitae/alembic/versions/`.
@@ -110,19 +110,19 @@ class User(Base):
 4. Apply the migration:
 
 ```bash
-./migrate.sh dev
+./scripts/migrate.sh dev
 ```
 
 ### Migration Commands
 
-The `./migrate.sh` script simplifies Alembic usage:
+The `./scripts/migrate.sh` script simplifies Alembic usage:
 
 ```bash
-./migrate.sh                    # Apply pending migrations
-./migrate.sh generate "message" # Generate new migration
-./migrate.sh history            # Show history
-./migrate.sh current            # Show current version
-./migrate.sh downgrade          # Rollback last migration
+./scripts/migrate.sh                    # Apply pending migrations
+./scripts/migrate.sh generate "message" # Generate new migration
+./scripts/migrate.sh history            # Show history
+./scripts/migrate.sh current            # Show current version
+./scripts/migrate.sh downgrade          # Rollback last migration
 ```
 
 ## Backups and Restore
@@ -130,13 +130,13 @@ The `./migrate.sh` script simplifies Alembic usage:
 ### Manual Backup
 
 ```bash
-./vps/backup_db.sh
+./infra/vps/backup_db.sh
 ```
 
 ### Restore from Backup
 
 ```bash
-./vps/restore_db.sh cv_database_2024-01-15_03-00-00.sql.gz
+./infra/vps/restore_db.sh cv_database_2024-01-15_03-00-00.sql.gz
 ```
 
 ### Automatic Backups (Cron)
@@ -144,5 +144,5 @@ The `./migrate.sh` script simplifies Alembic usage:
 Daily backup at 3 AM:
 
 ```bash
-(crontab -l; echo "0 3 * * * /opt/cv-generator/vps/backup_db.sh >> /var/log/cv-backup.log 2>&1") | crontab -
+(crontab -l; echo "0 3 * * * /opt/cv-generator/infra/vps/backup_db.sh >> /var/log/cv-backup.log 2>&1") | crontab -
 ```

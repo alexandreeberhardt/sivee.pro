@@ -63,6 +63,6 @@ This repository (`site_UX`) hosts a CV (Resume) Generator application. It consis
 - **Testing:** Write unit tests for new components and logic using Vitest/React Testing Library.
 
 ## Deployment
-- Deployment is handled via scripts in the root (`deploy.sh`, `migrate.sh`).
+- Deployment is handled via scripts in `scripts/` (`scripts/deploy.sh`, `scripts/migrate.sh`).
 - Production runs via `docker-compose.yml` behind Nginx.
 - Ensure the `site_UX` folder contains valid `uv.lock` and `package-lock.json` before deployment.

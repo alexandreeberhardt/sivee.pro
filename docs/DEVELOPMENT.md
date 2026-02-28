@@ -55,16 +55,16 @@ sivee/
 │   │   ├── locales/           # i18n translations (fr/en/de/es/it/pt)
 │   │   └── test/              # Test setup and helpers
 │   └── package.json
-├── vps/                       # VPS deployment configs
+├── infra/vps/                       # VPS deployment configs
 │   ├── nginx_saas.conf        # Nginx configuration
 │   ├── SECURITY.md            # Security checklist
 │   ├── backup_db.sh           # DB backup script
 │   └── restore_db.sh          # DB restore script
 ├── docker-compose.yml         # Production setup
 ├── docker-compose.dev.yml     # Development setup
-├── deploy.sh                  # Deployment script
-├── migrate.sh                 # Migration script
-└── test.sh                    # Test suite runner
+├── scripts/deploy.sh                  # Deployment script
+├── scripts/migrate.sh                 # Migration script
+└── scripts/test.sh                    # Test suite runner
 ```
 
 ## Local Installation (Without Docker)
@@ -104,7 +104,7 @@ npm run dev
 ### Run all tests
 
 ```bash
-./test.sh
+./scripts/test.sh
 ```
 
 ### Backend tests only

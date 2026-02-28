@@ -2,11 +2,11 @@
 
 ## Automated Deployment
 
-The `./deploy.sh` script handles the entire process: git pull, image build, service restart, and database migrations.
+The `./scripts/deploy.sh` script handles the entire process: git pull, image build, service restart, and database migrations.
 
 ```bash
 cd /opt/cv-generator
-./deploy.sh
+./scripts/deploy.sh
 ```
 
 The script runs 4 steps:
@@ -70,7 +70,7 @@ python -c "import secrets; print(secrets.token_urlsafe(32))"
 ### 3. First deployment
 
 ```bash
-./deploy.sh
+./scripts/deploy.sh
 ```
 
 ## Nginx and SSL
@@ -79,7 +79,7 @@ python -c "import secrets; print(secrets.token_urlsafe(32))"
 
 ```bash
 # Copy configuration
-sudo cp vps/nginx_saas.conf /etc/nginx/sites-available/cv-generator
+sudo cp infra/vps/nginx_saas.conf /etc/nginx/sites-available/cv-generator
 
 # Edit to set your domain
 sudo nano /etc/nginx/sites-available/cv-generator
@@ -123,7 +123,7 @@ docker compose exec -T cv-generator uv run alembic downgrade -1
 To return to the latest version afterward:
 ```bash
 git checkout main
-./deploy.sh
+./scripts/deploy.sh
 ```
 
 ## Logs and Monitoring
@@ -169,4 +169,4 @@ docker system prune
 
 ## Security
 
-See `vps/SECURITY.md` for the full security checklist before going to production.
+See `infra/vps/SECURITY.md` for the full security checklist before going to production.
