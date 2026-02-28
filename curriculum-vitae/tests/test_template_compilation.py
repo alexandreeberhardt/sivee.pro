@@ -24,6 +24,12 @@ from core.LatexRenderer import LatexRenderer
 FIXTURES_DIR = Path(__file__).parent / "fixtures"
 TEMPLATES_DIR = Path(__file__).parent.parent / "templates"
 REPORT_PATH = FIXTURES_DIR / "compilation_report.txt"
+LATEXMK_PATH = shutil.which("latexmk")
+
+pytestmark = pytest.mark.skipif(
+    LATEXMK_PATH is None,
+    reason="latexmk not installed; requires a LaTeX toolchain",
+)
 
 
 def load_fixture(name: str) -> dict:
