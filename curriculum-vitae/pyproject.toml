@@ -40,6 +40,9 @@ dev = [
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 pythonpath = ["."]
+markers = [
+    "integration: marks tests as integration tests",
+]
 filterwarnings = [
     # fakeredis internals pass deprecated kwargs to redis-py 7.x — not our code
     "ignore:Call to '__init__' function with deprecated usage:DeprecationWarning",
