@@ -3,11 +3,11 @@
 # CV Generator - Database Migration Script
 # ===========================================
 # Usage:
-#   ./migrate.sh              # Auto-detect environment
-#   ./migrate.sh dev          # Force development mode
-#   ./migrate.sh prod         # Force production mode
-#   ./migrate.sh generate     # Generate new migration (dev only)
-#   ./migrate.sh history      # Show migration history
+#   ./scripts/migrate.sh              # Auto-detect environment
+#   ./scripts/migrate.sh dev          # Force development mode
+#   ./scripts/migrate.sh prod         # Force production mode
+#   ./scripts/migrate.sh generate     # Generate new migration (dev only)
+#   ./scripts/migrate.sh history      # Show migration history
 
 set -e
 
@@ -64,7 +64,7 @@ run_alembic() {
             ;;
         *)
             echo -e "${RED}Error: Could not detect environment${NC}"
-            echo "Please specify: ./migrate.sh [dev|prod]"
+            echo "Please specify: ./scripts/migrate.sh [dev|prod]"
             exit 1
             ;;
     esac
@@ -72,7 +72,7 @@ run_alembic() {
 
 # Show usage
 show_usage() {
-    echo "Usage: ./migrate.sh [command] [environment]"
+    echo "Usage: ./scripts/migrate.sh [command] [environment]"
     echo ""
     echo "Commands:"
     echo "  (none)      Apply all pending migrations (upgrade head)"
@@ -87,11 +87,11 @@ show_usage() {
     echo "  (auto)      Auto-detect environment"
     echo ""
     echo "Examples:"
-    echo "  ./migrate.sh                    # Apply migrations (auto-detect)"
-    echo "  ./migrate.sh generate           # Generate new migration"
-    echo "  ./migrate.sh generate 'Add profile photo column'"
-    echo "  ./migrate.sh history            # Show history"
-    echo "  ./migrate.sh prod               # Apply migrations in production"
+    echo "  ./scripts/migrate.sh                    # Apply migrations (auto-detect)"
+    echo "  ./scripts/migrate.sh generate           # Generate new migration"
+    echo "  ./scripts/migrate.sh generate 'Add profile photo column'"
+    echo "  ./scripts/migrate.sh history            # Show history"
+    echo "  ./scripts/migrate.sh prod               # Apply migrations in production"
 }
 
 # Main
