@@ -174,7 +174,9 @@ class TestImportEndpointQuota:
     def test_guest_at_limit_returns_429(self, client: TestClient, db: Session) -> None:
         resp = client.post("/api/auth/guest")
         assert resp.status_code == 201
-        token = resp.json()["access_token"]
+        token = resp.cookies.get("access_token")
+
+        assert token
 
         user = db.query(User).filter(User.is_guest.is_(True)).first()
         assert user is not None
@@ -305,7 +307,9 @@ class TestImportStreamEndpointQuota:
     def test_guest_at_limit_returns_429(self, client: TestClient, db: Session) -> None:
         resp = client.post("/api/auth/guest")
         assert resp.status_code == 201
-        token = resp.json()["access_token"]
+        token = resp.cookies.get("access_token")
+
+        assert token
 
         user = db.query(User).filter(User.is_guest.is_(True)).first()
         assert user is not None

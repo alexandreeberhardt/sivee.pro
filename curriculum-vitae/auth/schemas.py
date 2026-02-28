@@ -41,11 +41,10 @@ class UserLogin(BaseModel):
     password: str
 
 
-class Token(BaseModel):
-    """Schema for JWT token response."""
+class SessionResponse(BaseModel):
+    """Schema for cookie-based auth session establishment response."""
 
-    access_token: str
-    token_type: str = "bearer"
+    message: str
 
 
 class TokenData(BaseModel):

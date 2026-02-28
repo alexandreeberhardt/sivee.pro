@@ -127,7 +127,9 @@ class TestResumeLimits:
         # Create guest
         resp = client.post("/api/auth/guest")
         assert resp.status_code == 201
-        token = resp.json()["access_token"]
+        token = resp.cookies.get("access_token")
+
+        assert token
 
         resp = client.post(
             "/api/resumes",
@@ -167,7 +169,9 @@ class TestAuthEdgeCases:
 
     def test_guest_account_is_flagged(self, client):
         resp = client.post("/api/auth/guest")
-        token = resp.json()["access_token"]
+        token = resp.cookies.get("access_token")
+
+        assert token
         resp = client.get("/api/auth/me", headers=auth_header(token))
         assert resp.status_code == 200
         assert resp.json()["is_guest"] is True
@@ -178,7 +182,9 @@ class TestAuthEdgeCases:
 
         # Create guest
         resp = client.post("/api/auth/guest")
-        guest_token = resp.json()["access_token"]
+        guest_token = resp.cookies.get("access_token")
+
+        assert guest_token
 
         # Try to upgrade with taken email
         resp = client.post(
@@ -200,7 +206,9 @@ class TestAuthEdgeCases:
 
     def test_upgrade_guest_success(self, client):
         resp = client.post("/api/auth/guest")
-        guest_token = resp.json()["access_token"]
+        guest_token = resp.cookies.get("access_token")
+
+        assert guest_token
         headers = auth_header(guest_token)
 
         resp = client.post(
@@ -218,7 +226,9 @@ class TestAuthEdgeCases:
 
     def test_upgraded_guest_requires_verification(self, client):
         resp = client.post("/api/auth/guest")
-        guest_token = resp.json()["access_token"]
+        guest_token = resp.cookies.get("access_token")
+
+        assert guest_token
 
         client.post(
             "/api/auth/upgrade",

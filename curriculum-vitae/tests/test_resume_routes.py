@@ -3,6 +3,7 @@
 from conftest import (
     auth_header,
     create_authenticated_user,
+    get_cookie_access_token,
 )
 
 SAMPLE_JSON = {
@@ -52,7 +53,8 @@ class TestCreateResume:
         assert resp.status_code == 401
 
     def test_guest_limited_to_1_resume(self, client):
-        token = client.post("/api/auth/guest").json()["access_token"]
+        client.post("/api/auth/guest")
+        token = get_cookie_access_token(client)
         headers = auth_header(token)
         resp = client.post("/api/resumes", json={"name": "CV 0"}, headers=headers)
         assert resp.status_code == 201

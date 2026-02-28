@@ -142,7 +142,7 @@ describe('AuthContext', () => {
   })
 
   it('login sets user from /me', async () => {
-    mockLoginUser.mockResolvedValue({ access_token: 'new-jwt', token_type: 'bearer' })
+    mockLoginUser.mockResolvedValue({ message: 'Authenticated session established' })
     mockGetCurrentUser
       .mockRejectedValueOnce(new Error('initial unauth'))
       .mockResolvedValueOnce({
@@ -205,7 +205,7 @@ describe('AuthContext', () => {
   })
 
   it('loginAsGuest sets isGuest to true', async () => {
-    mockCreateGuestAccount.mockResolvedValue({ access_token: 'guest-jwt', token_type: 'bearer' })
+    mockCreateGuestAccount.mockResolvedValue({ message: 'Guest session established' })
     mockGetCurrentUser
       .mockRejectedValueOnce(new Error('initial unauth'))
       .mockResolvedValueOnce({

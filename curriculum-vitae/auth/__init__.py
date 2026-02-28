@@ -1,7 +1,7 @@
 """Authentication module for the CV SaaS application."""
 
 from auth.dependencies import get_current_user
-from auth.schemas import Token, TokenData, UserCreate, UserLogin, UserResponse
+from auth.schemas import SessionResponse, TokenData, UserCreate, UserLogin, UserResponse
 from auth.security import (
     create_access_token,
     decode_access_token,
@@ -15,7 +15,7 @@ __all__ = [
     "create_access_token",
     "decode_access_token",
     "get_current_user",
-    "Token",
+    "SessionResponse",
     "TokenData",
     "UserCreate",
     "UserLogin",

@@ -12,10 +12,7 @@ After login, two cookies are set automatically:
 - `access_token` — HTTP-only JWT (not accessible from JavaScript)
 - `csrf_token` — readable by the frontend, must be sent as `X-CSRF-Token` header on state-changing requests
 
-The JWT is also returned in the JSON response body for clients that prefer header-based auth:
-```
-Authorization: Bearer <token>
-```
+JWTs are not returned in JSON response bodies. They are only set as `HttpOnly` cookies.
 
 Tokens expire after 30 minutes by default (configurable via `ACCESS_TOKEN_EXPIRE_MINUTES`).
 
@@ -37,7 +34,7 @@ Tokens expire after 30 minutes by default (configurable via `ACCESS_TOKEN_EXPIRE
 | POST | `/api/auth/reset-password` | No | Reset password with token |
 | GET | `/api/auth/google/login` | No | Redirect to Google OAuth |
 | GET | `/api/auth/google/callback` | No | Google OAuth callback (internal) |
-| POST | `/api/auth/google/exchange` | No | Exchange temporary OAuth code for JWT |
+| POST | `/api/auth/google/exchange` | No | Exchange temporary OAuth code for cookie session |
 | GET | `/api/auth/me` | Yes | Get current user info |
 | GET | `/api/auth/me/export` | Yes | Export all user data (GDPR) |
 | DELETE | `/api/auth/me` | Yes | Delete account and all data (GDPR) |
@@ -72,7 +69,7 @@ Note: The login endpoint uses OAuth2 Password Flow — send `username` (with the
 
 Response sets `access_token` and `csrf_token` cookies, and returns:
 ```json
-{"access_token": "eyJ...", "token_type": "bearer"}
+{"message": "Authenticated session established"}
 ```
 
 Returns `403 email_not_verified` if the account has not been verified yet.

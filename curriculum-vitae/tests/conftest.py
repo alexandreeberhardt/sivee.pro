@@ -134,15 +134,24 @@ def register_user(
 def login_user(
     client: TestClient, email: str = "test@example.com", password: str = VALID_PASSWORD
 ) -> str:
-    """Login and return the access token."""
+    """Login and return the access token from cookie storage."""
     resp = client.post("/api/auth/login", data={"username": email, "password": password})
     assert resp.status_code == 200, resp.text
-    return resp.json()["access_token"]
+    token = client.cookies.get("access_token")
+    assert token
+    return token
 
 
 def auth_header(token: str) -> dict:
     """Build an Authorization header from a token."""
     return {"Authorization": f"Bearer {token}"}
+
+
+def get_cookie_access_token(client: TestClient) -> str:
+    """Return current access token from the TestClient cookie jar."""
+    token = client.cookies.get("access_token")
+    assert token
+    return token
 
 
 def create_authenticated_user(client: TestClient, email: str = "test@example.com") -> str:

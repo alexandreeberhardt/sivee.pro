@@ -75,7 +75,8 @@ class TestOAuthCodeExchange:
 
         resp = client.post("/api/auth/google/exchange", params={"code": code})
         assert resp.status_code == 200
-        assert resp.json()["access_token"] == "test-jwt-token-here"
+        assert resp.json()["message"] == "Authenticated session established"
+        assert resp.cookies.get("access_token") == "test-jwt-token-here"
 
     def test_exchange_code_consumed(self, client):
         """Code can only be used once."""

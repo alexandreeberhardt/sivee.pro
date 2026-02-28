@@ -2,7 +2,7 @@
  * Authentication API functions
  */
 import { api } from './client'
-import type { AuthResponse, User, LoginCredentials, RegisterCredentials } from '../types'
+import type { SessionResponse, User, LoginCredentials, RegisterCredentials } from '../types'
 
 const API_URL = import.meta.env.DEV ? '' : ''
 
@@ -17,43 +17,12 @@ export async function registerUser(credentials: RegisterCredentials): Promise<{ 
  * Login user with OAuth2 Password Flow
  * Note: OAuth2 expects 'username' field, so we send email as username
  */
-export async function loginUser(credentials: LoginCredentials): Promise<AuthResponse> {
+export async function loginUser(credentials: LoginCredentials): Promise<SessionResponse> {
   const formData = new URLSearchParams()
   formData.append('username', credentials.email)
   formData.append('password', credentials.password)
 
-  return api.postForm<AuthResponse>('/auth/login', formData)
-}
-
-/**
- * Decode JWT token to extract user info
- * Note: This is client-side decoding for convenience - the server still validates the token
- */
-export function decodeToken(token: string): {
-  sub: string
-  email: string
-  exp: number
-  is_guest?: boolean
-  feedback_completed?: boolean
-} | null {
-  try {
-    const payload = token.split('.')[1]
-    const decoded = JSON.parse(atob(payload))
-    return decoded
-  } catch {
-    return null
-  }
-}
-
-/**
- * Check if token is expired
- */
-export function isTokenExpired(token: string): boolean {
-  const decoded = decodeToken(token)
-  if (!decoded) return true
-
-  const now = Math.floor(Date.now() / 1000)
-  return decoded.exp < now
+  return api.postForm<SessionResponse>('/auth/login', formData)
 }
 
 /**
@@ -115,8 +84,8 @@ export async function getCurrentUser(): Promise<User> {
 /**
  * Create an anonymous guest account
  */
-export async function createGuestAccount(): Promise<AuthResponse> {
-  return api.post<AuthResponse>('/auth/guest', {})
+export async function createGuestAccount(): Promise<SessionResponse> {
+  return api.post<SessionResponse>('/auth/guest', {})
 }
 
 /**

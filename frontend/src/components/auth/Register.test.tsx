@@ -7,8 +7,6 @@ import { renderWithProviders } from '../../test/render'
 // Mock the auth API
 vi.mock('../../api/auth', () => ({
   loginWithGoogle: vi.fn(),
-  decodeToken: vi.fn(() => ({ sub: '1', email: 'test@test.com', exp: 9999999999 })),
-  isTokenExpired: vi.fn(() => false),
 }))
 
 describe('Register', () => {

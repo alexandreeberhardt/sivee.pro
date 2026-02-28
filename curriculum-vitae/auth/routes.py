@@ -26,7 +26,7 @@ from auth.schemas import (
     ResendVerificationRequest,
     ResumeExportData,
     ResetPasswordRequest,
-    Token,
+    SessionResponse,
     UserCreate,
     UserDataExport,
     UserExportData,
@@ -270,13 +270,13 @@ async def register(
     return {"message": generic_message}
 
 
-@router.post("/login", response_model=Token)
+@router.post("/login", response_model=SessionResponse)
 async def login(
     request: Request,
     form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
     response: Response,
     db: Annotated[Session, Depends(get_db)],
-) -> Token:
+) -> SessionResponse:
     """Authenticate user and return JWT token (OAuth2 Password Flow).
 
     Note: OAuth2PasswordRequestForm expects 'username' field, but we use email.
@@ -329,24 +329,24 @@ async def login(
     )
     _set_auth_cookies(response, access_token)
 
-    return Token(access_token=access_token)
+    return SessionResponse(message="Authenticated session established")
 
 
-@router.post("/guest", response_model=Token, status_code=status.HTTP_201_CREATED)
+@router.post("/guest", response_model=SessionResponse, status_code=status.HTTP_201_CREATED)
 async def create_guest_account(
     response: Response,
     db: Annotated[Session, Depends(get_db)],
-) -> Token:
+) -> SessionResponse:
     """Create an anonymous guest account.
 
-    Creates a guest user with a unique guest email and returns a JWT token.
+    Creates a guest user with a unique guest email and sets an auth cookie.
     Guest accounts are limited to 3 resumes and can be upgraded to full accounts.
 
     Args:
         db: Database session.
 
     Returns:
-        JWT access token with is_guest claim set to true.
+        Cookie-based authenticated session response.
     """
     # Generate unique guest email
     guest_email = f"guest-{uuid.uuid4()}@guest.local"
@@ -372,7 +372,7 @@ async def create_guest_account(
     )
     _set_auth_cookies(response, access_token)
 
-    return Token(access_token=access_token)
+    return SessionResponse(message="Guest session established")
 
 
 @router.post("/upgrade", response_model=UserResponse)
@@ -687,8 +687,8 @@ async def google_callback(
     return response
 
 
-@router.post("/google/exchange", response_model=Token)
-async def exchange_oauth_code(code: str, response: Response) -> Token:
+@router.post("/google/exchange", response_model=SessionResponse)
+async def exchange_oauth_code(code: str, response: Response) -> SessionResponse:
     """Exchange temporary OAuth code for JWT token.
 
     SECURITY: This endpoint allows the frontend to securely retrieve the JWT token
@@ -698,7 +698,7 @@ async def exchange_oauth_code(code: str, response: Response) -> Token:
         code: Temporary code received from OAuth callback.
 
     Returns:
-        JWT access token.
+        Cookie-based authenticated session response.
 
     Raises:
         HTTPException: 400 if code is invalid or expired.
@@ -712,7 +712,7 @@ async def exchange_oauth_code(code: str, response: Response) -> Token:
         )
     _set_auth_cookies(response, jwt_token)
 
-    return Token(access_token=jwt_token)
+    return SessionResponse(message="Authenticated session established")
 
 
 @router.post("/logout", status_code=status.HTTP_204_NO_CONTENT)

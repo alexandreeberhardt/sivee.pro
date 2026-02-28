@@ -5,6 +5,7 @@ from conftest import (
     VALID_PASSWORD,
     auth_header,
     create_authenticated_user,
+    get_cookie_access_token,
     register_user,
 )
 from database.models import User
@@ -78,8 +79,8 @@ class TestLogin:
         )
         assert resp.status_code == 200
         data = resp.json()
-        assert "access_token" in data
-        assert data["token_type"] == "bearer"
+        assert data["message"] == "Authenticated session established"
+        assert resp.cookies.get("access_token")
 
     def test_login_wrong_password(self, client):
         register_user(client)
@@ -122,16 +123,19 @@ class TestGuestAccount:
         resp = client.post("/api/auth/guest")
         assert resp.status_code == 201
         data = resp.json()
-        assert "access_token" in data
+        assert data["message"] == "Guest session established"
+        assert resp.cookies.get("access_token")
 
     def test_guest_can_access_me(self, client):
-        token = client.post("/api/auth/guest").json()["access_token"]
+        client.post("/api/auth/guest")
+        token = get_cookie_access_token(client)
         resp = client.get("/api/auth/me", headers=auth_header(token))
         assert resp.status_code == 200
         assert resp.json()["is_guest"] is True
 
     def test_upgrade_guest(self, client):
-        token = client.post("/api/auth/guest").json()["access_token"]
+        client.post("/api/auth/guest")
+        token = get_cookie_access_token(client)
         headers = auth_header(token)
         resp = client.post(
             "/api/auth/upgrade",
@@ -165,7 +169,8 @@ class TestGuestAccount:
 
     def test_upgrade_to_existing_email_fails(self, client):
         register_user(client, email="taken@example.com")
-        token = client.post("/api/auth/guest").json()["access_token"]
+        client.post("/api/auth/guest")
+        token = get_cookie_access_token(client)
         resp = client.post(
             "/api/auth/upgrade",
             json={

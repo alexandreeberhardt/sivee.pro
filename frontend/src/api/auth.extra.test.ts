@@ -48,7 +48,7 @@ describe('loginUser', () => {
   afterEach(() => vi.clearAllMocks())
 
   it('calls postForm /auth/login with email as username', async () => {
-    const mockResponse = { access_token: 'jwt', token_type: 'bearer' }
+    const mockResponse = { message: 'Authenticated session established' }
     vi.mocked(api.postForm).mockResolvedValue(mockResponse)
 
     const result = await loginUser({ email: 'user@test.com', password: 'mypass' })
@@ -106,7 +106,7 @@ describe('createGuestAccount', () => {
   afterEach(() => vi.clearAllMocks())
 
   it('calls POST /auth/guest', async () => {
-    const mockResponse = { access_token: 'guest-jwt', token_type: 'bearer' }
+    const mockResponse = { message: 'Guest session established' }
     vi.mocked(api.post).mockResolvedValue(mockResponse)
 
     const result = await createGuestAccount()

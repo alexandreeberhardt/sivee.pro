@@ -30,9 +30,8 @@ export interface RegisterCredentials {
   password: string
 }
 
-export interface AuthResponse {
-  access_token: string
-  token_type: string
+export interface SessionResponse {
+  message: string
 }
 
 export interface SavedResume {

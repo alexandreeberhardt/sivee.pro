@@ -30,7 +30,9 @@ class TestSubmitFeedback:
         """Guest accounts should be rejected with 400."""
         resp = client.post("/api/auth/guest")
         assert resp.status_code == 201
-        guest_token = resp.json()["access_token"]
+        guest_token = resp.cookies.get("access_token")
+
+        assert guest_token
 
         resp = client.post(
             "/api/auth/feedback",
@@ -189,7 +191,9 @@ class TestBonusLimits:
             "/api/auth/login",
             data={"username": email, "password": VALID_PASSWORD},
         )
-        token_before = resp.json()["access_token"]
+        token_before = resp.cookies.get("access_token")
+
+        assert token_before
 
         import base64  # noqa: E402
         import json  # noqa: E402
@@ -210,6 +214,8 @@ class TestBonusLimits:
             "/api/auth/login",
             data={"username": email, "password": VALID_PASSWORD},
         )
-        token_after = resp.json()["access_token"]
+        token_after = resp.cookies.get("access_token")
+
+        assert token_after
         payload_after = json.loads(base64.b64decode(token_after.split(".")[1] + "=="))
         assert payload_after.get("feedback_completed") is True

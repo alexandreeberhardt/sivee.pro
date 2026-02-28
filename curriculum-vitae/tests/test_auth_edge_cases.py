@@ -73,7 +73,7 @@ class TestRegisterEdgeCases:
 
 
 class TestLoginEdgeCases:
-    def test_login_returns_bearer_token(self, client):
+    def test_login_sets_cookie_session(self, client):
         register_user(client)
         resp = client.post(
             "/api/auth/login",
@@ -83,8 +83,8 @@ class TestLoginEdgeCases:
             },
         )
         data = resp.json()
-        assert "access_token" in data
-        assert data.get("token_type") == "bearer"
+        assert data["message"] == "Authenticated session established"
+        assert resp.cookies.get("access_token")
 
     def test_login_with_wrong_email(self, client):
         register_user(client)
@@ -113,23 +113,31 @@ class TestGuestAccountEdgeCases:
     def test_guest_email_is_unique(self, client):
         resp1 = client.post("/api/auth/guest")
         resp2 = client.post("/api/auth/guest")
+        token1 = resp1.cookies.get("access_token")
+        token2 = resp2.cookies.get("access_token")
+        assert token1
+        assert token2
         email1 = client.get(
-            "/api/auth/me", headers=auth_header(resp1.json()["access_token"])
+            "/api/auth/me", headers=auth_header(token1)
         ).json()["email"]
         email2 = client.get(
-            "/api/auth/me", headers=auth_header(resp2.json()["access_token"])
+            "/api/auth/me", headers=auth_header(token2)
         ).json()["email"]
         assert email1 != email2
 
     def test_guest_is_marked_as_guest(self, client):
         resp = client.post("/api/auth/guest")
-        token = resp.json()["access_token"]
+        token = resp.cookies.get("access_token")
+
+        assert token
         me = client.get("/api/auth/me", headers=auth_header(token)).json()
         assert me["is_guest"] is True
 
     def test_upgrade_sets_guest_false(self, client):
         resp = client.post("/api/auth/guest")
-        token = resp.json()["access_token"]
+        token = resp.cookies.get("access_token")
+
+        assert token
         headers = auth_header(token)
 
         resp = client.post(
@@ -150,7 +158,9 @@ class TestGuestAccountEdgeCases:
 
     def test_upgrade_requires_email_verification_for_login(self, client):
         resp = client.post("/api/auth/guest")
-        token = resp.json()["access_token"]
+        token = resp.cookies.get("access_token")
+
+        assert token
 
         client.post(
             "/api/auth/upgrade",
@@ -174,7 +184,9 @@ class TestGuestAccountEdgeCases:
 
     def test_upgrade_with_weak_password(self, client):
         resp = client.post("/api/auth/guest")
-        token = resp.json()["access_token"]
+        token = resp.cookies.get("access_token")
+
+        assert token
 
         resp = client.post(
             "/api/auth/upgrade",
@@ -188,7 +200,9 @@ class TestGuestAccountEdgeCases:
 
     def test_change_email_for_unverified_user(self, client):
         resp = client.post("/api/auth/guest")
-        token = resp.json()["access_token"]
+        token = resp.cookies.get("access_token")
+
+        assert token
 
         client.post(
             "/api/auth/upgrade",

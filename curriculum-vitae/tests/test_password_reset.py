@@ -95,7 +95,7 @@ class TestResetPassword:
             data={"username": "user@example.com", "password": NEW_PASSWORD},
         )
         assert resp_new.status_code == 200
-        assert "access_token" in resp_new.json()
+        assert resp_new.cookies.get("access_token")
 
     def test_reset_password_invalid_token(self, client):
         """Garbage token is rejected."""
@@ -137,7 +137,8 @@ class TestResetPassword:
             "/api/auth/login",
             data={"username": "user@example.com", "password": VALID_PASSWORD},
         )
-        login_token = resp_login.json()["access_token"]
+        login_token = resp_login.cookies.get("access_token")
+        assert login_token
 
         resp = client.post(
             "/api/auth/reset-password",

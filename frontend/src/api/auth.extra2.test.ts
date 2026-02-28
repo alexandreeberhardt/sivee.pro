@@ -1,10 +1,8 @@
 /**
- * Additional tests for auth API functions - decodeToken, isTokenExpired, GDPR
+ * Additional tests for auth API functions (GDPR + account flows)
  */
 import { describe, it, expect, vi, afterEach } from 'vitest'
 import {
-  decodeToken,
-  isTokenExpired,
   getGoogleLoginUrl,
   exportUserData,
   deleteUserAccount,
@@ -12,64 +10,6 @@ import {
   createGuestAccount,
   upgradeGuestAccount,
 } from './auth'
-
-// Helper to create a JWT-like token
-function makeToken(payload: object): string {
-  const header = btoa(JSON.stringify({ alg: 'HS256', typ: 'JWT' }))
-  const body = btoa(JSON.stringify(payload))
-  return `${header}.${body}.signature`
-}
-
-describe('decodeToken', () => {
-  it('decodes a valid token', () => {
-    const token = makeToken({ sub: '1', email: 'test@example.com', exp: 9999999999 })
-    const decoded = decodeToken(token)
-    expect(decoded?.sub).toBe('1')
-    expect(decoded?.email).toBe('test@example.com')
-  })
-
-  it('returns null for invalid token', () => {
-    expect(decodeToken('not.a.jwt')).toBeNull()
-  })
-
-  it('returns null for empty string', () => {
-    expect(decodeToken('')).toBeNull()
-  })
-
-  it('returns null for malformed base64', () => {
-    expect(decodeToken('header.!!!invalid!!!.sig')).toBeNull()
-  })
-
-  it('extracts is_guest flag', () => {
-    const token = makeToken({ sub: '1', email: 'guest@local', exp: 999999, is_guest: true })
-    const decoded = decodeToken(token)
-    expect(decoded?.is_guest).toBe(true)
-  })
-})
-
-describe('isTokenExpired', () => {
-  it('returns false for future expiry', () => {
-    const token = makeToken({
-      sub: '1',
-      email: 'a@b.com',
-      exp: Math.floor(Date.now() / 1000) + 3600,
-    })
-    expect(isTokenExpired(token)).toBe(false)
-  })
-
-  it('returns true for past expiry', () => {
-    const token = makeToken({
-      sub: '1',
-      email: 'a@b.com',
-      exp: Math.floor(Date.now() / 1000) - 100,
-    })
-    expect(isTokenExpired(token)).toBe(true)
-  })
-
-  it('returns true for invalid token', () => {
-    expect(isTokenExpired('invalid')).toBe(true)
-  })
-})
 
 describe('getGoogleLoginUrl', () => {
   it('returns path to google login', () => {
@@ -151,11 +91,11 @@ describe('createGuestAccount', () => {
     globalThis.fetch = vi.fn().mockResolvedValue({
       ok: true,
       status: 200,
-      json: () => Promise.resolve({ access_token: 'guest-token', token_type: 'bearer' }),
+      json: () => Promise.resolve({ message: 'Guest session established' }),
     })
 
     const result = await createGuestAccount()
-    expect(result.access_token).toBe('guest-token')
+    expect(result.message).toBe('Guest session established')
   })
 })
 

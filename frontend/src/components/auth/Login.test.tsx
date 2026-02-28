@@ -29,8 +29,6 @@ vi.mock('../../context/AuthContext', async () => {
 const mockLoginWithGoogle = vi.fn()
 vi.mock('../../api/auth', () => ({
   loginWithGoogle: () => mockLoginWithGoogle(),
-  decodeToken: vi.fn(),
-  isTokenExpired: vi.fn(),
 }))
 
 describe('Login', () => {

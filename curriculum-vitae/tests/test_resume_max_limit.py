@@ -38,7 +38,9 @@ class TestGuestResumeLimit:
     def test_guest_can_create_up_to_limit(self, client):
         resp = client.post("/api/auth/guest")
         assert resp.status_code == 201
-        token = resp.json()["access_token"]
+        token = resp.cookies.get("access_token")
+
+        assert token
         headers = auth_header(token)
 
         resp = client.post("/api/resumes", json={"name": "CV 0"}, headers=headers)
@@ -46,7 +48,9 @@ class TestGuestResumeLimit:
 
     def test_guest_blocked_at_limit(self, client):
         resp = client.post("/api/auth/guest")
-        token = resp.json()["access_token"]
+        token = resp.cookies.get("access_token")
+
+        assert token
         headers = auth_header(token)
 
         client.post("/api/resumes", json={"name": "CV 0"}, headers=headers)
@@ -58,7 +62,9 @@ class TestGuestResumeLimit:
 
     def test_guest_can_create_after_deleting(self, client):
         resp = client.post("/api/auth/guest")
-        token = resp.json()["access_token"]
+        token = resp.cookies.get("access_token")
+
+        assert token
         headers = auth_header(token)
 
         resp = client.post("/api/resumes", json={"name": "CV 0"}, headers=headers)
@@ -126,7 +132,9 @@ class TestDownloadLimits:
 
     def test_guest_download_limit(self, client, db):
         resp = client.post("/api/auth/guest")
-        token = resp.json()["access_token"]
+        token = resp.cookies.get("access_token")
+
+        assert token
         headers = auth_header(token)
 
         resume_id = self._create_resume_with_content(client, headers)
