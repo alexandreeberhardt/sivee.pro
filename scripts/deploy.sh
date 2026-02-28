@@ -29,11 +29,11 @@ git pull
 
 # Step 2: Build Docker images
 echo -e "\n${YELLOW}[2/4] Building Docker images...${NC}"
-docker-compose build
+docker compose --project-directory . -f infra/docker/docker-compose.yml build
 
 # Step 3: Start services
 echo -e "\n${YELLOW}[3/4] Starting services...${NC}"
-docker-compose up -d
+docker compose --project-directory . -f infra/docker/docker-compose.yml up -d
 
 # Step 4: Wait for database to be ready and run migrations
 echo -e "\n${YELLOW}[4/4] Running database migrations...${NC}"
@@ -42,7 +42,7 @@ echo -e "\n${YELLOW}[4/4] Running database migrations...${NC}"
 echo "Waiting for database to be ready..."
 timeout=60
 counter=0
-until docker-compose exec -T db pg_isready -U "${POSTGRES_USER:-cvuser}" -d "${POSTGRES_DB:-cvdatabase}" > /dev/null 2>&1; do
+until docker compose --project-directory . -f infra/docker/docker-compose.yml exec -T db pg_isready -U "${POSTGRES_USER:-cvuser}" -d "${POSTGRES_DB:-cvdatabase}" > /dev/null 2>&1; do
     counter=$((counter + 1))
     if [ $counter -ge $timeout ]; then
         echo -e "${RED}Error: Database failed to start within ${timeout} seconds${NC}"
@@ -54,12 +54,12 @@ echo "Database is ready!"
 
 # Run Alembic migrations
 echo "Applying database migrations..."
-docker-compose exec -T cv-generator uv run alembic upgrade head
+docker compose --project-directory . -f infra/docker/docker-compose.yml exec -T cv-generator uv run alembic upgrade head
 
 # Show status
 echo -e "\n${GREEN}=== Deployment Complete ===${NC}"
 echo -e "\nService status:"
-docker-compose ps
+docker compose --project-directory . -f infra/docker/docker-compose.yml ps
 
 echo -e "\n${GREEN}Application is running at http://localhost:8099${NC}"
 echo -e "Health check: curl http://localhost:8099/api/health"

@@ -3,7 +3,7 @@
 # CV Generator - PostgreSQL Backup Script
 # ===========================================
 # Usage: ./backup_db.sh
-# Cron:  0 3 * * * $HOME/sivee.pro/vps/backup_db.sh >> /var/log/cv-backup.log 2>&1
+# Cron:  0 3 * * * $HOME/sivee.pro/infra/vps/backup_db.sh >> /var/log/cv-backup.log 2>&1
 
 set -e
 
@@ -50,7 +50,7 @@ fi
 echo -e "${YELLOW}Starting backup of database '${POSTGRES_DB}'...${NC}"
 
 cd "$APP_DIR"
-docker compose exec -T db pg_dump \
+docker compose --project-directory . -f infra/docker/docker-compose.yml exec -T db pg_dump \
     -U "$POSTGRES_USER" \
     -d "$POSTGRES_DB" \
     --no-owner \

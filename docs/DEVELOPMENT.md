@@ -60,8 +60,8 @@ sivee/
 │   ├── SECURITY.md            # Security checklist
 │   ├── backup_db.sh           # DB backup script
 │   └── restore_db.sh          # DB restore script
-├── docker-compose.yml         # Production setup
-├── docker-compose.dev.yml     # Development setup
+├── infra/docker/docker-compose.yml         # Production setup
+├── infra/docker/docker-compose.dev.yml     # Development setup
 ├── scripts/deploy.sh                  # Deployment script
 ├── scripts/migrate.sh                 # Migration script
 └── scripts/test.sh                    # Test suite runner
@@ -134,10 +134,10 @@ To start fresh:
 
 ```bash
 # Stop and remove containers and volumes
-docker compose -f docker-compose.dev.yml down -v
+docker compose --project-directory . -f infra/docker/docker-compose.dev.yml down -v
 
 # Restart
-docker compose -f docker-compose.dev.yml up --build
+docker compose --project-directory . -f infra/docker/docker-compose.dev.yml up --build
 ```
 
 ### Submodule not initialized

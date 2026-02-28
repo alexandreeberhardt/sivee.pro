@@ -58,7 +58,7 @@ cp .env.example .env
 # Edit .env with your values (see .env.example for documentation)
 
 # Start development environment
-docker compose -f docker-compose.dev.yml up --build
+docker compose --project-directory . -f infra/docker/docker-compose.dev.yml up --build
 ```
 
 The application will be accessible at:

@@ -71,7 +71,7 @@ fi
 echo -e "\n${YELLOW}Restoring database...${NC}"
 
 cd "$APP_DIR"
-gunzip -c "$BACKUP_FILE" | docker compose exec -T db psql \
+gunzip -c "$BACKUP_FILE" | docker compose --project-directory . -f infra/docker/docker-compose.yml exec -T db psql \
     -U "$POSTGRES_USER" \
     -d "$POSTGRES_DB" \
     --quiet
@@ -80,6 +80,6 @@ echo -e "${GREEN}Database restored successfully!${NC}"
 
 # Vérifier la restauration
 echo -e "\n${YELLOW}Verifying restoration...${NC}"
-docker compose exec -T db psql -U "$POSTGRES_USER" -d "$POSTGRES_DB" -c "\dt"
+docker compose --project-directory . -f infra/docker/docker-compose.yml exec -T db psql -U "$POSTGRES_USER" -d "$POSTGRES_DB" -c "\dt"
 
 echo -e "\n=== Restore completed at $(date) ==="

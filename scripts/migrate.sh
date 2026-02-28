@@ -27,7 +27,7 @@ detect_environment() {
     # Check if we're on the VPS (production)
     if [ -d "/opt/cv-generator" ] && [ -f "/opt/cv-generator/.env" ]; then
         echo "prod"
-    # Check if docker-compose.dev.yml exists and dev containers are running
+    # Check if infra/docker/docker-compose.dev.yml exists and dev containers are running
     elif docker ps --format '{{.Names}}' 2>/dev/null | grep -q "cv-backend-dev"; then
         echo "dev-docker"
     # Check if we have a local .venv
@@ -47,11 +47,11 @@ run_alembic() {
         "prod")
             echo -e "${BLUE}Running in PRODUCTION mode${NC}"
             cd /opt/cv-generator
-            docker compose exec -T cv-generator uv run alembic $cmd
+            docker compose --project-directory . -f infra/docker/docker-compose.yml exec -T cv-generator uv run alembic $cmd
             ;;
         "dev-docker")
             echo -e "${BLUE}Running in DEVELOPMENT mode (Docker)${NC}"
-            docker compose -f docker-compose.dev.yml exec -T backend uv run alembic $cmd
+            docker compose --project-directory . -f infra/docker/docker-compose.dev.yml exec -T backend uv run alembic $cmd
             ;;
         "dev-local")
             echo -e "${BLUE}Running in DEVELOPMENT mode (Local)${NC}"

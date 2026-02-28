@@ -36,7 +36,7 @@ services:
   cv-generator:
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: infra/docker/Dockerfile
     container_name: cv-generator
     restart: unless-stopped
     ports:

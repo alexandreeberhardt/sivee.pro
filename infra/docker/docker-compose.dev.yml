@@ -1,7 +1,7 @@
 # ===========================================
 # Docker Compose - Development Environment
 # ===========================================
-# Usage: docker compose -f docker-compose.dev.yml up
+# Usage: docker compose --project-directory . -f infra/docker/docker-compose.dev.yml up
 #
 # Features:
 # - Hot reload: code changes restart the server automatically
@@ -32,7 +32,7 @@ services:
   backend:
     build:
       context: .
-      dockerfile: Dockerfile.dev
+      dockerfile: infra/docker/Dockerfile.dev
     container_name: cv-backend-dev
     restart: unless-stopped
     ports:

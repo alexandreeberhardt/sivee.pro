@@ -267,11 +267,11 @@ curl -I https://cv.alexeber.fr/health_db
 ### Logs Docker
 ```bash
 # Logs en temps réel
-docker compose logs -f
+docker compose --project-directory . -f infra/docker/docker-compose.yml logs -f
 
 # Logs d'un service spécifique
-docker compose logs -f cv-generator
-docker compose logs -f db
+docker compose --project-directory . -f infra/docker/docker-compose.yml logs -f cv-generator
+docker compose --project-directory . -f infra/docker/docker-compose.yml logs -f db
 ```
 
 ### Logs Nginx
@@ -312,10 +312,10 @@ docker system prune -a
 # Statut des services
 sudo systemctl status nginx
 sudo systemctl status docker
-docker compose ps
+docker compose --project-directory . -f infra/docker/docker-compose.yml ps
 
 # Redémarrer l'application
-cd /opt/cv-generator && docker compose restart
+cd /opt/cv-generator && docker compose --project-directory . -f infra/docker/docker-compose.yml restart
 
 # Mise à jour de l'application
 cd /opt/cv-generator && ./scripts/deploy.sh

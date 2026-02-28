@@ -113,11 +113,11 @@ git log --oneline -10
 git checkout <commit-hash>
 
 # 3. Rebuild and restart
-docker compose build
-docker compose up -d
+docker compose --project-directory . -f infra/docker/docker-compose.yml build
+docker compose --project-directory . -f infra/docker/docker-compose.yml up -d
 
 # 4. If a migration needs to be reversed
-docker compose exec -T cv-generator uv run alembic downgrade -1
+docker compose --project-directory . -f infra/docker/docker-compose.yml exec -T cv-generator uv run alembic downgrade -1
 ```
 
 To return to the latest version afterward:
@@ -132,19 +132,19 @@ git checkout main
 
 ```bash
 # All services
-docker compose logs -f
+docker compose --project-directory . -f infra/docker/docker-compose.yml logs -f
 
 # Backend only
-docker compose logs -f cv-generator
+docker compose --project-directory . -f infra/docker/docker-compose.yml logs -f cv-generator
 
 # Database only
-docker compose logs -f db
+docker compose --project-directory . -f infra/docker/docker-compose.yml logs -f db
 
 # Redis only
-docker compose logs -f redis
+docker compose --project-directory . -f infra/docker/docker-compose.yml logs -f redis
 
 # Last 100 lines
-docker compose logs --tail 100 cv-generator
+docker compose --project-directory . -f infra/docker/docker-compose.yml logs --tail 100 cv-generator
 ```
 
 ### Health checks
