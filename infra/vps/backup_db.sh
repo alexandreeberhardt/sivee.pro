@@ -5,11 +5,13 @@
 # Usage: ./backup_db.sh
 # Cron:  0 3 * * * $HOME/sivee.pro/infra/vps/backup_db.sh >> /var/log/cv-backup.log 2>&1
 
-set -e
+set -euo pipefail
 
-# Configuration
-BACKUP_DIR="$HOME/backups/sivee"
-APP_DIR="$HOME/sivee.pro"
+# Configuration (overridable via environment)
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+ROOT_FROM_SCRIPT="$(cd "$SCRIPT_DIR/../.." && pwd)"
+BACKUP_DIR="${BACKUP_DIR:-/var/backups/cv-generator}"
+APP_DIR="${APP_DIR:-}"
 RETENTION_DAYS=30
 DATE=$(date +%Y-%m-%d_%H-%M-%S)
 BACKUP_FILE="cv_database_${DATE}.sql.gz"
@@ -22,6 +24,20 @@ NC='\033[0m'
 
 echo "=== PostgreSQL Backup - $(date) ==="
 
+# Auto-detect APP_DIR if not provided
+if [ -z "$APP_DIR" ]; then
+    if [ -f "$ROOT_FROM_SCRIPT/.env" ] && [ -f "$ROOT_FROM_SCRIPT/infra/docker/docker-compose.yml" ]; then
+        APP_DIR="$ROOT_FROM_SCRIPT"
+    elif [ -f "/opt/cv-generator/.env" ] && [ -f "/opt/cv-generator/infra/docker/docker-compose.yml" ]; then
+        APP_DIR="/opt/cv-generator"
+    elif [ -f "$HOME/sivee.pro/.env" ] && [ -f "$HOME/sivee.pro/infra/docker/docker-compose.yml" ]; then
+        APP_DIR="$HOME/sivee.pro"
+    else
+        echo -e "${RED}Error: Could not detect APP_DIR. Set APP_DIR=/path/to/project.${NC}"
+        exit 1
+    fi
+fi
+
 # Vérifier que le répertoire de backup existe
 if [ ! -d "$BACKUP_DIR" ]; then
     echo -e "${YELLOW}Creating backup directory: $BACKUP_DIR${NC}"
@@ -29,14 +45,28 @@ if [ ! -d "$BACKUP_DIR" ]; then
 fi
 
 # Charger les variables d'environnement
-if [ -f "$APP_DIR/.env" ]; then
-    source "$APP_DIR/.env"
-else
-    echo -e "${RED}Error: .env file not found in $APP_DIR${NC}"
+ENV_FILE="$APP_DIR/.env"
+if [ ! -f "$ENV_FILE" ]; then
+    echo -e "${RED}Error: .env file not found in APP_DIR=$APP_DIR${NC}"
     exit 1
 fi
 
-# Variables par défaut si non définies
+# Parse a variable from .env without executing the file.
+read_env_var() {
+    local key="$1"
+    local value
+    value="$(grep -E "^${key}=" "$ENV_FILE" | tail -n1 | cut -d'=' -f2-)"
+    # Trim optional surrounding quotes
+    value="${value%\"}"
+    value="${value#\"}"
+    value="${value%\'}"
+    value="${value#\'}"
+    printf '%s' "$value"
+}
+
+# Variables par défaut si non définies dans l'environnement shell
+POSTGRES_USER="${POSTGRES_USER:-$(read_env_var POSTGRES_USER)}"
+POSTGRES_DB="${POSTGRES_DB:-$(read_env_var POSTGRES_DB)}"
 POSTGRES_USER="${POSTGRES_USER:-cvuser}"
 POSTGRES_DB="${POSTGRES_DB:-cvdatabase}"
 
@@ -49,8 +79,7 @@ fi
 # Effectuer le backup
 echo -e "${YELLOW}Starting backup of database '${POSTGRES_DB}'...${NC}"
 
-cd "$APP_DIR"
-docker compose --project-directory . -f infra/docker/docker-compose.yml exec -T db pg_dump \
+docker exec -i cv-postgres pg_dump \
     -U "$POSTGRES_USER" \
     -d "$POSTGRES_DB" \
     --no-owner \
