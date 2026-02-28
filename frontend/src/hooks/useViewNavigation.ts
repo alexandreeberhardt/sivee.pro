@@ -1,29 +1,39 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 
-export type ViewState = { view: 'landing' | 'resumes' | 'editor' }
+export type ViewState = { view: 'landing' | 'templates' | 'resumes' | 'editor' }
 
 export function useViewNavigation() {
   const [showLanding, setShowLanding] = useState(true)
+  const [showTemplatesPage, setShowTemplatesPage] = useState(false)
   const [showResumesPage, setShowResumesPage] = useState(false)
 
   const getCurrentView = useCallback((): ViewState['view'] => {
     if (showLanding) return 'landing'
+    if (showTemplatesPage) return 'templates'
     if (showResumesPage) return 'resumes'
     return 'editor'
-  }, [showLanding, showResumesPage])
+  }, [showLanding, showResumesPage, showTemplatesPage])
 
   const applyView = useCallback((view: ViewState['view']) => {
     switch (view) {
       case 'landing':
         setShowLanding(true)
+        setShowTemplatesPage(false)
+        setShowResumesPage(false)
+        break
+      case 'templates':
+        setShowLanding(false)
+        setShowTemplatesPage(true)
         setShowResumesPage(false)
         break
       case 'resumes':
         setShowLanding(false)
+        setShowTemplatesPage(false)
         setShowResumesPage(true)
         break
       case 'editor':
         setShowLanding(false)
+        setShowTemplatesPage(false)
         setShowResumesPage(false)
         break
     }
@@ -39,7 +49,7 @@ export function useViewNavigation() {
       }
       previousViewRef.current = currentView
     }
-  }, [showLanding, showResumesPage, getCurrentView])
+  }, [showLanding, showResumesPage, showTemplatesPage, getCurrentView])
 
   // Replace initial history entry with current view state
   useEffect(() => {
@@ -66,6 +76,8 @@ export function useViewNavigation() {
   return {
     showLanding,
     setShowLanding,
+    showTemplatesPage,
+    setShowTemplatesPage,
     showResumesPage,
     setShowResumesPage,
     applyView,

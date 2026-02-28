@@ -86,8 +86,16 @@ function App() {
   const [showMobileMenu, setShowMobileMenu] = useState(false)
   const [resendLoading, setResendLoading] = useState(false)
   const [resendSent, setResendSent] = useState(false)
+  const [selectedTemplate, setSelectedTemplate] = useState<TemplateId>('harvard')
 
-  const { showLanding, setShowLanding, showResumesPage, setShowResumesPage } = useViewNavigation()
+  const {
+    showLanding,
+    setShowLanding,
+    showTemplatesPage,
+    showResumesPage,
+    setShowResumesPage,
+    applyView,
+  } = useViewNavigation()
 
   const handleLimitError = () => setIsLimitError(true)
 
@@ -209,6 +217,12 @@ function App() {
   const getTemplateImage = (imgBase: string, size: string) => {
     if (size === 'normal') return `${imgBase}.png`
     return `${imgBase}_${size}.png`
+  }
+
+  const openEditorWithTemplate = (templateId: TemplateId) => {
+    setData((prev) => ({ ...prev, template_id: templateId }))
+    applyView('editor')
+    window.scrollTo(0, 0)
   }
 
   const sensors = useSensors(
@@ -350,8 +364,7 @@ function App() {
               <LanguageSwitcher />
               <button
                 onClick={() => {
-                  setShowLanding(false)
-                  setShowResumesPage(true)
+                  applyView('resumes')
                 }}
                 className="btn-brand text-sm px-2.5 sm:px-4 py-2"
               >
@@ -396,7 +409,7 @@ function App() {
             <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4">
               <button
                 onClick={() => {
-                  setShowLanding(false)
+                  applyView('editor')
                   window.scrollTo(0, 0)
                 }}
                 className="btn-brand px-6 py-3 text-base w-full sm:w-auto"
@@ -455,9 +468,7 @@ function App() {
                   key={template.id}
                   className="group card p-2 sm:p-3 text-center hover:shadow-medium transition-all cursor-pointer active:scale-[0.98]"
                   onClick={() => {
-                    setData((prev) => ({ ...prev, template_id: template.id as TemplateId }))
-                    setShowLanding(false)
-                    window.scrollTo(0, 0)
+                    openEditorWithTemplate(template.id as TemplateId)
                   }}
                 >
                   <div className="w-full aspect-[3/4] rounded-lg mb-2 sm:mb-3 overflow-hidden bg-primary-50">
@@ -475,7 +486,8 @@ function App() {
             <div className="text-center mt-8">
               <button
                 onClick={() => {
-                  setShowLanding(false)
+                  setSelectedTemplate(getBaseTemplateId(data.template_id) as TemplateId)
+                  applyView('templates')
                   window.scrollTo(0, 0)
                 }}
                 className="btn-ghost text-primary-600"
@@ -527,7 +539,7 @@ function App() {
             </p>
             <button
               onClick={() => {
-                setShowLanding(false)
+                applyView('editor')
                 window.scrollTo(0, 0)
               }}
               className="btn-brand px-6 sm:px-8 py-3 text-base w-full sm:w-auto"
@@ -543,6 +555,114 @@ function App() {
     )
   }
 
+  // Templates gallery page
+  if (showTemplatesPage) {
+    return (
+      <div className="min-h-[100dvh] bg-surface-50">
+        <header className="sticky top-0 z-50 bg-surface-0/80 backdrop-blur-xl border-b border-primary-100/50">
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between">
+            <button
+              onClick={() => applyView('landing')}
+              className="flex items-center gap-2 hover:opacity-80 transition-opacity"
+            >
+              <img src="/logo.png" alt="Sivee" className="w-9 h-9" />
+              <span className="text-lg font-semibold text-primary-900">{t('landing.appName')}</span>
+            </button>
+            <div className="flex items-center gap-2">
+              <ThemeToggle />
+              <LanguageSwitcher />
+              <button onClick={() => applyView('resumes')} className="btn-ghost text-sm">
+                <FolderOpen className="w-4 h-4" />
+                <span className="hidden sm:inline">{t('resumes.myResumes')}</span>
+              </button>
+            </div>
+          </div>
+        </header>
+
+        <main className="max-w-6xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
+          <div className="text-center mb-8 sm:mb-10">
+            <h1 className="text-3xl sm:text-4xl font-bold text-primary-900 mb-3">
+              {t('landing.templatesGalleryTitle')}
+            </h1>
+            <p className="text-base sm:text-lg text-primary-600 max-w-2xl mx-auto">
+              {t('landing.templatesGallerySubtitle')}
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+            {templatePreviews.map((template) => {
+              const isSelected = selectedTemplate === template.id
+              const imgSrc = getTemplateImage(template.imgBase, 'normal')
+              const fallbackSrc = `${template.imgBase}.png`
+
+              return (
+                <article
+                  key={template.id}
+                  onClick={() => setSelectedTemplate(template.id)}
+                  className={`rounded-2xl border bg-surface-0 overflow-hidden cursor-pointer transition-all ${
+                    isSelected
+                      ? 'border-brand shadow-medium ring-2 ring-brand/20'
+                      : 'border-primary-100 hover:border-primary-300 hover:shadow-medium'
+                  }`}
+                >
+                  <div className="aspect-[3/4] bg-primary-50 overflow-hidden">
+                    <img
+                      src={imgSrc}
+                      alt={template.name}
+                      className="w-full h-full object-cover object-top"
+                      onError={(e) => {
+                        const target = e.target as HTMLImageElement
+                        if (target.src !== fallbackSrc) {
+                          target.src = fallbackSrc
+                        }
+                      }}
+                    />
+                  </div>
+                  <div className="p-4">
+                    <div className="flex items-center justify-between mb-3">
+                      <h2 className="text-base font-semibold text-primary-900">{template.name}</h2>
+                      {isSelected && (
+                        <span className="text-xs font-medium px-2 py-1 rounded-full bg-brand/10 text-brand">
+                          {t('landing.selectedTemplate')}
+                        </span>
+                      )}
+                    </div>
+                    <button
+                      onClick={(event) => {
+                        event.stopPropagation()
+                        openEditorWithTemplate(template.id)
+                      }}
+                      className="btn-brand w-full justify-center"
+                    >
+                      {t('landing.chooseTemplate')}
+                    </button>
+                  </div>
+                </article>
+              )
+            })}
+          </div>
+        </main>
+
+        <div className="fixed inset-x-0 bottom-0 z-40 border-t border-primary-200/60 bg-surface-0/95 backdrop-blur-xl">
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between gap-3">
+            <p className="text-sm text-primary-700 truncate">
+              {t('landing.selectedTemplate')}:&nbsp;
+              <span className="font-semibold text-primary-900">{selectedTemplate}</span>
+            </p>
+            <button
+              onClick={() => openEditorWithTemplate(selectedTemplate)}
+              className="btn-brand whitespace-nowrap"
+            >
+              {t('landing.chooseSelectedTemplate')}
+            </button>
+          </div>
+        </div>
+
+        <Footer />
+      </div>
+    )
+  }
+
   // Resumes Page
   if (showResumesPage) {
     return (
@@ -552,8 +672,7 @@ function App() {
           <div className="max-w-6xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between">
             <button
               onClick={() => {
-                setShowResumesPage(false)
-                setShowLanding(true)
+                applyView('landing')
               }}
               className="flex items-center gap-2 hover:opacity-80 transition-opacity"
             >
@@ -646,7 +765,7 @@ function App() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between gap-4">
           {/* Logo */}
           <button
-            onClick={() => setShowLanding(true)}
+            onClick={() => applyView('landing')}
             className="flex items-center gap-2 hover:opacity-80 transition-opacity flex-shrink-0"
           >
             <img src="/logo.png" alt="Sivee" className="w-9 h-9" />
@@ -663,7 +782,7 @@ function App() {
             <div className="w-px h-5 bg-primary-200/60 mx-1" />
 
             {/* My Resumes */}
-            <button onClick={() => setShowResumesPage(true)} className="btn-ghost">
+            <button onClick={() => applyView('resumes')} className="btn-ghost">
               <FolderOpen className="w-4 h-4" />
               <span className="hidden lg:inline">{t('resumes.myResumes')}</span>
             </button>
@@ -784,7 +903,7 @@ function App() {
               {/* My Resumes */}
               <button
                 onClick={() => {
-                  setShowResumesPage(true)
+                  applyView('resumes')
                   setShowMobileMenu(false)
                 }}
                 className="w-full px-2 py-2.5 text-left text-sm text-primary-700 hover:bg-primary-50 rounded-lg flex items-center gap-3 transition-colors"

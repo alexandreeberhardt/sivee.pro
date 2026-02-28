@@ -11,10 +11,11 @@ describe('useViewNavigation', () => {
     replaceStateSpy.mockReset()
   })
 
-  it('has correct initial state: showLanding=true, showResumesPage=false', () => {
+  it('has correct initial state: showLanding=true, showTemplatesPage=false, showResumesPage=false', () => {
     const { result } = renderHook(() => useViewNavigation())
 
     expect(result.current.showLanding).toBe(true)
+    expect(result.current.showTemplatesPage).toBe(false)
     expect(result.current.showResumesPage).toBe(false)
   })
 
@@ -38,6 +39,16 @@ describe('useViewNavigation', () => {
     expect(result.current.showResumesPage).toBe(true)
   })
 
+  it('setShowTemplatesPage(true) updates showTemplatesPage to true', () => {
+    const { result } = renderHook(() => useViewNavigation())
+
+    act(() => {
+      result.current.setShowTemplatesPage(true)
+    })
+
+    expect(result.current.showTemplatesPage).toBe(true)
+  })
+
   it('applyView("editor") sets both showLanding and showResumesPage to false', () => {
     const { result } = renderHook(() => useViewNavigation())
 
@@ -46,6 +57,7 @@ describe('useViewNavigation', () => {
     })
 
     expect(result.current.showLanding).toBe(false)
+    expect(result.current.showTemplatesPage).toBe(false)
     expect(result.current.showResumesPage).toBe(false)
   })
 
@@ -62,6 +74,7 @@ describe('useViewNavigation', () => {
     })
 
     expect(result.current.showLanding).toBe(true)
+    expect(result.current.showTemplatesPage).toBe(false)
     expect(result.current.showResumesPage).toBe(false)
   })
 
@@ -73,7 +86,20 @@ describe('useViewNavigation', () => {
     })
 
     expect(result.current.showLanding).toBe(false)
+    expect(result.current.showTemplatesPage).toBe(false)
     expect(result.current.showResumesPage).toBe(true)
+  })
+
+  it('applyView("templates") sets showLanding=false, showTemplatesPage=true and showResumesPage=false', () => {
+    const { result } = renderHook(() => useViewNavigation())
+
+    act(() => {
+      result.current.applyView('templates')
+    })
+
+    expect(result.current.showLanding).toBe(false)
+    expect(result.current.showTemplatesPage).toBe(true)
+    expect(result.current.showResumesPage).toBe(false)
   })
 
   it('calls window.history.pushState when the view changes', () => {
@@ -104,6 +130,7 @@ describe('useViewNavigation', () => {
     })
 
     expect(result.current.showLanding).toBe(false)
+    expect(result.current.showTemplatesPage).toBe(false)
     expect(result.current.showResumesPage).toBe(false)
 
     // Simulate browser back button with popstate
@@ -115,7 +142,23 @@ describe('useViewNavigation', () => {
     })
 
     expect(result.current.showLanding).toBe(false)
+    expect(result.current.showTemplatesPage).toBe(false)
     expect(result.current.showResumesPage).toBe(true)
+  })
+
+  it('popstate event supports templates view', () => {
+    const { result } = renderHook(() => useViewNavigation())
+
+    act(() => {
+      const popStateEvent = new PopStateEvent('popstate', {
+        state: { view: 'templates' },
+      })
+      window.dispatchEvent(popStateEvent)
+    })
+
+    expect(result.current.showLanding).toBe(false)
+    expect(result.current.showTemplatesPage).toBe(true)
+    expect(result.current.showResumesPage).toBe(false)
   })
 
   it('popstate event without state defaults to landing', () => {
@@ -133,6 +176,7 @@ describe('useViewNavigation', () => {
     })
 
     expect(result.current.showLanding).toBe(true)
+    expect(result.current.showTemplatesPage).toBe(false)
     expect(result.current.showResumesPage).toBe(false)
   })
 })
