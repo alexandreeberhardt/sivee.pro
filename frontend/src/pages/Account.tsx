@@ -4,8 +4,6 @@
 import { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import {
-  FileText,
-  ArrowLeft,
   User,
   DownloadSimple,
   Trash,
@@ -95,16 +93,32 @@ export default function Account() {
       <header className="bg-surface-0/80 backdrop-blur-xl border-b border-primary-100/50 sticky top-0 z-50">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between">
           <Link to="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
-            <FileText className="w-7 h-7 text-primary-900" />
+            <img src="/logo.png" alt="Sivee" className="w-9 h-9" />
             <span className="text-lg font-semibold text-primary-900">{t('landing.appName')}</span>
           </Link>
           <div className="flex items-center gap-2">
             <ThemeToggle />
             <LanguageSwitcher />
-            <Link to="/" className="btn-ghost text-sm">
-              <ArrowLeft className="w-4 h-4" />
-              {t('legal.backToHome')}
-            </Link>
+            <div className="w-px h-5 bg-primary-200/60 mx-1" />
+            <div className="flex items-center gap-1.5">
+              <span className="text-sm text-primary-500 hidden lg:inline max-w-[140px] truncate">
+                {user?.email}
+              </span>
+              <Link
+                to="/account"
+                className="btn-ghost !p-2 text-primary-500 hover:text-primary-700"
+                title={t('account.title')}
+              >
+                <User className="w-4 h-4" />
+              </Link>
+              <button
+                onClick={logout}
+                className="btn-ghost !p-2 text-primary-500 hover:text-error-600 hover:bg-error-50"
+                title={t('common.logout')}
+              >
+                <SignOut className="w-4 h-4" />
+              </button>
+            </div>
           </div>
         </div>
       </header>
