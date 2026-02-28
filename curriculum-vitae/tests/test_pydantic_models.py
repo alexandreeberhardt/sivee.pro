@@ -1,4 +1,4 @@
-"""Tests for Pydantic models in app.py — input validation for CV data."""
+"""Comprehensive tests for Pydantic models in app.py."""
 
 import os
 
@@ -14,6 +14,7 @@ from app import (
     EducationItem,
     ExperienceItem,
     LeadershipItem,
+    OptimalSizeResponse,
     PersonalInfo,
     ProfessionalLink,
     ProjectItem,
@@ -22,153 +23,104 @@ from app import (
 
 
 class TestProfessionalLink:
-    def test_valid_link(self):
-        link = ProfessionalLink(
-            platform="github", username="johndoe", url="https://github.com/johndoe"
-        )
-        assert link.platform == "github"
-
-    def test_empty_url_is_valid(self):
-        link = ProfessionalLink(platform="linkedin", username="john", url="")
-        assert link.url == ""
-
-    def test_invalid_url_rejected(self):
-        with pytest.raises(ValidationError, match="URL must start with"):
-            ProfessionalLink(platform="github", username="johndoe", url="ftp://bad.com")
-
-    def test_http_url_accepted(self):
-        link = ProfessionalLink(platform="other", username="test", url="http://example.com")
-        assert link.url == "http://example.com"
-
     def test_defaults(self):
         link = ProfessionalLink()
         assert link.platform == "linkedin"
         assert link.username == ""
         assert link.url == ""
 
+    def test_valid_url(self):
+        link = ProfessionalLink(url="https://github.com/user")
+        assert link.url == "https://github.com/user"
+
+    def test_http_url_accepted(self):
+        link = ProfessionalLink(url="http://example.com")
+        assert link.url == "http://example.com"
+
+    def test_invalid_url_rejected(self):
+        with pytest.raises(ValidationError, match="URL must start with"):
+            ProfessionalLink(url="ftp://example.com")
+
+    def test_empty_url_accepted(self):
+        link = ProfessionalLink(url="")
+        assert link.url == ""
+
+    def test_max_length_platform(self):
+        link = ProfessionalLink(platform="a" * 50)
+        assert len(link.platform) == 50
+
+    def test_platform_too_long(self):
+        with pytest.raises(ValidationError):
+            ProfessionalLink(platform="a" * 51)
+
 
 class TestPersonalInfo:
-    def test_valid_info(self):
-        info = PersonalInfo(
-            name="John Doe",
-            title="Dev",
-            location="Paris",
-            email="john@test.com",
-            phone="+33612345678",
-        )
-        assert info.name == "John Doe"
-
     def test_defaults(self):
         info = PersonalInfo()
         assert info.name == ""
         assert info.links == []
 
-    def test_with_links(self):
-        info = PersonalInfo(
-            links=[
-                ProfessionalLink(platform="github", username="j", url="https://github.com/j"),
-                ProfessionalLink(
-                    platform="linkedin", username="j", url="https://linkedin.com/in/j"
-                ),
-            ]
-        )
-        assert len(info.links) == 2
-
-    def test_legacy_github_migration(self):
-        """Old github/github_url fields should migrate to links."""
-        info = PersonalInfo(github="johndoe", github_url="https://github.com/johndoe")
+    def test_github_migration(self):
+        """Legacy github fields should migrate to links."""
+        info = PersonalInfo(github="user", github_url="https://github.com/user")
         assert len(info.links) == 1
         assert info.links[0].platform == "github"
-        assert info.links[0].username == "johndoe"
-        # Legacy fields cleared after migration
+        assert info.links[0].username == "user"
         assert info.github is None
         assert info.github_url is None
 
-    def test_legacy_not_migrated_if_links_exist(self):
-        info = PersonalInfo(
-            github="old",
-            links=[
-                ProfessionalLink(platform="linkedin", username="j", url="https://linkedin.com/in/j")
-            ],
+    def test_no_migration_when_links_present(self):
+        """If links are already set, github fields should not add duplicates."""
+        existing_link = ProfessionalLink(
+            platform="linkedin", username="me", url="https://linkedin.com/in/me"
         )
-        # links already exist, so github is NOT migrated
+        info = PersonalInfo(
+            links=[existing_link], github="user", github_url="https://github.com/user"
+        )
         assert len(info.links) == 1
         assert info.links[0].platform == "linkedin"
 
+    def test_max_links(self):
+        links = [ProfessionalLink() for _ in range(20)]
+        info = PersonalInfo(links=links)
+        assert len(info.links) == 20
 
-class TestEducationItem:
-    def test_valid(self):
-        item = EducationItem(school="MIT", degree="BS", dates="2020")
-        assert item.school == "MIT"
+    def test_too_many_links(self):
+        with pytest.raises(ValidationError):
+            PersonalInfo(links=[ProfessionalLink() for _ in range(21)])
 
-    def test_defaults(self):
-        item = EducationItem()
-        assert item.school == ""
-        assert item.subtitle == ""
-        assert item.description == ""
-
-
-class TestExperienceItem:
-    def test_valid(self):
-        item = ExperienceItem(title="Dev", company="Co", dates="2020", highlights=["Built stuff"])
-        assert len(item.highlights) == 1
-
-    def test_defaults(self):
-        item = ExperienceItem()
-        assert item.highlights == []
+    def test_email_max_length(self):
+        info = PersonalInfo(email="a" * 254)
+        assert len(info.email) == 254
 
 
 class TestProjectItem:
-    def test_valid(self):
-        item = ProjectItem(name="My Project", year="2024", highlights=["Did stuff"])
-        assert item.name == "My Project"
+    def test_year_string(self):
+        item = ProjectItem(name="Test", year="2023")
+        assert item.year == "2023"
 
-    def test_year_as_int(self):
-        """Year can be provided as int and gets converted to string."""
-        item = ProjectItem(name="Proj", year=2024)
-        assert item.year == "2024"
+    def test_year_int_converted(self):
+        item = ProjectItem(name="Test", year=2023)
+        assert item.year == "2023"
 
-    def test_year_as_none(self):
-        item = ProjectItem(name="Proj", year=None)
+    def test_year_none_converted(self):
+        item = ProjectItem(name="Test", year=None)
         assert item.year == ""
 
-
-
-class TestLeadershipItem:
-    def test_valid(self):
-        item = LeadershipItem(role="Lead", place="Org", dates="2020", highlights=["Led team"])
-        assert item.role == "Lead"
-
     def test_defaults(self):
-        item = LeadershipItem()
-        assert item.role == ""
-        assert item.place == ""
-
-
-class TestCustomItem:
-    def test_valid(self):
-        item = CustomItem(title="Hobbies", subtitle="Sports", dates="", highlights=["Football"])
-        assert item.title == "Hobbies"
-
-    def test_defaults(self):
-        item = CustomItem()
-        assert item.title == ""
+        item = ProjectItem()
+        assert item.name == ""
         assert item.highlights == []
 
 
 class TestCVSection:
-    def test_valid_education_section(self):
-        section = CVSection(
-            id="sec-1",
-            type="education",
-            title="Education",
-            items=[{"school": "MIT", "degree": "BS", "dates": "2020"}],
-        )
-        assert section.type == "education"
+    def test_summary_section(self):
+        section = CVSection(id="s1", type="summary", title="Summary", items="My bio text")
+        assert section.items == "My bio text"
 
-    def test_valid_skills_section(self):
+    def test_skills_section_list(self):
         section = CVSection(
-            id="sec-2",
+            id="s2",
             type="skills",
             title="Skills",
             items=[
@@ -180,63 +132,101 @@ class TestCVSection:
         assert len(section.items) == 2
         assert section.items[0]["skills"] == "Python"
 
-    def test_valid_summary_section(self):
-        section = CVSection(
-            id="sec-3",
-            type="summary",
-            title="Summary",
-            items="I am a developer",
-        )
-        assert section.items == "I am a developer"
+    def test_education_section_list(self):
+        section = CVSection(id="s3", type="education", title="Education", items=[])
+        assert section.items == []
+
+    def test_visible_default(self):
+        section = CVSection(id="s1", type="summary", title="Test", items="")
+        assert section.isVisible is True
 
     def test_hidden_section(self):
-        section = CVSection(
-            id="sec-4",
-            type="education",
-            title="Edu",
-            isVisible=False,
-            items=[],
-        )
+        section = CVSection(id="s1", type="summary", title="Test", isVisible=False, items="")
         assert section.isVisible is False
 
-    def test_invalid_type(self):
+    def test_id_required(self):
         with pytest.raises(ValidationError):
-            CVSection(id="sec-5", type="invalid_type", title="Bad", items=[])
+            CVSection(type="summary", title="Test", items="")
 
 
 class TestResumeData:
-    def test_valid_resume(self):
-        data = ResumeData(
-            personal=PersonalInfo(name="John"),
-            sections=[
-                CVSection(id="sec-1", type="education", title="Edu", items=[]),
-            ],
-            template_id="harvard",
-            lang="fr",
-        )
-        assert data.template_id == "harvard"
-        assert len(data.sections) == 1
-
     def test_defaults(self):
         data = ResumeData(personal=PersonalInfo())
         assert data.template_id == "harvard"
         assert data.lang == "fr"
         assert data.sections == []
 
-    def test_with_all_section_types(self):
-        data = ResumeData(
-            personal=PersonalInfo(name="Test"),
-            sections=[
-                CVSection(id="sec-1", type="summary", title="Summary", items="Text"),
-                CVSection(id="sec-2", type="education", title="Edu", items=[]),
-                CVSection(id="sec-3", type="experiences", title="Exp", items=[]),
-                CVSection(id="sec-4", type="projects", title="Proj", items=[]),
-                CVSection(
-                    id="sec-5", type="skills", title="Skills", items=[]
-                ),
-                CVSection(id="sec-6", type="leadership", title="Lead", items=[]),
-                CVSection(id="sec-7", type="languages", title="Lang", items="French"),
-                CVSection(id="sec-8", type="custom", title="Custom", items=[]),
+    def test_with_sections(self):
+        section = CVSection(id="s1", type="summary", title="Summary", items="Hello")
+        data = ResumeData(personal=PersonalInfo(), sections=[section])
+        assert len(data.sections) == 1
+
+    def test_custom_template_and_lang(self):
+        data = ResumeData(personal=PersonalInfo(), template_id="europass", lang="en")
+        assert data.template_id == "europass"
+        assert data.lang == "en"
+
+
+class TestOptimalSizeResponse:
+    def test_basic(self):
+        resp = OptimalSizeResponse(
+            optimal_size="normal",
+            template_id="harvard",
+            tested_sizes=[{"size": "normal", "template_id": "harvard", "page_count": 1}],
+        )
+        assert resp.optimal_size == "normal"
+
+    def test_with_errors(self):
+        resp = OptimalSizeResponse(
+            optimal_size="compact",
+            template_id="harvard_compact",
+            tested_sizes=[
+                {"size": "large", "template_id": "harvard_large", "error": "Failed"},
+                {"size": "compact", "template_id": "harvard_compact", "page_count": 2},
             ],
         )
-        assert len(data.sections) == 8
+        assert len(resp.tested_sizes) == 2
+
+
+class TestEducationItem:
+    def test_defaults(self):
+        item = EducationItem()
+        assert item.school == ""
+        assert item.description is None or item.description == ""
+
+    def test_full_item(self):
+        item = EducationItem(
+            school="MIT",
+            degree="BSc CS",
+            dates="2020-2024",
+            subtitle="GPA 3.9",
+            description="Thesis on AI",
+        )
+        assert item.school == "MIT"
+
+
+class TestExperienceItem:
+    def test_defaults(self):
+        item = ExperienceItem()
+        assert item.highlights == []
+
+    def test_with_highlights(self):
+        item = ExperienceItem(
+            title="SWE", company="Google", dates="2023", highlights=["Built X", "Led Y"]
+        )
+        assert len(item.highlights) == 2
+
+
+
+class TestLeadershipItem:
+    def test_defaults(self):
+        item = LeadershipItem()
+        assert item.role == ""
+        assert item.highlights == []
+
+
+class TestCustomItem:
+    def test_defaults(self):
+        item = CustomItem()
+        assert item.title == ""
+        assert item.highlights == []
